@@ -1,0 +1,3 @@
+﻿cl : command line  warning D9025: overriding '/MDd' with '/MTd'
+  glad.c
+  Glad.vcxproj -> F:\Projects\SnapEngine\SnapCore\vendor\GLAD\bin\-windows-x86_64\Glad\Glad.lib
