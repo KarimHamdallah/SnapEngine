@@ -136,7 +136,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Snap\Core\Application.h" />
     <ClInclude Include="src\Snap\Core\Core.h" />
     <ClInclude Include="src\Snap\Core\EntryPoint.h" />
@@ -172,6 +171,7 @@
     <ClInclude Include="src\SnapPCH.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLTexture.h" />
@@ -457,7 +457,6 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Snap\Core\Application.cpp" />
     <ClCompile Include="src\Snap\Core\LayerStack.cpp" />
     <ClCompile Include="src\Snap\Core\Timer.cpp" />
@@ -481,6 +480,7 @@
     </ClCompile>
     <ClCompile Include="src\platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLTexture.cpp" />

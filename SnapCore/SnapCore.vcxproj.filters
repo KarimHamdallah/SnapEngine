@@ -108,6 +108,9 @@
     <ClInclude Include="src\Snap\Renderer\Buffer.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\FrameBuffer.h">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Renderer\GraphicsContext.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
@@ -151,6 +154,9 @@
       <Filter>src\platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\OpenGL\OpenGLContext.h">
+      <Filter>src\platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h">
       <Filter>src\platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\OpenGL\OpenGLRendererAPI.h">
@@ -1002,8 +1008,6 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp">
       <Filter>vendor\GLM\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Renderer\FrameBuffer.h" />
-    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1025,6 +1029,9 @@
       <Filter>src\Snap\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp">
       <Filter>src\Snap\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicCameraController.cpp">
@@ -1066,6 +1073,9 @@
     <ClCompile Include="src\platform\OpenGL\OpenGLContext.cpp">
       <Filter>src\platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp">
+      <Filter>src\platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\platform\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\platform\OpenGL</Filter>
     </ClCompile>
@@ -1084,7 +1094,5 @@
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp" />
-    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp" />
   </ItemGroup>
 </Project>
