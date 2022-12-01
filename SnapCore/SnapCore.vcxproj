@@ -136,6 +136,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Snap\Core\Application.h" />
     <ClInclude Include="src\Snap\Core\Core.h" />
     <ClInclude Include="src\Snap\Core\EntryPoint.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="src\Snap\Events\WindowEvent.h" />
     <ClInclude Include="src\Snap\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Snap\Renderer\Buffer.h" />
+    <ClInclude Include="src\Snap\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Snap\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\Snap\Renderer\OrthoGraphicCamera.h" />
     <ClInclude Include="src\Snap\Renderer\OrthoGraphicCameraController.h" />
@@ -455,6 +457,7 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Snap\Core\Application.cpp" />
     <ClCompile Include="src\Snap\Core\LayerStack.cpp" />
     <ClCompile Include="src\Snap\Core\Timer.cpp" />
@@ -462,6 +465,7 @@
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Snap\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicCameraController.cpp" />
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicsCamera.cpp" />
     <ClCompile Include="src\Snap\Renderer\Renderer.cpp" />

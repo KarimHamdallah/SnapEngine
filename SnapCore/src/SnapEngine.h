@@ -35,6 +35,7 @@
 #include <Snap/Renderer/Shader.h>
 #include <Snap/Renderer/Texture.h>
 #include <Snap/Renderer/SubTexture2D.h>
+#include <Snap/Renderer/FrameBuffer.h>
 
 #include <Snap/Renderer/OrthoGraphicCamera.h>
 #include <Snap/Renderer/OrthoGraphicCameraController.h>

@@ -1002,6 +1002,8 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp">
       <Filter>vendor\GLM\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\FrameBuffer.h" />
+    <ClInclude Include="src\platform\OpenGL\OpenGLFrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1082,5 +1084,7 @@
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp" />
+    <ClCompile Include="src\platform\OpenGL\OpenGLFrameBuffer.cpp" />
   </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@ namespace SnapEngine
 		inline static Application& Get() { return *s_Instance; }
 		inline IWindow& GetWindow() { return *m_Window; }
 
+		inline void Close() { m_Running = false; }
 	private:
 		std::unique_ptr<IWindow> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
