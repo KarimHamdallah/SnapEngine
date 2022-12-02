@@ -1,65 +1,65 @@
 #include "SnapPCH.h"
-#include "WindowsInput.h"
+#include <Snap/Core/Input.h>
 #include <Snap/Core/Application.h>
 #include <GLFW/glfw3.h>
 
 namespace SnapEngine
 {
-	Input* Input::s_Instance = new WindowsInput();
+	//Input* Input::s_Instance = new WindowsInput();
 
-	bool WindowsInput::IsKeyPressedImpl(int KeyCode)
+	bool Input::IsKeyPressed(Key KeyCode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		int KeyState = glfwGetKey(window, KeyCode);
+		int KeyState = glfwGetKey(window, (int)KeyCode);
 
 		return KeyState == GLFW_PRESS || KeyState == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsKeyReleasedImpl(int KeyCode)
+	bool Input::IsKeyReleased(Key KeyCode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		int KeyState = glfwGetKey(window, KeyCode);
+		int KeyState = glfwGetKey(window, (int)KeyCode);
 
 		return KeyState == GLFW_RELEASE;
 	}
 
-	bool WindowsInput::IsKeyDownImpl(int KeyCode)
+	bool Input::IsKeyDown(Key KeyCode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		int KeyState = glfwGetKey(window, KeyCode);
+		int KeyState = glfwGetKey(window, (int)KeyCode);
 
 		return KeyState == GLFW_PRESS && KeyState != GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int Button)
+	bool Input::IsMouseButtonPressed(MouseButton Button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		int ButtonState = glfwGetMouseButton(window, Button);
+		int ButtonState = glfwGetMouseButton(window, (int)Button);
 
 		return ButtonState == GLFW_PRESS || ButtonState == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonReleasedImpl(int Button)
+	bool Input::IsMouseButtonReleased(MouseButton Button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		int ButtonState = glfwGetMouseButton(window, Button);
+		int ButtonState = glfwGetMouseButton(window, (int)Button);
 
 		return ButtonState == GLFW_RELEASE;
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseX()
 	{
-		auto [x, y] = GetMousePosImpl();
+		auto [x, y] = GetMousePos();
 		return (float)x;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePosImpl();
+		auto [x, y] = GetMousePos();
 		return (float)y;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePosImpl()
+	std::pair<float, float> Input::GetMousePos()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double x, y;

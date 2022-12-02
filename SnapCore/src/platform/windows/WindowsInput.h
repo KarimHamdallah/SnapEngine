@@ -1,4 +1,5 @@
 #pragma once
+/*
 #include <Snap/Core/Input.h>
 
 namespace SnapEngine
@@ -18,3 +19,4 @@ namespace SnapEngine
 		virtual std::pair<float, float> GetMousePosImpl() override;
 	};
 }
+*/

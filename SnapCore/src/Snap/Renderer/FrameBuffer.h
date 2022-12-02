@@ -16,6 +16,7 @@ namespace SnapEngine
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
+		virtual void Resize(uint32_t Width, uint32_t Height) = 0;
 		
 		static FrameBuffer* Creat(uint32_t Width, uint32_t Height);
 	protected:

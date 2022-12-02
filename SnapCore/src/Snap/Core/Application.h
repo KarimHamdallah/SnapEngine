@@ -9,7 +9,7 @@ namespace SnapEngine
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "SnapEngine Application", uint32_t Width = 800, uint32_t Height = 600);
 		virtual ~Application();
 
 		void Run();
@@ -22,6 +22,7 @@ namespace SnapEngine
 		inline IWindow& GetWindow() { return *m_Window; }
 
 		inline void Close() { m_Running = false; }
+		inline ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 	private:
 		std::unique_ptr<IWindow> m_Window;
 		ImGuiLayer* m_ImGuiLayer;

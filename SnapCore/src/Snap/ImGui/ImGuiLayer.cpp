@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <Snap/Core/Application.h>
+#include <Snap/Events/Event.h>
 
 #define BIND_FUNCTION(x) std::bind(&x, this, std::placeholders::_1)
 
@@ -51,6 +52,17 @@ namespace SnapEngine
         ImGui_ImplOpenGL3_Init("#version 460");
     }
 
+    void ImGuiLayer::ProcessEvent(IEvent& e)
+    {
+        if (m_BlockEvents)
+        {
+            ImGuiIO& io = ImGui::GetIO();
+
+            e.m_Handeled |= e.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
+            e.m_Handeled |= e.IsInCategory(EventCategory::EventCategoryKeyBoard) & io.WantCaptureKeyboard;
+        }
+    }
+
     void ImGuiLayer::Destroy()
     {
         ImGui_ImplOpenGL3_Shutdown();
@@ -84,12 +96,4 @@ namespace SnapEngine
             glfwMakeContextCurrent(backup_current_context);
         }
     }
-
-    /*
-    void ImGuiLayer::ImGuiRender()
-    {
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show);
-    }
-    */
 }

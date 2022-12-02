@@ -9,10 +9,15 @@ namespace SnapEngine
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
+	Application::Application(const std::string& name, uint32_t Width, uint32_t Height)
 	{
 		s_Instance = this;
-		m_Window = std::unique_ptr<IWindow>(IWindow::Creat());
+
+		WindowProps props;
+		props.Title = name;
+		props.Width = Width;
+		props.Height = Height;
+		m_Window = std::unique_ptr<IWindow>(IWindow::Creat(props));
 		m_Window->SetProcessEventFuncPtr(SNAP_BIND_FUNCTION(Application::ProcessEvent));
 		m_Window->SetVsync(true);
 
@@ -64,11 +69,11 @@ namespace SnapEngine
 		dispatcher.DispatchEvent<WindowCloseEvent>(SNAP_BIND_FUNCTION(Application::OnWindowClose));
 		dispatcher.DispatchEvent<WindowResizeEvent>(SNAP_BIND_FUNCTION(Application::OnWindowResize));
 
-		for (auto it = m_LayersStack.end(); it != m_LayersStack.begin();)
+		for (auto it = m_LayersStack.rbegin(); it != m_LayersStack.rend(); ++it)
 		{
-			(*--it)->ProcessEvent(e);
 			if (e.m_Handeled)
 				break;
+			(*it)->ProcessEvent(e);
 		}
 	}
 

@@ -18,7 +18,7 @@ namespace SnapEngine
 		AppUpdateEvent() {}
 
 		EVENT_CLASS_TYPE(AppUpdate)
-			EVENT_CLASS_CATEGORY((int)EventCategory::EventCategoryApplication)
+		EVENT_CLASS_CATEGORY((int)EventCategory::EventCategoryApplication)
 	};
 
 	class AppRenderEvent : public IEvent
@@ -27,6 +27,6 @@ namespace SnapEngine
 		AppRenderEvent() {}
 
 		EVENT_CLASS_TYPE(AppRender)
-			EVENT_CLASS_CATEGORY((int)EventCategory::EventCategoryApplication)
+		EVENT_CLASS_CATEGORY((int)EventCategory::EventCategoryApplication)
 	};
 }

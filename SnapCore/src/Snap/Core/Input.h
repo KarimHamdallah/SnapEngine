@@ -6,17 +6,18 @@ namespace SnapEngine
 	class Input
 	{
 	public:
-		inline static bool IsKeyPressed(Key KeyCode) { return s_Instance->IsKeyPressedImpl((int)KeyCode); }
-		inline static bool IsKeyReleased(Key KeyCode) { return s_Instance->IsKeyReleasedImpl((int)KeyCode); }
-		inline static bool IsKeyDown(Key KeyCode) { return s_Instance->IsKeyDownImpl((int)KeyCode); }
+		static bool IsKeyPressed(Key KeyCode);
+		static bool IsKeyReleased(Key KeyCode);
+		static bool IsKeyDown(Key KeyCode);
 
-		inline static bool IsMouseButtonPressed(MouseButton Button) { return s_Instance->IsMouseButtonPressedImpl((int)Button); }
-		inline static bool IsMouseButtonReleased(MouseButton Button) { return s_Instance->IsMouseButtonReleasedImpl((int)Button); }
+		static bool IsMouseButtonPressed(MouseButton Button);
+		static bool IsMouseButtonReleased(MouseButton Button);
 
-		inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); }
-		inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); }
-		inline static std::pair<float, float> GetMousePos() { return std::pair<float, float>(1.0f, 1.0f); }
+		static float GetMouseX();
+		static float GetMouseY();
+		static std::pair<float, float> GetMousePos();
 
+		/*
 	protected:
 		virtual bool IsKeyPressedImpl(int KeyCode) = 0;
 		virtual bool IsKeyReleasedImpl(int KeyCode) = 0;
@@ -30,5 +31,6 @@ namespace SnapEngine
 		virtual std::pair<float, float> GetMousePosImpl() = 0;
 	private:
 		static Input* s_Instance;
+		*/
 	};
 }

@@ -149,3 +149,60 @@ project "SandBox"
 		buildoptions "/MT"
 		runtime "Release"
 		optimize "on"
+
+project "SnapEditor"
+    location "SnapEditor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "off"
+
+	targetdir ("Build/Bin".. project_output .. "{prj.name}")
+	objdir ("Build/intermediate/".. project_output .. "{prj.name}")
+
+	files
+	{
+	    "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp"
+	}
+
+	includedirs 
+	{
+        "SnapCore/vendor/spdlog/include",
+		"SnapCore/src",
+		"%{Dependencies.ImGui}",
+		"%{Dependencies.GLM}"
+	}
+
+	links
+	{
+		"SnapCore"
+	}
+
+	filter "system:windows"
+	    cppdialect "c++17" 
+		staticruntime "On"
+		systemversion "latest"
+
+		defines
+	{
+		"SNAP_PLATFORM_WINDOWS"
+	}
+	
+	filter "configurations:Debug"
+		defines "SNAP_ENGINE_DEBUG"
+		buildoptions "/MTd"
+		runtime "Debug"
+		symbols "on"
+	
+	filter "configurations:Release"
+		defines "SNAP_ENGINE_RELEASE"
+		buildoptions "/MT"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "SNAP_ENGINE_DIST"
+		buildoptions "/MT"
+		runtime "Release"
+		optimize "on"

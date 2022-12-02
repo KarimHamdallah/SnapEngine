@@ -12,5 +12,9 @@ namespace SnapEngine
 
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
+		virtual void Resize(uint32_t Width, uint32_t Height) override;
+
+	private:
+		void Invalidate(uint32_t Width, uint32_t Height);
 	};
 }

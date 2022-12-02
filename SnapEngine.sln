@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "SnapCore\vendor\im
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapCore", "SnapCore\SnapCore.vcxproj", "{002CE712-ECF8-411E-1512-30C6013E77AC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapEditor", "SnapEditor\SnapEditor.vcxproj", "{DECE406D-CA86-82BA-338E-5B161F651DAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -48,6 +50,12 @@ Global
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Distribution|x64.Build.0 = Distribution|x64
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Release|x64.ActiveCfg = Release|x64
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Release|x64.Build.0 = Release|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Debug|x64.ActiveCfg = Debug|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Debug|x64.Build.0 = Debug|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Distribution|x64.ActiveCfg = Distribution|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Distribution|x64.Build.0 = Distribution|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Release|x64.ActiveCfg = Release|x64
+		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
