@@ -86,12 +86,12 @@ namespace SnapEngine
 		delete s_Data;
 	}
 
-	void Renderer2D::Begin(const OrthoGraphicsCamera& Camera)
+	void Renderer2D::Begin(const RendererCamera& Camera)
 	{
 		// Point To First Element of QuadVertexBatchBuffer Array
 		s_Data->QuadVertexPtr = s_Data->QuadVertexBatchBuffer;
 
-		s_Data->m_ProjectionViewMatrix = Camera.GetProjectionViewMatrix();
+		s_Data->m_ProjectionViewMatrix = Camera.Projection * Camera.View;
 
 		auto Shader = s_Data->m_BatchRendererShader;
 
@@ -300,6 +300,33 @@ namespace SnapEngine
 		{
 			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
 			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i];
+			s_Data->QuadVertexPtr->m_Color = Color;
+			s_Data->QuadVertexPtr->m_TexCoords = TexCoords[i];
+			s_Data->QuadVertexPtr->m_TexID = tex_index;
+			s_Data->QuadVertexPtr->m_TilingFactor = TilingFactor;
+			s_Data->QuadVertexPtr++;
+		}
+
+		s_Data->Stats.m_QuadCount++; // Add Quad
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color)
+	{
+		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
+			FlushAndReset();
+
+		float tex_index = 0.0f; // White Texture
+		float TilingFactor = 1.0f;
+
+		//                                Top Right      Bottom Right      Bottom Left      Top Left
+		const glm::vec2 TexCoords[] = { {1.0f, 1.0f}, { 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 1.0f } };
+
+		const int QuadVerticesCount = 4;
+
+		for (int i = 0; i < QuadVerticesCount; i++)
+		{
+			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
+			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i]; // Top Right
 			s_Data->QuadVertexPtr->m_Color = Color;
 			s_Data->QuadVertexPtr->m_TexCoords = TexCoords[i];
 			s_Data->QuadVertexPtr->m_TexID = tex_index;

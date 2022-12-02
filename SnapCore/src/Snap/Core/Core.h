@@ -15,4 +15,11 @@ namespace SnapEngine
 
     template<typename T>
     using SnapUniquePtr = std::unique_ptr<T>;
+
+
+    template<typename T, typename... Args>
+    SnapPtr<T> CreatSnapPtr(Args&&... args)
+    {
+        return (SnapPtr<T>)std::make_shared<T>(std::forward<Args>(args)...);
+    }
 }

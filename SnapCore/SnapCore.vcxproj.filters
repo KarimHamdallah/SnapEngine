@@ -19,6 +19,12 @@
     <Filter Include="src\Snap\Renderer">
       <UniqueIdentifier>{B46EDE6B-2085-DC01-69FC-6723D551AD89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snap\Scene">
+      <UniqueIdentifier>{EBC2BE6F-D790-B275-C024-239CAC918EDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Snap\Scene\Comps">
+      <UniqueIdentifier>{1CA39B84-0832-254E-B150-39499DBE35F4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
     </Filter>
@@ -144,6 +150,15 @@
     <ClInclude Include="src\Snap\Renderer\VertexArray.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Comps\Components.h">
+      <Filter>src\Snap\Scene\Comps</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Entity.h">
+      <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Scene.h">
+      <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\SnapEngine.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -170,6 +185,9 @@
     </ClInclude>
     <ClInclude Include="src\platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\WindowsInput.h">
+      <Filter>src\platform\windows</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\windows\WindowsWindow.h">
       <Filter>src\platform\windows</Filter>
@@ -1005,6 +1023,7 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp">
       <Filter>vendor\GLM\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1060,6 +1079,15 @@
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\VertexArray.cpp">
       <Filter>src\Snap\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\Comps\Components.cpp">
+      <Filter>src\Snap\Scene\Comps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\Entity.cpp">
+      <Filter>src\Snap\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\Scene.cpp">
+      <Filter>src\Snap\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\SnapPCH.cpp">
       <Filter>src</Filter>

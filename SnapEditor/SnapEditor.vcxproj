@@ -78,8 +78,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;SNAP_ENGINE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;SNAP_ENGINE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;..\SnapCore\vendor\Entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -95,8 +95,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;SNAP_ENGINE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;SNAP_ENGINE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;..\SnapCore\vendor\Entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -116,8 +116,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\SnapCore\vendor\spdlog\include;..\SnapCore\src;..\SnapCore\vendor\imgui;..\SnapCore\vendor\GLM;..\SnapCore\vendor\Entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -127,12 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\SnapEditor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SnapCore\SnapCore.vcxproj">
       <Project>{002CE712-ECF8-411E-1512-30C6013E77AC}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\SnapEditor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

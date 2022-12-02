@@ -8,58 +8,35 @@ namespace SnapEngine
 	{
 	public:
 		EditorLayer()
-			: Layer("Example"), m_Camera(400.0f, -400.0f, 300.0f, -300.0f, 0.0f, 1.0f)
+			: Layer("Example")
 		{
-			m_Texture = SnapPtr< Texture2D>(Texture2D::Creat("assets/SpriteSheet.png"));
-			m_SubTexture = SubTexture2D::CreatFromCoords(m_Texture, { 1.0f, 2.0f }, { 400.0f, 600.0f });
 			m_FrameBuffer = SnapPtr< FrameBuffer>(FrameBuffer::Creat(800.0f, 600.0f));
+
+
+			/// Scene ///////////////////////////////////////////////
+
+			m_Scene = CreatSnapPtr<Scene>();
+
+			m_Camera = m_Scene->CreatEntity("Camera");
+			m_Camera.AddComponent<CameraComponent>(glm::ortho(-400.0f, 400.0f, -300.0f, 300.0f, 0.0f, 1.0f)).m_IsMain = true;
+
+			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 100.0f, 100.0f, 0.0f }, 0.0f);
+			m_Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		}
 
 		~EditorLayer() {}
 
 		void Update( TimeStep Time) override
 		{
-
-			dt = Time;
-			// Update Frame
-			/*
-			m_Position += m_Velocity * Time.GetSeconds();
-
-			float HalfWidth = m_ViewPortSize.x * 0.5f;
-			float HalfHeight = m_ViewPortSize.y * 0.5f;
-
-			if (m_Position.x + m_Scale.x * 0.5f >= HalfWidth) { m_Position.x = HalfWidth - m_Scale.x * 0.5f; m_Velocity.x *= -1.0f; }
-			if (m_Position.x - m_Scale.x * 0.5f <= -HalfWidth) { m_Position.x = -HalfWidth + m_Scale.x * 0.5f; m_Velocity.x *= -1.0f; }
-			if (m_Position.y + m_Scale.y * 0.5f >= HalfHeight) { m_Position.y = HalfHeight - m_Scale.y * 0.5f; m_Velocity.y *= -1.0f; }
-			if (m_Position.y - m_Scale.y * 0.5f <= -HalfHeight) { m_Position.y = -HalfHeight + m_Scale.y * 0.5f; m_Velocity.y *= -1.0f; }
-			*/
-
 			if (m_ViewPortFocused)
 			{
-				if (Input::IsKeyPressed(Key::W))
-					m_Position.y += m_Velocity.y * dt;
-				if (Input::IsKeyPressed(Key::S))
-					m_Position.y -= m_Velocity.y * dt;
-				if (Input::IsKeyPressed(Key::D))
-					m_Position.x += m_Velocity.x * dt;
-				if (Input::IsKeyPressed(Key::A))
-					m_Position.x -= m_Velocity.x * dt;
+				m_Scene->Update(Time);
 			}
+
 			// Render
-
-			 Renderer2D::ResetStats();
-
 			m_FrameBuffer->Bind(); // Record Scene into frame buffer
 
-			 RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			 RendererCommand::Clear();
-
-			 Renderer2D::Begin(m_Camera);
-			{
-				 Renderer2D::DrawQuad(m_SubTexture,
-					m_Position, m_Scale);
-			}
-			 Renderer2D::End();
+			m_Scene->Render();
 
 			m_FrameBuffer->UnBind(); // Stop Recording
 		}
@@ -128,7 +105,9 @@ namespace SnapEngine
 				ImGui::EndMenuBar();
 			}
 
-			ImGui::Begin("Hiererachy");
+			ImGui::Begin("Settings");
+			auto& sprite_color = m_Sprite.GetComponent<SpriteRendererComponent>().m_Color;
+			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite_color));
 			ImGui::End();
 
 			// ViewPort Window
@@ -148,10 +127,12 @@ namespace SnapEngine
 					m_FrameBuffer->Resize((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y); // Reset Frame Buffer To new ViewPort Window Size
 
 					// Change Camera Projection According To New Width and New Height of ViewPortWindow
-					m_Camera = SnapEngine::OrthoGraphicsCamera(
-						m_ViewPortSize.x * 0.5f, m_ViewPortSize.x * -0.5f,
-						m_ViewPortSize.y * 0.5f, m_ViewPortSize.y * -0.5f,
-						0.0f, 1.0f);
+					m_Camera.GetComponent<CameraComponent>().m_Camera = Camera(
+						glm::ortho(
+						  m_ViewPortSize.x * -0.5f, m_ViewPortSize.x * 0.5f,
+						  m_ViewPortSize.y * -0.5f, m_ViewPortSize.y * 0.5f,
+						  0.0f, 1.0f
+						));
 				}
 			}
 
@@ -162,26 +143,20 @@ namespace SnapEngine
 			ImGui::End();
 		}
 
-		void ProcessEvent( IEvent& e) override
-		{
-		}
-
 	private:
-		OrthoGraphicsCamera m_Camera;
-		SnapPtr< Texture2D> m_Texture;
-		SnapPtr< SubTexture2D> m_SubTexture;
 		SnapPtr< FrameBuffer> m_FrameBuffer;
+		SnapPtr<Scene> m_Scene;
+		
+		///////// Entites ////////////////
+		Entity m_Camera;
+		Entity m_Sprite;
+		/////////////////////////////////
 
+		/////////////////// ViewPort ////////////////////////////
 		glm::vec2 m_ViewPortSize; // ImGui ViewPort Window Size
 		bool m_ViewPortFocused = false;
 		bool m_ViewPortHavored = false;
-
-		float dt = 0.0f;
-
-		// Rendering
-		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_Scale = { 100.0f, 100.0f, 1.0f };
-		glm::vec3 m_Velocity = { 100.0f, 100.0f, 0.0f };
+		/////////////////////////////////////////////////////////
 
 	private:
 	};

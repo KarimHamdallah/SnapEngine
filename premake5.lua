@@ -17,6 +17,7 @@ Dependencies["GLAD"] = "SnapCore/vendor/GLAD/include"
 Dependencies["ImGui"] = "SnapCore/vendor/imgui"
 Dependencies["GLM"] = "SnapCore/vendor/GLM"
 Dependencies["STB"] = "SnapCore/vendor/STB"
+Dependencies["Entt"] = "SnapCore/vendor/Entt/include"
 
 include "SnapCore/vendor/GLFW"
 include "SnapCore/vendor/GLAD"
@@ -50,7 +51,8 @@ project "SnapCore"
 		"%{Dependencies.GLAD}",
 		"%{Dependencies.ImGui}",
 		"%{Dependencies.GLM}",
-		"%{Dependencies.STB}"
+		"%{Dependencies.STB}",
+		"%{Dependencies.Entt}"
 	}
 
 	links
@@ -114,7 +116,8 @@ project "SandBox"
         "SnapCore/vendor/spdlog/include",
 		"SnapCore/src",
 		"%{Dependencies.ImGui}",
-		"%{Dependencies.GLM}"
+		"%{Dependencies.GLM}",
+		"%{Dependencies.Entt}"
 	}
 
 	links
@@ -129,7 +132,8 @@ project "SandBox"
 
 		defines
 	{
-		"SNAP_PLATFORM_WINDOWS"
+		"SNAP_PLATFORM_WINDOWS",
+		"SNAP_ENABLE_ASSERTION"
 	}
 	
 	filter "configurations:Debug"
@@ -171,7 +175,8 @@ project "SnapEditor"
         "SnapCore/vendor/spdlog/include",
 		"SnapCore/src",
 		"%{Dependencies.ImGui}",
-		"%{Dependencies.GLM}"
+		"%{Dependencies.GLM}",
+		"%{Dependencies.Entt}"
 	}
 
 	links
@@ -186,7 +191,8 @@ project "SnapEditor"
 
 		defines
 	{
-		"SNAP_PLATFORM_WINDOWS"
+		"SNAP_PLATFORM_WINDOWS",
+		"SNAP_ENABLE_ASSERTION"
 	}
 	
 	filter "configurations:Debug"

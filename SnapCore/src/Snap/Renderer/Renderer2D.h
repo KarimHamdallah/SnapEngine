@@ -3,23 +3,33 @@
 #include <Snap/Renderer/VertexArray.h>
 #include <Snap/Renderer/Shader.h>
 #include <Snap/Renderer/SubTexture2D.h>
+#include <Snap/Scene/Camera.h>
 
 namespace SnapEngine
 {
 	class Renderer2D
 	{
 	public:
+		struct RendererCamera
+		{
+			glm::mat4 Projection;
+			glm::mat4 View;
+		};
+
+
 		static void Init();
 
 		static void ShutDown();
 		
-		static void Begin(const OrthoGraphicsCamera& Camera);
+		static void Begin(const RendererCamera& Camera);
 		static void End();
 
 		static void DrawQuad(const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color, float TilingFactor = 1.0f);
 		static void DrawQuad(const glm::vec3& Position, const glm::vec3& Scale, float Rotation, const glm::vec4& Color, float TilingFactor = 1.0f);
 		static void DrawQuad(const SnapPtr<Texture2D>& Texture, const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
 		static void DrawQuad(const SnapPtr<Texture2D>& Texture, const glm::vec3& Position, const glm::vec3& Scale, float Rotation, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
+		
+		static void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f));
 		
 		static void DrawQuad(
 			const SnapPtr<SubTexture2D>& subtexture,

@@ -40,6 +40,10 @@
 #include <Snap/Renderer/OrthoGraphicCamera.h>
 #include <Snap/Renderer/OrthoGraphicCameraController.h>
 
+#include <Snap/Scene/Scene.h>
+#include <Snap/Scene/Entity.h>
+#include <Snap/Scene/Comps/Components.h>
+
 //---------------------------
 
 //------ EntryPoint ---------
