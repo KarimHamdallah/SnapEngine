@@ -18,9 +18,9 @@ namespace SnapEngine
 			m_Scene = CreatSnapPtr<Scene>();
 
 			m_Camera = m_Scene->CreatEntity("Camera");
-			m_Camera.AddComponent<CameraComponent>(glm::ortho(-400.0f, 400.0f, -300.0f, 300.0f, 0.0f, 1.0f)).m_IsMain = true;
+			m_Camera.AddComponent<CameraComponent>(10.0f, -1.0f, 1.0f).m_IsMain = true;
 
-			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 100.0f, 100.0f, 0.0f }, 0.0f);
+			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, 0.0f);
 			m_Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		}
 
@@ -28,6 +28,19 @@ namespace SnapEngine
 
 		void Update( TimeStep Time) override
 		{
+
+			{ // Resize Renderer Area
+				if (m_ViewPortSize.x > 0 && m_ViewPortSize.y > 0
+					&& (m_FrameBuffer->GetWidth() != m_ViewPortSize.x || m_FrameBuffer->GetHeight() != m_ViewPortSize.y))
+				{
+					m_FrameBuffer->Resize((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y); // Reset Frame Buffer To new ViewPort Window Size
+
+					// Change Scene Cameras Projection According To New Width and New Height of ViewPortWindow
+					m_Scene->ResizeViewPort(m_ViewPortSize.x, m_ViewPortSize.y);
+				}
+			}
+
+
 			if (m_ViewPortFocused)
 			{
 				m_Scene->Update(Time);
@@ -108,6 +121,13 @@ namespace SnapEngine
 			ImGui::Begin("Settings");
 			auto& sprite_color = m_Sprite.GetComponent<SpriteRendererComponent>().m_Color;
 			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite_color));
+
+			auto& cam = m_Camera.GetComponent<CameraComponent>().m_Camera;
+			float orthosize = cam.GetOrthoGraphicSize();
+			if (ImGui::DragFloat("OrthoGraphic Size", &orthosize, 0.01f))
+				cam.SetOrthoGraphicSize(orthosize);
+			
+			
 			ImGui::End();
 
 			// ViewPort Window
@@ -119,22 +139,8 @@ namespace SnapEngine
 
 			Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewPortFocused || !m_ViewPortHavored);
 			
-			{ // Resize Renderer Area
-				ImVec2 viewportsize = ImGui::GetContentRegionAvail(); // Get This ImGui Window Size
-				if (m_ViewPortSize != *((glm::vec2*)&viewportsize) && viewportsize.x != 0 && viewportsize.y != 0)
-				{
-					m_ViewPortSize = { viewportsize.x, viewportsize.y }; // Record new ViewPort Window Size
-					m_FrameBuffer->Resize((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y); // Reset Frame Buffer To new ViewPort Window Size
-
-					// Change Camera Projection According To New Width and New Height of ViewPortWindow
-					m_Camera.GetComponent<CameraComponent>().m_Camera = Camera(
-						glm::ortho(
-						  m_ViewPortSize.x * -0.5f, m_ViewPortSize.x * 0.5f,
-						  m_ViewPortSize.y * -0.5f, m_ViewPortSize.y * 0.5f,
-						  0.0f, 1.0f
-						));
-				}
-			}
+			ImVec2 viewportsize = ImGui::GetContentRegionAvail(); // Get This ImGui Window Size
+			m_ViewPortSize = { viewportsize.x, viewportsize.y };
 
 			ImGui::Image((ImTextureID)m_FrameBuffer->GetTextureID(), ImVec2{ m_ViewPortSize.x, m_ViewPortSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			ImGui::End();
@@ -153,7 +159,7 @@ namespace SnapEngine
 		/////////////////////////////////
 
 		/////////////////// ViewPort ////////////////////////////
-		glm::vec2 m_ViewPortSize; // ImGui ViewPort Window Size
+		glm::vec2 m_ViewPortSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
 		bool m_ViewPortFocused = false;
 		bool m_ViewPortHavored = false;
 		/////////////////////////////////////////////////////////

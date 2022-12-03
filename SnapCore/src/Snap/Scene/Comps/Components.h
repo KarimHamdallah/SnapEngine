@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
-#include <Snap/Scene/Camera.h>
+#include <Snap/Scene/SceneCamera.h>
 
 namespace SnapEngine
 {
@@ -52,10 +52,14 @@ namespace SnapEngine
 	struct CameraComponent
 	{
 	public:
-		CameraComponent(const glm::mat4& Projection) : m_Camera(Projection) {}
+		CameraComponent(float Size, float NearClipPlane, float FarClipPlane)
+		{
+			m_Camera.SetOrthoGraphic(Size, NearClipPlane, FarClipPlane);
+		}
 		CameraComponent(const CameraComponent&) = default;
 
-		Camera m_Camera;
+		SceneCamera m_Camera;
 		bool m_IsMain = false;
+		bool m_FixedAspectRatio = false;
 	};
 }

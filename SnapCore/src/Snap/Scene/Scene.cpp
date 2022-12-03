@@ -42,7 +42,7 @@ namespace SnapEngine
 
     void Scene::Render()
     {
-        Camera* MainCamera = nullptr;
+        SceneCamera* MainCamera = nullptr;
         glm::mat4* MainCameraTransform;
         {// Get Main Camera
 
@@ -82,6 +82,25 @@ namespace SnapEngine
             }
 
             Renderer2D::End();
+        }
+    }
+
+    void Scene::ResizeViewPort(uint32_t Width, uint32_t Height)
+    {
+        {// Get Main Camera
+
+            auto& group = registry.view<CameraComponent>();
+
+            for (auto entity : group)
+            {
+                auto& cam = group.get<CameraComponent>(entity);
+
+                if (!cam.m_FixedAspectRatio)
+                {
+                    // Update OrthoGraphicCamera Projection Matrix
+                    cam.m_Camera.SetViewPortSize(Width, Height);
+                }
+            }
         }
     }
 }

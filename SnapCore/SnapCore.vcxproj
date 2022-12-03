@@ -182,6 +182,7 @@
     <ClInclude Include="src\platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\platform\windows\WindowsInput.h" />
     <ClInclude Include="src\platform\windows\WindowsWindow.h" />
+    <ClInclude Include="src\Snap\Scene\SceneCamera.h" />
     <ClInclude Include="vendor\GLM\glm\common.hpp" />
     <ClInclude Include="vendor\GLM\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\GLM\glm\detail\_fixes.hpp" />
@@ -494,6 +495,7 @@
     <ClCompile Include="src\platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\platform\windows\WindowsInput.cpp" />
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

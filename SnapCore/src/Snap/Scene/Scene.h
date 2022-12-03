@@ -31,11 +31,19 @@ namespace SnapEngine
 		void Render();
 
 
+		// Editor Functions
+		void ResizeViewPort(uint32_t Width, uint32_t Height); // Update All Scene Cameras Projection According To ViewPort Size Changes
+
+
 	private:
 		Resgistry registry;
 		std::map<std::string, SnapPtr<Entity>> Entities;
 
 		inline static std::atomic_uint64_t EntityCounter = 0;
 		friend Entity;
+
+
+		// Editor Attribs
+		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;
 	};
 }
