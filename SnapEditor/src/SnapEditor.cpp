@@ -1,4 +1,6 @@
 #include <SnapEngine.h>
+#include <Snap/Scene/Scripts/CameraControllerScript.h>
+#include "Panels/SceneHierarchyPanel.h"
 
 
 namespace SnapEngine
@@ -17,11 +19,14 @@ namespace SnapEngine
 
 			m_Scene = CreatSnapPtr<Scene>();
 
+			m_SceneHierarchyPanel.SetScene(m_Scene);
+
 			m_Camera = m_Scene->CreatEntity("Camera");
 			m_Camera.AddComponent<CameraComponent>(10.0f, -1.0f, 1.0f).m_IsMain = true;
 
 			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, 0.0f);
 			m_Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+			m_Sprite.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
 		}
 
 		~EditorLayer() {}
@@ -118,6 +123,8 @@ namespace SnapEngine
 				ImGui::EndMenuBar();
 			}
 
+			m_SceneHierarchyPanel.ImGuiRender();
+
 			ImGui::Begin("Settings");
 			auto& sprite_color = m_Sprite.GetComponent<SpriteRendererComponent>().m_Color;
 			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite_color));
@@ -163,6 +170,9 @@ namespace SnapEngine
 		bool m_ViewPortFocused = false;
 		bool m_ViewPortHavored = false;
 		/////////////////////////////////////////////////////////
+
+		//////////////// Editor ///////////////
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 
 	private:
 	};

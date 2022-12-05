@@ -37,7 +37,20 @@ namespace SnapEngine
 
     void Scene::Update(const TimeStep& Time)
     {
+        { // Update Scripts
+            registry.view<CppScriptComponent>().each([=](auto entity, auto& cppSc)
+                {
+                    if (!cppSc.m_Instance)
+                    {
+                        cppSc.m_Instance = cppSc.InstantiateScriptFuncPtr();
+                        cppSc.m_Instance->m_Entity = Entity{ entity, this };
 
+                        cppSc.m_Instance->Start();
+                    }
+
+                    cppSc.m_Instance->Update(Time);
+                });
+        }
     }
 
     void Scene::Render()

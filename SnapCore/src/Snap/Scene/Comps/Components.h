@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <Snap/Scene/SceneCamera.h>
+#include <Snap/Scene/Scripts/CppScript.h>
 
 namespace SnapEngine
 {
@@ -61,5 +62,21 @@ namespace SnapEngine
 		SceneCamera m_Camera;
 		bool m_IsMain = false;
 		bool m_FixedAspectRatio = false;
+	};
+
+	struct CppScriptComponent
+	{
+		CppScript* m_Instance = nullptr;
+
+		// Function Ptrs
+		CppScript* (*InstantiateScriptFuncPtr)();
+		void(*DestroyScript)(CppScriptComponent*);
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScriptFuncPtr = []() { return static_cast<CppScript*>(new T()); };
+			DestroyScript = [](CppScriptComponent* cppSc) { delete cppSc->m_Instance; cppSc->m_Instance = nullptr; };
+		}
 	};
 }

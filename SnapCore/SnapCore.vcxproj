@@ -183,6 +183,9 @@
     <ClInclude Include="src\platform\windows\WindowsInput.h" />
     <ClInclude Include="src\platform\windows\WindowsWindow.h" />
     <ClInclude Include="src\Snap\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\CameraControllerScript.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\ChangeColor.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h" />
     <ClInclude Include="vendor\GLM\glm\common.hpp" />
     <ClInclude Include="vendor\GLM\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\GLM\glm\detail\_fixes.hpp" />
@@ -496,6 +499,7 @@
     <ClCompile Include="src\platform\windows\WindowsInput.cpp" />
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

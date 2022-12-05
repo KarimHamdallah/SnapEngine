@@ -1025,6 +1025,9 @@
     </ClInclude>
     <ClInclude Include="src\Snap\Scene\Camera.h" />
     <ClInclude Include="src\Snap\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\CameraControllerScript.h" />
+    <ClInclude Include="src\Snap\Scene\Scripts\ChangeColor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1121,5 +1124,6 @@
       <Filter>src\platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp" />
   </ItemGroup>
 </Project>
