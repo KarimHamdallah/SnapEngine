@@ -12,7 +12,7 @@ namespace SnapEngine
         const std::string& name,
         const glm::vec3& Position,
         const glm::vec3& Scale,
-        float Rotation
+        const glm::vec3& Rotation
     )
     {
         Entity* entity = new Entity(registry.create(), this);
@@ -56,7 +56,7 @@ namespace SnapEngine
     void Scene::Render()
     {
         SceneCamera* MainCamera = nullptr;
-        glm::mat4* MainCameraTransform;
+        glm::mat4 MainCameraTransform;
         {// Get Main Camera
 
             auto& group = registry.view<TransformComponent, CameraComponent>();
@@ -68,7 +68,7 @@ namespace SnapEngine
                 if (cam.m_IsMain)
                 {
                     MainCamera = &cam.m_Camera;
-                    MainCameraTransform = &transform.m_Transform;
+                    MainCameraTransform = transform.m_Transform;
                     break;
                 }
             }
@@ -81,7 +81,7 @@ namespace SnapEngine
             RendererCommand::Clear();
 
             // Send Projection And View Matrix To Renderer2D
-            Renderer2D::Begin({ MainCamera->GetProjectionMatrix(), glm::inverse(*MainCameraTransform) });
+            Renderer2D::Begin({ MainCamera->GetProjectionMatrix(), glm::inverse(MainCameraTransform) });
 
             {// Render Sprites
 

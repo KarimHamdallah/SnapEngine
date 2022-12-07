@@ -19,7 +19,7 @@ namespace SnapEngine
 			const std::string& name = std::string(),
 			const glm::vec3& Position = glm::vec3(0.0f),
 			const glm::vec3& Scale = glm::vec3(1.0f),
-			float Rotation = 0.0f
+			const glm::vec3& Rotation = glm::vec3(0.0f)
 		);
 
 		Entity& GetEntity(const std::string& name);

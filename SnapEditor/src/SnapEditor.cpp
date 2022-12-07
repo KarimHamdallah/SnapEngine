@@ -22,11 +22,15 @@ namespace SnapEngine
 			m_SceneHierarchyPanel.SetScene(m_Scene);
 
 			m_Camera = m_Scene->CreatEntity("Camera");
-			m_Camera.AddComponent<CameraComponent>(10.0f, -1.0f, 1.0f).m_IsMain = true;
+			m_Camera.AddComponent<CameraComponent>(10.0f, -100.0f, 100.0f).m_IsMain = true;
 
-			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, 0.0f);
+			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f });
 			m_Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 			m_Sprite.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
+
+			m_Sprite2 = m_Scene->CreatEntity("WhiteSprite", { 1.5f, 0.0f, -10.0f }, { 1.0f, 1.0f, 0.0f });
+			m_Sprite2.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			m_Sprite2.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
 		}
 
 		~EditorLayer() {}
@@ -126,15 +130,9 @@ namespace SnapEngine
 			m_SceneHierarchyPanel.ImGuiRender();
 
 			ImGui::Begin("Settings");
-			auto& sprite_color = m_Sprite.GetComponent<SpriteRendererComponent>().m_Color;
-			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite_color));
-
-			auto& cam = m_Camera.GetComponent<CameraComponent>().m_Camera;
-			float orthosize = cam.GetOrthoGraphicSize();
-			if (ImGui::DragFloat("OrthoGraphic Size", &orthosize, 0.01f))
-				cam.SetOrthoGraphicSize(orthosize);
-			
-			
+			static bool check = true;
+			if (ImGui::Checkbox("Enable Camera", &check))
+				m_Camera.GetComponent<CameraComponent>().m_IsMain = check;
 			ImGui::End();
 
 			// ViewPort Window
@@ -163,6 +161,7 @@ namespace SnapEngine
 		///////// Entites ////////////////
 		Entity m_Camera;
 		Entity m_Sprite;
+		Entity m_Sprite2;
 		/////////////////////////////////
 
 		/////////////////// ViewPort ////////////////////////////

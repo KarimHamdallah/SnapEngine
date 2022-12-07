@@ -9,11 +9,13 @@ namespace SnapEngine
 	struct TransformComponent
 	{
 	public:
-		TransformComponent(const glm::vec3& Position = glm::vec3(0.0f), const glm::vec3& Scale = glm::vec3(1.0f), float Roation = 0.0f)
+		TransformComponent(const glm::vec3& Position = glm::vec3(0.0f), const glm::vec3& Scale = glm::vec3(1.0f), const glm::vec3& Roation = glm::vec3(0.0f))
 		{
-			m_Transform = glm::translate(glm::mat4(1.0f), Position);
-			m_Transform = glm::rotate(glm::mat4(1.0f), glm::radians(Roation), glm::vec3(0.0f, 0.0f, 1.0f));
-			m_Transform = glm::scale(glm::mat4(1.0f), Scale);
+			m_Transform = glm::translate(m_Transform, Position);
+			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			m_Transform = glm::scale(m_Transform, Scale);
 		}
 
 		TransformComponent(const TransformComponent& other) { m_Transform = other.m_Transform; }
