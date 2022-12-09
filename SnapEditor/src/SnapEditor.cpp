@@ -23,14 +23,13 @@ namespace SnapEngine
 
 			m_Camera = m_Scene->CreatEntity("Camera");
 			m_Camera.AddComponent<CameraComponent>(10.0f, -100.0f, 100.0f).m_IsMain = true;
+			m_Camera.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
 
 			m_Sprite = m_Scene->CreatEntity("Sprite", { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f });
 			m_Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-			m_Sprite.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
 
-			m_Sprite2 = m_Scene->CreatEntity("WhiteSprite", { 1.5f, 0.0f, -10.0f }, { 1.0f, 1.0f, 0.0f });
+			m_Sprite2 = m_Scene->CreatEntity("WhiteSprite", { 1.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f });
 			m_Sprite2.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-			m_Sprite2.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
 		}
 
 		~EditorLayer() {}
@@ -57,6 +56,10 @@ namespace SnapEngine
 
 			// Render
 			m_FrameBuffer->Bind(); // Record Scene into frame buffer
+
+			Renderer2D::ResetStats();
+			RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			RendererCommand::Clear();
 
 			m_Scene->Render();
 
@@ -174,6 +177,12 @@ namespace SnapEngine
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 
 	private:
+
+		virtual void ProcessEvent(IEvent& e) override
+		{
+			m_Scene->ProcessEvents(&e);
+		}
+
 	};
 
 	class SnapEditor : public SnapEngine::Application

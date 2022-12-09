@@ -20,5 +20,6 @@ namespace SnapEngine
 	private:
 		SnapPtr<Scene> m_Scene = nullptr;
 		Entity m_SelectedEntity;
+		uint32_t EmptyEntityCounter = 0;
 	};
 }

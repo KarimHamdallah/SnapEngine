@@ -36,6 +36,9 @@ namespace SnapEngine
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
+        io.Fonts->AddFontFromFileTTF("assets/Editor/OpenSans-Bold.ttf", 19.0f);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/Editor/OpenSans-Regular.ttf", 19.0f);
+
         // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
         ImGuiStyle& style = ImGui::GetStyle();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

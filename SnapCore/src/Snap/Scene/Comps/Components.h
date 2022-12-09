@@ -9,22 +9,32 @@ namespace SnapEngine
 	struct TransformComponent
 	{
 	public:
-		TransformComponent(const glm::vec3& Position = glm::vec3(0.0f), const glm::vec3& Scale = glm::vec3(1.0f), const glm::vec3& Roation = glm::vec3(0.0f))
-		{
-			m_Transform = glm::translate(m_Transform, Position);
-			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-			m_Transform = glm::rotate(m_Transform, glm::radians(Roation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-			m_Transform = glm::scale(m_Transform, Scale);
+		TransformComponent(const glm::vec3& Position = glm::vec3(0.0f), const glm::vec3& Scale = glm::vec3(1.0f), const glm::vec3& Rotation = glm::vec3(0.0f))
+			: m_Position(Position), m_Rotation(Rotation), m_Scale(Scale)
+		{}
+
+		TransformComponent(const TransformComponent& other) = default;
+
+		operator const glm::mat4() const
+		{ 
+			return GetTransformMatrix();
 		}
 
-		TransformComponent(const TransformComponent& other) { m_Transform = other.m_Transform; }
-		TransformComponent(const glm::mat4& Transform) : m_Transform(Transform) {}
+		glm::mat4 GetTransformMatrix() const
+		{
+			glm::mat4 Transform = glm::mat4(1.0f);
+			Transform = glm::translate(Transform, m_Position);
+			Transform = glm::rotate(Transform, glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+			Transform = glm::rotate(Transform, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+			Transform = glm::rotate(Transform, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+			Transform = glm::scale(Transform, m_Scale);
 
-		operator const glm::mat4& () const { return m_Transform; }
+			return Transform;
+		}
 
-
-		glm::mat4 m_Transform = glm::mat4(1.0f);
+		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Rotation = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
 	};
 
 	struct TagComponent

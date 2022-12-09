@@ -19,8 +19,9 @@ namespace SnapEngine
 		T& AddComponent(Args&&... args)
 		{
 			SNAP_ASSERT_MSG(!HasComponent<T>(), "Component already registerd!");
-
-			return mScene->registry.emplace<T>(entity, std::forward<Args>(args)...);
+			T& Comp = mScene->registry.emplace<T>(entity, std::forward<Args>(args)...);
+			mScene->OnComponentAdded<T>(*this, Comp);
+			return Comp;
 		}
 
 		template<typename T>
