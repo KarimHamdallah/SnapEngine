@@ -21,5 +21,8 @@ namespace SnapEngine
 	private:
 		float m_Time = 0.0f;
 		bool m_BlockEvents = true; // Block Any EventProcessing of any layer behind ImGui Layer ( that means break loop of process Layer events inside Apllication class)
+
+	private:
+		void SetDarkThemeColors();
 	};
 }

@@ -81,18 +81,21 @@ namespace SnapEngine
 		if (entity.HasComponent<T>())
 		{
 			T& component = entity.GetComponent<T>(); // Get Component
+			ImVec2 ContentRegionAvail = ImGui::GetContentRegionAvail();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4, 4 });
-			
+			float LineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			ImGui::Separator();// Separator Between each 2 components
+
 			// creat Componnet Node With (ComponnetNodeFlags) Props and Name (name)
 			bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), ComponentNodeFlags, name.c_str());
+			ImGui::PopStyleVar();
 			
 			// Draw Component Properites Menu
-			ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
-			if (ImGui::Button("+", { 20.0f, 20.0f }))
+			ImGui::SameLine(ContentRegionAvail.x - LineHeight * 0.5f);
+			if (ImGui::Button("+", { LineHeight, LineHeight }))
 				ImGui::OpenPopup("Component Settings");
 			
-			ImGui::PopStyleVar();
 
 			// Component Properties
 			bool removed = false;
@@ -115,8 +118,6 @@ namespace SnapEngine
 			// Remove Component On Component Removed
 			if (removed)
 				entity.RemoveComponent<T>();
-			
-			ImGui::Separator(); // Separator Between each 2 components
 		}
 	}
 
@@ -159,43 +160,7 @@ namespace SnapEngine
 		ImGui::Begin("Inspector");
 		
 		if (m_SelectedEntity)
-		{
 			DrawComponents(m_SelectedEntity);
-
-			ImGui::Separator();
-			if (ImGui::Button("Add Component", {150.0f, 25.0f}))
-				ImGui::OpenPopup("Add Component");
-
-			if (ImGui::BeginPopup("Add Component"))
-			{
-				if (ImGui::MenuItem("Tag Component"))
-					if (!m_SelectedEntity.HasComponent<TagComponent>())
-						m_SelectedEntity.AddComponent<TagComponent>();
-					else
-						SNAP_WARN("Entity With Tag {0}, Already Has Tag Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
-
-				if (ImGui::MenuItem("Transform Component"))
-					if (!m_SelectedEntity.HasComponent<TransformComponent>())
-						m_SelectedEntity.AddComponent<TransformComponent>();
-					else
-						SNAP_WARN("Entity With Tag {0}, Already Has Transform Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
-
-				if (ImGui::MenuItem("Camera Component"))
-					if (!m_SelectedEntity.HasComponent<CameraComponent>())
-						m_SelectedEntity.AddComponent<CameraComponent>(10.0f, -100.0f, 100.0f).m_IsMain = true;
-					else
-						SNAP_WARN("Entity With Tag {0}, Already Has Camera Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
-
-				if (ImGui::MenuItem("SpriteRenderer Component"))
-					if (!m_SelectedEntity.HasComponent<SpriteRendererComponent>())
-						m_SelectedEntity.AddComponent<SpriteRendererComponent>();
-					else
-						SNAP_WARN("Entity With Tag {0}, Already Has SpriteRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
-				
-
-				ImGui::EndPopup();
-			}
-		}
 
 		ImGui::End();
 	}
@@ -234,7 +199,7 @@ namespace SnapEngine
 	{
 		if (entity.HasComponent<TagComponent>())
 		{
-			ImGui::Separator();
+			//ImGui::Separator();
 
 			auto& Tag = entity.GetComponent<TagComponent>().m_Tag; // Get Tag
 			
@@ -242,9 +207,47 @@ namespace SnapEngine
 			memset(buffer, 0, sizeof(buffer));
 			strcpy_s(buffer, sizeof(buffer), Tag.c_str()); // Copy Tag Content To Buffer
 			
-			if (ImGui::InputText("Tag", buffer, sizeof(buffer))) // Draw Buffer Into InputText
+			if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) // Draw Buffer Into InputText
 				Tag = std::string(buffer);
 		}
+
+
+		ImGui::SameLine();
+		ImGui::PushItemWidth(-1);
+		
+		if (ImGui::Button("Add Component"))
+			ImGui::OpenPopup("Add Component");
+
+		if (ImGui::BeginPopup("Add Component"))
+		{
+			if (ImGui::MenuItem("Tag Component"))
+				if (!m_SelectedEntity.HasComponent<TagComponent>())
+					m_SelectedEntity.AddComponent<TagComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has Tag Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+
+			if (ImGui::MenuItem("Transform Component"))
+				if (!m_SelectedEntity.HasComponent<TransformComponent>())
+					m_SelectedEntity.AddComponent<TransformComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has Transform Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+
+			if (ImGui::MenuItem("Camera Component"))
+				if (!m_SelectedEntity.HasComponent<CameraComponent>())
+					m_SelectedEntity.AddComponent<CameraComponent>(10.0f, -100.0f, 100.0f).m_IsMain = true;
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has Camera Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+
+			if (ImGui::MenuItem("SpriteRenderer Component"))
+				if (!m_SelectedEntity.HasComponent<SpriteRendererComponent>())
+					m_SelectedEntity.AddComponent<SpriteRendererComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has SpriteRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+
+			ImGui::EndPopup();
+		}
+			ImGui::PopItemWidth();
+
 
 		DrawComponent<TransformComponent>("Transform", entity, [&](TransformComponent& Component)
 			{

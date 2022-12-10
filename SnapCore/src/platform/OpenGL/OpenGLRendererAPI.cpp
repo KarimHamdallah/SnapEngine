@@ -30,7 +30,7 @@ namespace SnapEngine
 
 	void OpenGLRendererAPI::DrawIndexed(const SnapPtr<VertexArray>& vertexArray, uint32_t count)
 	{
-		int index_count = count > 0 ? count : vertexArray->GetIndexBuffer()->GetCount();
+		int index_count = count > 0 ? count : /*vertexArray->GetIndexBuffer()->GetCount()*/0;
 
 		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
