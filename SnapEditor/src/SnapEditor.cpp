@@ -2,6 +2,9 @@
 #include <Snap/Scene/Scripts/CameraControllerScript.h>
 #include "Panels/SceneHierarchyPanel.h"
 
+#include <Snap/Scene/SceneSerializer.h>
+#include <platform/Utils/PlatformUtils.h>
+
 
 namespace SnapEngine
 {
@@ -20,7 +23,7 @@ namespace SnapEngine
 			m_Scene = CreatSnapPtr<Scene>();
 
 			m_SceneHierarchyPanel.SetScene(m_Scene);
-
+#if 0
 			m_Camera = m_Scene->CreatEntity("Camera");
 			m_Camera.AddComponent<CameraComponent>(10.0f, -100.0f, 100.0f).m_IsMain = true;
 			m_Camera.AddComponent<CppScriptComponent>().Bind<CameraControllerScript>();
@@ -30,6 +33,7 @@ namespace SnapEngine
 
 			m_Sprite2 = m_Scene->CreatEntity("WhiteSprite", { 1.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f });
 			m_Sprite2.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+#endif
 		}
 
 		~EditorLayer() {}
@@ -130,6 +134,34 @@ namespace SnapEngine
 				if (ImGui::BeginMenu("Options"))
 				{
 					if (ImGui::MenuItem("Exit")) {  Application::Get().Close(); }
+					if (ImGui::MenuItem("New...", "Cntrl+N"))
+					{
+						m_Scene = CreatSnapPtr<Scene>();
+						m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
+						m_SceneHierarchyPanel.SetScene(m_Scene);
+					}
+					if (ImGui::MenuItem("Open...", "Cntrl+O"))
+					{
+						std::string filepath = FileDialoge::OpenFile("Snap Scene (*.snap)\0*.snap\0");
+						if (!filepath.empty())
+						{
+							m_Scene = CreatSnapPtr<Scene>();
+							m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
+							m_SceneHierarchyPanel.SetScene(m_Scene);
+
+							SceneSerializer serializer(m_Scene);
+							serializer.DeSerializeScene(filepath);
+						}
+					}
+					if (ImGui::MenuItem("Save As...", "Cntrl+Shift+S"))
+					{
+						std::string filepath = FileDialoge::SaveFile("Snap Scene (*.snap)\0*.snap\0");
+						if (!filepath.empty())
+						{
+							SceneSerializer serializer(m_Scene);
+							serializer.SerializeScene(filepath);
+						}
+					}
 					ImGui::EndMenu();
 				}
 
@@ -187,8 +219,71 @@ namespace SnapEngine
 		virtual void ProcessEvent(IEvent& e) override
 		{
 			m_Scene->ProcessEvents(&e);
+			EventDispatcher dispatcher(e);
+			dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));
 		}
 
+		bool OnKeyPressed(KeyPressedEvent& e)
+		{
+			if (e.GetRepeatCount() > 0)
+				return false;
+
+			switch ((Key)e.GetKeyCode())
+			{
+			case Key::S:
+			{
+				bool cntrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+				bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
+				if (cntrl && shift)
+				{
+					// Save Scene
+					std::string filepath = FileDialoge::SaveFile("Snap Scene (*.snap)\0*.snap\0");
+					if (!filepath.empty())
+					{
+						SceneSerializer serializer(m_Scene);
+						serializer.SerializeScene(filepath);
+					}
+				}
+			}
+			break;
+			case Key::O:
+			{
+				bool cntrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+				if (cntrl)
+				{
+					// Open Scene
+					std::string filepath = FileDialoge::OpenFile("Snap Scene (*.snap)\0*.snap\0");
+					if (!filepath.empty())
+					{
+						m_Scene = CreatSnapPtr<Scene>();
+						m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
+						m_SceneHierarchyPanel.SetScene(m_Scene);
+
+						SceneSerializer serializer(m_Scene);
+						serializer.DeSerializeScene(filepath);
+					}
+				}
+			}
+			break;
+			case Key::N:
+			{
+				bool cntrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+				if (cntrl)
+				{
+					// New Scene
+					m_Scene = CreatSnapPtr<Scene>();
+					m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
+					m_SceneHierarchyPanel.SetScene(m_Scene);
+				}
+			}
+			break;
+			default:
+				break;
+			};
+
+			return true;
+		}
 	};
 
 	class SnapEditor : public SnapEngine::Application

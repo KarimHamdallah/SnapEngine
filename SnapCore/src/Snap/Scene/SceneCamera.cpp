@@ -33,7 +33,7 @@ namespace SnapEngine
 
 	void SceneCamera::SetViewPortSize(uint32_t Width, uint32_t Height)
 	{
-		m_AspectRatio = (float)Width / (float)Height;
+		m_AspectRatio = (Height == 0) ? 0.0f : (float)Width / (float)Height;
 		CalculateProjection();
 	}
 

@@ -18,10 +18,12 @@ Dependencies["ImGui"] = "SnapCore/vendor/imgui"
 Dependencies["GLM"] = "SnapCore/vendor/GLM"
 Dependencies["STB"] = "SnapCore/vendor/STB"
 Dependencies["Entt"] = "SnapCore/vendor/Entt/include"
+Dependencies["YAML"] = "SnapCore/vendor/YAML/include"
 
 include "SnapCore/vendor/GLFW"
 include "SnapCore/vendor/GLAD"
 include "SnapCore/vendor/imgui"
+include "SnapCore/vendor/YAML"
 
 project "SnapCore"
     location "SnapCore"
@@ -52,7 +54,8 @@ project "SnapCore"
 		"%{Dependencies.ImGui}",
 		"%{Dependencies.GLM}",
 		"%{Dependencies.STB}",
-		"%{Dependencies.Entt}"
+		"%{Dependencies.Entt}",
+		"%{Dependencies.YAML}"
 	}
 
 	links
@@ -60,6 +63,7 @@ project "SnapCore"
 		"GLFW",
 		"GLAD",
 		"ImGui",
+		"yaml-cpp",
 		"opengl32.lib"
 	}
 
@@ -74,7 +78,8 @@ project "SnapCore"
 		"_CRT_SECURE_NO_WARNINGS",
 		"GLFW_INCLUDE_NONE",
 		"SNAP_PLATFORM_WINDOWS",
-		"SNAP_ENABLE_ASSERTION"
+		"SNAP_ENABLE_ASSERTION",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 	
 	 filter "configurations:Debug"
@@ -176,7 +181,8 @@ project "SnapEditor"
 		"SnapCore/src",
 		"%{Dependencies.ImGui}",
 		"%{Dependencies.GLM}",
-		"%{Dependencies.Entt}"
+		"%{Dependencies.Entt}",
+		"%{Dependencies.yaml_cpp}"
 	}
 
 	links

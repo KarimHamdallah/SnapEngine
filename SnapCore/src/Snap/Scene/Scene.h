@@ -15,6 +15,7 @@ namespace SnapEngine
 	{
 	public:
 		Scene() { m_Entities.resize(MAX_ENTITIES); }
+
 		using Resgistry = entt::registry;
 
 

@@ -25,6 +25,9 @@
     <Filter Include="src\Snap\Scene\Comps">
       <UniqueIdentifier>{1CA39B84-0832-254E-B150-39499DBE35F4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snap\Scene\Scripts">
+      <UniqueIdentifier>{22650DCE-0E5F-3620-F7CB-CC30E3649C8C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
     </Filter>
@@ -150,6 +153,9 @@
     <ClInclude Include="src\Snap\Renderer\VertexArray.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Camera.h">
+      <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Scene\Comps\Components.h">
       <Filter>src\Snap\Scene\Comps</Filter>
     </ClInclude>
@@ -158,6 +164,21 @@
     </ClInclude>
     <ClInclude Include="src\Snap\Scene\Scene.h">
       <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\SceneCamera.h">
+      <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\SceneSerializer.h">
+      <Filter>src\Snap\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Scripts\CameraControllerScript.h">
+      <Filter>src\Snap\Scene\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Scripts\ChangeColor.h">
+      <Filter>src\Snap\Scene\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h">
+      <Filter>src\Snap\Scene\Scripts</Filter>
     </ClInclude>
     <ClInclude Include="src\SnapEngine.h">
       <Filter>src</Filter>
@@ -1023,11 +1044,7 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp">
       <Filter>vendor\GLM\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Scene\Camera.h" />
-    <ClInclude Include="src\Snap\Scene\SceneCamera.h" />
-    <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h" />
-    <ClInclude Include="src\Snap\Scene\Scripts\CameraControllerScript.h" />
-    <ClInclude Include="src\Snap\Scene\Scripts\ChangeColor.h" />
+    <ClInclude Include="src\platform\Utils\PlatformUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1093,6 +1110,15 @@
     <ClCompile Include="src\Snap\Scene\Scene.cpp">
       <Filter>src\Snap\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\Scene\SceneCamera.cpp">
+      <Filter>src\Snap\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\SceneSerializer.cpp">
+      <Filter>src\Snap\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp">
+      <Filter>src\Snap\Scene\Scripts</Filter>
+    </ClCompile>
     <ClCompile Include="src\SnapPCH.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1123,7 +1149,6 @@
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
-    <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp" />
+    <ClCompile Include="src\platform\Utils\PlatformUtils.cpp" />
   </ItemGroup>
 </Project>

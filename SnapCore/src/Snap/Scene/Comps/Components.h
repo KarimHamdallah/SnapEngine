@@ -65,7 +65,7 @@ namespace SnapEngine
 	struct CameraComponent
 	{
 	public:
-		CameraComponent(float Size, float NearClipPlane, float FarClipPlane)
+		CameraComponent(float Size = 10.0f, float NearClipPlane = -100.0f, float FarClipPlane = 100.0f)
 		{
 			m_Camera.SetOrthoGraphic(Size, NearClipPlane, FarClipPlane);
 		}

@@ -127,9 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\SandBoxApp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SnapCore\SnapCore.vcxproj">
       <Project>{002CE712-ECF8-411E-1512-30C6013E77AC}</Project>
     </ProjectReference>

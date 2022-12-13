@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapCore", "SnapCore\SnapCo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapEditor", "SnapEditor\SnapEditor.vcxproj", "{DECE406D-CA86-82BA-338E-5B161F651DAB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaml-cpp", "SnapCore\vendor\YAML\yaml-cpp.vcxproj", "{88F1A057-74BE-FB62-9DD7-E90A890331F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -56,6 +58,12 @@ Global
 		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Distribution|x64.Build.0 = Distribution|x64
 		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Release|x64.ActiveCfg = Release|x64
 		{DECE406D-CA86-82BA-338E-5B161F651DAB}.Release|x64.Build.0 = Release|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Debug|x64.ActiveCfg = Debug|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Debug|x64.Build.0 = Debug|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Distribution|x64.ActiveCfg = Distribution|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Distribution|x64.Build.0 = Distribution|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Release|x64.ActiveCfg = Release|x64
+		{88F1A057-74BE-FB62-9DD7-E90A890331F1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

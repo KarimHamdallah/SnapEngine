@@ -129,6 +129,7 @@ namespace SnapEngine
 	void SceneHierarchyPanel::SetScene(const SnapPtr<Scene>& scene)
 	{
 		m_Scene = scene;
+		m_SelectedEntity = {};
 	}
 
 	void SceneHierarchyPanel::ImGuiRender()

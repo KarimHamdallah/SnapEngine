@@ -44,6 +44,8 @@ namespace SnapEngine
 			return mScene->registry.all_of<T>(entity);
 		}
 
+		inline uint32_t GetID() { return static_cast<uint32_t>(entity); }
+
 		explicit operator bool() const;
 		operator Handel () const;
 		operator uint32_t () const;
