@@ -86,6 +86,11 @@ namespace SnapEngine
 		delete s_Data;
 	}
 
+	void Renderer2D::Begin(const EditorCamera& Camera)
+	{
+		Begin(RendererCamera{ Camera.GetProjectionMatrix(), Camera.GetViewMatrix() });
+	}
+
 	void Renderer2D::Begin(const RendererCamera& Camera)
 	{
 		// Point To First Element of QuadVertexBatchBuffer Array

@@ -11,6 +11,7 @@ namespace SnapEngine
 		SceneHierarchyPanel(const SnapPtr<Scene>& scene);
 
 		void SetScene(const SnapPtr<Scene>& scene);
+		Entity GetSelectedEntity() { return m_SelectedEntity; }
 
 		void ImGuiRender();
 

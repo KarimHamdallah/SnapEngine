@@ -12,6 +12,7 @@
 #include <Snap/Core/Timer.h>
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 //------ Events --------------
 #include <Snap/Events/KeyEvent.h>
@@ -42,7 +43,7 @@
 
 #include <Snap/Scene/Scene.h>
 #include <Snap/Scene/Entity.h>
-//#include <Snap/Scene/SceneSerializer.h>
+#include <Snap/Scene/SceneSerializer.h>
 #include <Snap/Scene/Comps/Components.h>
 #include <Snap/Scene/Scripts/CppScript.h>
 

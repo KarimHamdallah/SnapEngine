@@ -34,6 +34,9 @@
     <Filter Include="src\platform\OpenGL">
       <UniqueIdentifier>{555C82A0-C1BD-5FAE-4A2B-A660B68B966D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\platform\Utils">
+      <UniqueIdentifier>{6154A15A-4D38-62B0-B698-5C03A29B4C32}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform\windows">
       <UniqueIdentifier>{9B5931A8-87E8-BA71-3007-CF6C1C75CB17}</UniqueIdentifier>
     </Filter>
@@ -57,6 +60,9 @@
     </Filter>
     <Filter Include="vendor\GLM\glm\gtx">
       <UniqueIdentifier>{53BA30AF-3F9E-F104-A8FE-EB579401DC86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\imguizmo">
+      <UniqueIdentifier>{B36F5F1F-1FFB-CCE3-280C-50D8941629E4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="src\platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\Utils\PlatformUtils.h">
+      <Filter>src\platform\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\windows\WindowsInput.h">
       <Filter>src\platform\windows</Filter>
@@ -1044,7 +1053,10 @@
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp">
       <Filter>vendor\GLM\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform\Utils\PlatformUtils.h" />
+    <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
+      <Filter>vendor\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1143,12 +1155,18 @@
     <ClCompile Include="src\platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\Utils\PlatformUtils.cpp">
+      <Filter>src\platform\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\platform\windows\WindowsInput.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\Utils\PlatformUtils.cpp" />
+    <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
+      <Filter>vendor\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

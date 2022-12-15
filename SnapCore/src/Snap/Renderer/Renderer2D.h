@@ -4,6 +4,7 @@
 #include <Snap/Renderer/Shader.h>
 #include <Snap/Renderer/SubTexture2D.h>
 #include <Snap/Scene/Camera.h>
+#include <Snap/Scene/EditorCamera.h>
 
 namespace SnapEngine
 {
@@ -20,7 +21,8 @@ namespace SnapEngine
 		static void Init();
 
 		static void ShutDown();
-		
+
+		static void Begin(const EditorCamera& Camera);
 		static void Begin(const RendererCamera& Camera);
 		static void End();
 

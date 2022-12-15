@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>SnapPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;YAML_CPP_STATIC_DEFINE;SNAP_ENGINE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -98,7 +98,7 @@
       <PrecompiledHeaderFile>SnapPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;YAML_CPP_STATIC_DEFINE;SNAP_ENGINE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -123,7 +123,7 @@
       <PrecompiledHeaderFile>SnapPCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SNAP_PLATFORM_WINDOWS;SNAP_ENABLE_ASSERTION;YAML_CPP_STATIC_DEFINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\GLM;vendor\STB;vendor\Entt\include;vendor\YAML\include;vendor\imguizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -136,7 +136,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\platform\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Snap\Core\Application.h" />
     <ClInclude Include="src\Snap\Core\Core.h" />
     <ClInclude Include="src\Snap\Core\EntryPoint.h" />
@@ -170,6 +169,7 @@
     <ClInclude Include="src\Snap\Renderer\VertexArray.h" />
     <ClInclude Include="src\Snap\Scene\Camera.h" />
     <ClInclude Include="src\Snap\Scene\Comps\Components.h" />
+    <ClInclude Include="src\Snap\Scene\EditorCamera.h" />
     <ClInclude Include="src\Snap\Scene\Entity.h" />
     <ClInclude Include="src\Snap\Scene\Scene.h" />
     <ClInclude Include="src\Snap\Scene\SceneCamera.h" />
@@ -186,6 +186,7 @@
     <ClInclude Include="src\platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\platform\Utils\PlatformUtils.h" />
     <ClInclude Include="src\platform\windows\WindowsInput.h" />
     <ClInclude Include="src\platform\windows\WindowsWindow.h" />
     <ClInclude Include="vendor\GLM\glm\common.hpp" />
@@ -465,9 +466,9 @@
     <ClInclude Include="vendor\GLM\glm\vec3.hpp" />
     <ClInclude Include="vendor\GLM\glm\vec4.hpp" />
     <ClInclude Include="vendor\GLM\glm\vector_relational.hpp" />
+    <ClInclude Include="vendor\imguizmo\ImGuizmo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\platform\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\Snap\Core\Application.cpp" />
     <ClCompile Include="src\Snap\Core\LayerStack.cpp" />
     <ClCompile Include="src\Snap\Core\Timer.cpp" />
@@ -487,6 +488,7 @@
     <ClCompile Include="src\Snap\Renderer\Texture.cpp" />
     <ClCompile Include="src\Snap\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Snap\Scene\Comps\Components.cpp" />
+    <ClCompile Include="src\Snap\Scene\EditorCamera.cpp" />
     <ClCompile Include="src\Snap\Scene\Entity.cpp" />
     <ClCompile Include="src\Snap\Scene\Scene.cpp" />
     <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
@@ -502,8 +504,10 @@
     <ClCompile Include="src\platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\platform\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\platform\windows\WindowsInput.cpp" />
     <ClCompile Include="src\platform\windows\WindowsWindow.cpp" />
+    <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">

@@ -42,9 +42,9 @@ namespace SnapEngine
 		ProjectionType GetProjectionType() const { return m_Type; }
 		void SetProjectionType(ProjectionType Type) { m_Type = Type; }
 
-	private:
+	protected:
 		void CalculateProjection();
-	private:
+	protected:
 		float m_OrthoGraphicSize = 10.0f;
 		float m_OrthoGraphicNear = -1.0f, m_OrthoGraphicFar = 1.0f;
 

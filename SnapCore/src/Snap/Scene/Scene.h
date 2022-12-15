@@ -2,8 +2,8 @@
 #include <entt.hpp>
 #include <glm/glm.hpp>
 #include <Snap/Core/Core.h>
-#include <Snap/Core/TimeStep.h>
-#include <Snap/Events/Event.h>
+
+#include <Snap/Scene/EditorCamera.h>
 
 #define MAX_ENTITIES 10000
 
@@ -30,7 +30,8 @@ namespace SnapEngine
 
 		const Resgistry& GetRegistry() const noexcept { return registry; }
 
-		void Update(const TimeStep& Time);
+		void UpdateEditor(const TimeStep& Time, const EditorCamera& Camera);
+		void UpdateRunTime(const TimeStep& Time);
 		void Render();
 
 
@@ -38,6 +39,8 @@ namespace SnapEngine
 		void ResizeViewPort(uint32_t Width, uint32_t Height); // Update All Scene Cameras Projection According To ViewPort Size Changes
 
 		void ProcessEvents(IEvent* e);
+
+		Entity GetMainCameraEntity();
 
 	private:
 		template<typename T>
@@ -47,7 +50,6 @@ namespace SnapEngine
 		std::vector<SnapPtr<Entity>> m_Entities;
 		inline static std::atomic_uint64_t EntityCounter = 0;
 		friend Entity;
-
 
 		// Editor Attribs
 		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;

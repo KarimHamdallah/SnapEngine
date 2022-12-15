@@ -2,7 +2,6 @@
 #include <Snap/Scene/Scripts/CameraControllerScript.h>
 #include "Panels/SceneHierarchyPanel.h"
 
-#include <Snap/Scene/SceneSerializer.h>
 #include <platform/Utils/PlatformUtils.h>
 
 
@@ -38,7 +37,7 @@ namespace SnapEngine
 
 		~EditorLayer() {}
 
-		void Update( TimeStep Time) override
+		void Update(TimeStep Time) override
 		{
 
 			{ // Resize Renderer Area
@@ -49,14 +48,19 @@ namespace SnapEngine
 
 					// Change Scene Cameras Projection According To New Width and New Height of ViewPortWindow
 					m_Scene->ResizeViewPort(m_ViewPortSize.x, m_ViewPortSize.y);
+					m_EditorCamera.SetViewPortSize(m_ViewPortSize.x, m_ViewPortSize.y);
 				}
 			}
 
 
+			// Update Scripts
 			if (m_ViewPortFocused)
 			{
-				m_Scene->Update(Time);
+				//m_Scene->UpdateRunTime(Time);
 			}
+
+			m_EditorCamera.Update(Time);
+			
 
 			// Render
 			m_FrameBuffer->Bind(); // Record Scene into frame buffer
@@ -65,7 +69,7 @@ namespace SnapEngine
 			RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RendererCommand::Clear();
 
-			m_Scene->Render();
+			m_Scene->UpdateEditor(Time, m_EditorCamera);
 
 			m_FrameBuffer->UnBind(); // Stop Recording
 		}
@@ -174,6 +178,13 @@ namespace SnapEngine
 			static bool check = true;
 			if (ImGui::Checkbox("Enable Camera", &check))
 				m_Camera.GetComponent<CameraComponent>().m_IsMain = check;
+
+			if (ImGui::DragFloat("Snapping", &m_Snapping, 0.01f))
+				if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+					m_Snapping = 45.0f;
+				else
+					m_Snapping = 0.5f;
+
 			ImGui::End();
 
 			// ViewPort Window
@@ -189,6 +200,55 @@ namespace SnapEngine
 			m_ViewPortSize = { viewportsize.x, viewportsize.y };
 
 			ImGui::Image((ImTextureID)m_FrameBuffer->GetTextureID(), ImVec2{ m_ViewPortSize.x, m_ViewPortSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			
+			
+			
+			
+			// Draw ImGuizmo inside ViewPort Widnow
+			Entity SelectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+
+			if (SelectedEntity)
+			{
+				Entity MainCameraEntity = m_Scene->GetMainCameraEntity();
+				if (MainCameraEntity)
+				{
+					auto& transform = MainCameraEntity.GetComponent<TransformComponent>();
+					auto& cam = MainCameraEntity.GetComponent<CameraComponent>();
+					
+					bool IsOrthoGraphic = cam.m_Camera.GetProjectionType() ==
+						SceneCamera::ProjectionType::OrthoGraphic ? true : false;
+
+					ImGuizmo::SetOrthographic(false);
+					ImGuizmo::SetDrawlist();
+					float WindowPosX = ImGui::GetWindowPos().x;
+					float WindowPosY = ImGui::GetWindowPos().y;
+					float WindowWidth = ImGui::GetWindowWidth();
+					float WindowHeight = ImGui::GetWindowHeight();
+					ImGuizmo::SetRect(WindowPosX, WindowPosY, WindowWidth, WindowHeight);
+
+					
+					auto& e_transform = SelectedEntity.GetComponent<TransformComponent>();
+
+					glm::mat4 EntityTransformMatrix = SelectedEntity.GetComponent<TransformComponent>().GetTransformMatrix();
+					glm::mat4 CameraTransformMatrix = transform.GetTransformMatrix();
+					glm::mat4 ViewMatrix = /*glm::inverse(CameraTransformMatrix);*/ m_EditorCamera.GetViewMatrix();
+					glm::mat4 ProjectionMatrix = /*cam.m_Camera.GetProjectionMatrix();*/ m_EditorCamera.GetProjectionMatrix();
+
+					ImGuizmo::Manipulate(glm::value_ptr(ViewMatrix), glm::value_ptr(ProjectionMatrix),
+						(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(EntityTransformMatrix),
+						nullptr, Input::IsKeyPressed(Key::LeftControl) ? &m_Snapping : nullptr);
+						
+					if (ImGuizmo::IsUsing())
+					{
+						ImGuizmo::DecomposeMatrixToComponents(
+							glm::value_ptr(EntityTransformMatrix),
+							glm::value_ptr(e_transform.m_Position),
+							glm::value_ptr(e_transform.m_Rotation),
+							glm::value_ptr(e_transform.m_Scale));
+					}
+				}
+			}
+			
 			ImGui::End();
 			ImGui::PopStyleVar();
 
@@ -213,12 +273,15 @@ namespace SnapEngine
 
 		//////////////// Editor ///////////////
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-
+		int m_GizmoType = 0;
+		float m_Snapping = 0.5f;
+		EditorCamera m_EditorCamera;
 	private:
 
 		virtual void ProcessEvent(IEvent& e) override
 		{
 			m_Scene->ProcessEvents(&e);
+			m_EditorCamera.ProcessEvent(e);
 			EventDispatcher dispatcher(e);
 			dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));
 		}
@@ -276,6 +339,26 @@ namespace SnapEngine
 					m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
 					m_SceneHierarchyPanel.SetScene(m_Scene);
 				}
+			}
+			break;
+			case Key::Q:
+			{
+				m_GizmoType = -1;
+			}
+			break;
+			case Key::W:
+			{
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			}
+			break;
+			case Key::E:
+			{
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			}
+			break;
+			case Key::R:
+			{
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 			}
 			break;
 			default:

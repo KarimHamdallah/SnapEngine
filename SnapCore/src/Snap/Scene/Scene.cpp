@@ -29,7 +29,26 @@ namespace SnapEngine
         registry.destroy(entity);
     }
 
-    void Scene::Update(const TimeStep& Time)
+    void Scene::UpdateEditor(const TimeStep& Time, const EditorCamera& Camera)
+    {
+        // Send Projection And View Matrix To Renderer2D
+        Renderer2D::Begin(Camera);
+
+        {// Render Sprites
+
+            auto& group = registry.view<TransformComponent, SpriteRendererComponent>();
+
+            for (auto entity : group)
+            {
+                auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Renderer2D::DrawQuad(transform, sprite_renderer);
+            }
+        }
+
+        Renderer2D::End();
+    }
+
+    void Scene::UpdateRunTime(const TimeStep& Time)
     {
         { // Update Scripts
             registry.view<CppScriptComponent>().each([=](auto entity, auto& cppSc)
@@ -123,6 +142,21 @@ namespace SnapEngine
 
                 cppSc.m_Instance->ProcessEvents(*e);
             });
+    }
+
+    Entity Scene::GetMainCameraEntity()
+    {
+        auto& group = registry.view<TransformComponent, CameraComponent>();
+
+        for (auto entity : group)
+        {
+            auto [transform, cam] = group.get<TransformComponent, CameraComponent>(entity);
+
+            if (cam.m_IsMain)
+                return Entity{ entity, this };
+        }
+            
+        return {};
     }
 
 

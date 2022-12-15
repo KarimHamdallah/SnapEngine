@@ -19,6 +19,7 @@ Dependencies["GLM"] = "SnapCore/vendor/GLM"
 Dependencies["STB"] = "SnapCore/vendor/STB"
 Dependencies["Entt"] = "SnapCore/vendor/Entt/include"
 Dependencies["YAML"] = "SnapCore/vendor/YAML/include"
+Dependencies["IMGUIZMO"] = "SnapCore/vendor/imguizmo"
 
 include "SnapCore/vendor/GLFW"
 include "SnapCore/vendor/GLAD"
@@ -42,7 +43,9 @@ project "SnapCore"
 	{
 	    "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/GLM/glm/**.hpp"
+		"%{prj.name}/vendor/GLM/glm/**.hpp",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
@@ -55,7 +58,8 @@ project "SnapCore"
 		"%{Dependencies.GLM}",
 		"%{Dependencies.STB}",
 		"%{Dependencies.Entt}",
-		"%{Dependencies.YAML}"
+		"%{Dependencies.YAML}",
+		"%{Dependencies.IMGUIZMO}"
 	}
 
 	links
@@ -66,6 +70,9 @@ project "SnapCore"
 		"yaml-cpp",
 		"opengl32.lib"
 	}
+
+	filter "files:vendor/imguizmo/**.cpp"
+	flags {"NoPCH"}
 
 	filter "system:windows"
 	    cppdialect "c++17"
@@ -182,7 +189,8 @@ project "SnapEditor"
 		"%{Dependencies.ImGui}",
 		"%{Dependencies.GLM}",
 		"%{Dependencies.Entt}",
-		"%{Dependencies.yaml_cpp}"
+		"%{Dependencies.yaml_cpp}",
+		"%{Dependencies.IMGUIZMO}"
 	}
 
 	links

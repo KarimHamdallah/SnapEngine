@@ -8,6 +8,8 @@
 #include <Snap/Core/Application.h>
 #include <Snap/Events/Event.h>
 
+#include <ImGuizmo.h>
+
 #define BIND_FUNCTION(x) std::bind(&x, this, std::placeholders::_1)
 
 namespace SnapEngine
@@ -79,6 +81,7 @@ namespace SnapEngine
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
     }
 
     void ImGuiLayer::End()

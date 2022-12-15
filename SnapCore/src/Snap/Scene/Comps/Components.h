@@ -4,6 +4,9 @@
 #include <Snap/Scene/SceneCamera.h>
 #include <Snap/Scene/Scripts/CppScript.h>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 namespace SnapEngine
 {
 	struct TransformComponent
@@ -22,14 +25,17 @@ namespace SnapEngine
 
 		glm::mat4 GetTransformMatrix() const
 		{
+			/*
 			glm::mat4 Transform = glm::mat4(1.0f);
 			Transform = glm::translate(Transform, m_Position);
 			Transform = glm::rotate(Transform, glm::radians(m_Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 			Transform = glm::rotate(Transform, glm::radians(m_Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 			Transform = glm::rotate(Transform, glm::radians(m_Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 			Transform = glm::scale(Transform, m_Scale);
-
-			return Transform;
+			*/
+			return glm::translate(glm::mat4(1.0f), m_Position) *
+				glm::toMat4(glm::quat(glm::vec3(glm::radians(m_Rotation.x), glm::radians(m_Rotation.y), glm::radians(m_Rotation.z)))) *
+				glm::scale(glm::mat4(1.0f), m_Scale);
 		}
 
 		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
