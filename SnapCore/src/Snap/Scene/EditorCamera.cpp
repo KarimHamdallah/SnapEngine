@@ -1,18 +1,14 @@
-#include "SnapPCH.h"
-#include "EditorCamera.h"
-
-#include <Snap/Core/Input.h>
-
+/*
 namespace SnapEngine
 {
 	EditorCamera::EditorCamera()
-		: Camera(glm::perspective(m_Fov, m_AspectRatio, m_NearClip, m_FarClip))
+		: Camera(glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_NearClip, m_FarClip))
 	{
 		CalculateView();
 	}
 	EditorCamera::EditorCamera(float Fov, float AspectRatio, float NearClip, float FarClip)
 		: m_Fov(Fov), m_AspectRatio(AspectRatio), m_NearClip(NearClip), m_FarClip(FarClip),
-		Camera(glm::perspective(m_Fov, m_AspectRatio, m_NearClip, m_FarClip))
+		Camera(glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_NearClip, m_FarClip))
 	{
 		CalculateView();
 	}
@@ -20,7 +16,7 @@ namespace SnapEngine
 	void EditorCamera::CalculateProjection()
 	{
 		m_AspectRatio = m_ViewPortWidth / m_ViewPortHeight;
-		m_Projection = glm::perspective(m_Fov, m_AspectRatio, m_NearClip, m_FarClip);
+		m_Projection = glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 
 	glm::vec3 EditorCamera::CalculatePosition() const
@@ -68,7 +64,7 @@ namespace SnapEngine
 			if (Input::IsMouseButtonPressed(MouseButton::MouseButtonLeft))
 				MouseRotate(mouse_delta);
 			if (Input::IsMouseButtonPressed(MouseButton::MouseButtonRight))
-				MouseZoom(mouse_delta.y);
+				MouseZoom(mouse_delta.y * 10.0f);
 			if (Input::IsMouseButtonPressed(MouseButton::MouseButtonMiddle))
 				MousePan(mouse_delta);
 		}
@@ -136,8 +132,106 @@ namespace SnapEngine
 	{
 		m_Zoom = -e.GetOffsetY() * m_ScrollSpeed;
 		MouseZoom(m_Zoom);
-		m_Zoom = 0.0f;
 		CalculateView();
+		return false;
+	}
+}
+*/
+#include "SnapPCH.h"
+#include "EditorCamera.h"
+
+#include <Snap/Core/Input.h>
+
+namespace SnapEngine
+{
+
+	static bool FirstMouse = true;
+
+	void EditorCamera::UpdateCamera(TimeStep Time)
+	{
+		// mouse movement
+		if (Input::IsKeyPressed(Key::LeftShift)) // TODO:: May Move This To Event Process Functon
+		{
+			m_IsActive = true;
+
+			auto [mouseX, mouseY] = Input::GetMousePos();
+
+			if (FirstMouse)
+			{
+				m_PreviouseMousePos = { mouseX, mouseY };
+				FirstMouse = false;
+			}
+
+			glm::vec2 mouse_delta = { mouseX - m_PreviouseMousePos.x, mouseY - m_PreviouseMousePos.y };
+			m_PreviouseMousePos = { mouseX, mouseY };
+
+			float xoffset = mouse_delta.x * sensitivity * Time;
+			float yoffset = -mouse_delta.y * sensitivity * Time;
+
+			orientation.y += xoffset;
+			orientation.x += yoffset;
+
+			glm::clamp(orientation.x, -89.0f, 89.0f);
+
+
+			// keyboard movement
+			if (Input::IsKeyPressed(Key::W))
+				position += forward * (movementspeed * Time);
+			if (Input::IsKeyPressed(Key::S))
+				position -= forward * (movementspeed * Time);
+			if (Input::IsKeyPressed(Key::D))
+				position += right * (movementspeed * Time);
+			if (Input::IsKeyPressed(Key::A))
+				position -= right * (movementspeed * Time);
+			if (Input::IsKeyPressed(Key::E))
+				position += up * (movementspeed * Time);
+			if (Input::IsKeyPressed(Key::Q))
+				position -= up * (movementspeed * Time);
+		}
+		else
+		{
+			FirstMouse = true;
+			m_IsActive = false;
+		}
+
+		UpdateCameraVectors();
+	}
+
+	void EditorCamera::UpdateCameraVectors()
+	{
+		// calculate direction from orientation
+		glm::vec3 direction;
+
+		direction.x = cos(glm::radians(orientation.y)) * cos(glm::radians(orientation.x));
+		direction.y = sin(glm::radians(orientation.x));
+		direction.z = sin(glm::radians(orientation.y)) * cos(glm::radians(orientation.x));
+
+		// calculate camera vectors
+		forward = glm::normalize(direction);
+		right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
+		up = glm::cross(right, forward);
+	}
+
+	void EditorCamera::CalculateProjection()
+	{
+		m_AspectRatio = m_ViewPortWidth / m_ViewPortHeight;
+		m_Projection = glm::perspective(glm::radians(m_Fov), m_AspectRatio, m_NearClip, m_FarClip);
+	}
+
+	void EditorCamera::ProcessEvents(IEvent& e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.DispatchEvent<MouseScrollEvent>(SNAP_BIND_FUNCTION(EditorCamera::OnMouseScroll));
+	}
+
+	bool EditorCamera::OnMouseScroll(MouseScrollEvent& e)
+	{
+		m_Zoom = e.GetOffsetY() * -0.1f;
+		m_Fov += m_Zoom;
+		m_Zoom = 0.0f;
+
+		CalculateProjection();
+		
 		return false;
 	}
 }

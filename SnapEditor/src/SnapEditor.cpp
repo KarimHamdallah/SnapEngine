@@ -59,7 +59,7 @@ namespace SnapEngine
 				//m_Scene->UpdateRunTime(Time);
 			}
 
-			m_EditorCamera.Update(Time);
+			m_EditorCamera.UpdateCamera(Time);
 			
 
 			// Render
@@ -281,14 +281,14 @@ namespace SnapEngine
 		virtual void ProcessEvent(IEvent& e) override
 		{
 			m_Scene->ProcessEvents(&e);
-			m_EditorCamera.ProcessEvent(e);
+			m_EditorCamera.ProcessEvents(e);
 			EventDispatcher dispatcher(e);
 			dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));
 		}
 
 		bool OnKeyPressed(KeyPressedEvent& e)
 		{
-			if (e.GetRepeatCount() > 0)
+			if (e.GetRepeatCount() > 0 || m_EditorCamera.IsActive())
 				return false;
 
 			switch ((Key)e.GetKeyCode())
