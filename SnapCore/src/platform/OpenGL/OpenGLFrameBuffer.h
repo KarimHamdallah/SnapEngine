@@ -7,7 +7,7 @@ namespace SnapEngine
 	class OpenGLFrameBuffer : public FrameBuffer
 	{
 	public:
-		OpenGLFrameBuffer(uint32_t Width, uint32_t Height);
+		OpenGLFrameBuffer(const FrameBufferSpecifications& specs);
 		virtual ~OpenGLFrameBuffer();
 
 		virtual void Bind() const override;
@@ -15,6 +15,6 @@ namespace SnapEngine
 		virtual void Resize(uint32_t Width, uint32_t Height) override;
 
 	private:
-		void Invalidate(uint32_t Width, uint32_t Height);
+		void Invalidate();
 	};
 }

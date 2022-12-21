@@ -6,12 +6,12 @@
 
 namespace SnapEngine
 {
-	FrameBuffer* FrameBuffer::Creat(uint32_t Width, uint32_t Height)
+	FrameBuffer* FrameBuffer::Creat(const FrameBufferSpecifications& specs)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:     SNAP_ASSERT_MSG(false, "RendererAPI::None is currently not supported!");
-		case RendererAPI::API::OpenGL:   return new OpenGLFrameBuffer(Width, Height);
+		case RendererAPI::API::OpenGL:   return new OpenGLFrameBuffer(specs);
 		}
 
 		SNAP_ASSERT_MSG(false, "RendererAPI is UNKOWN!");

@@ -1,53 +1,166 @@
 #include "SnapPCH.h"
 #include "OpenGLFrameBuffer.h"
 
-#include <Snap/Core/asserts.h>
 #include <glad/glad.h>
 
 namespace SnapEngine
 {
-	OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t Width, uint32_t Height)
+    static GLenum TextureTarget(bool IsMultiSampled)
+    {
+        return IsMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+    }
+
+    static void BindTexture(bool IsMultiSampled, uint32_t ID)
+    {
+        glBindTexture(TextureTarget(IsMultiSampled), ID);
+    }
+
+    static bool IsDepthFormat(FrameBufferTextureFormat format)
+    {
+        switch (format)
+        {
+           case FrameBufferTextureFormat::DEPTH24STECNCIL8: return true;
+        }
+
+        return false;
+    }
+
+    static void CreatTextures(bool IsMultiSampled, uint32_t* outID, uint32_t count)
+    {
+        glCreateTextures(TextureTarget(IsMultiSampled), count, outID);
+    }
+
+    static void AttachColorTexture(uint32_t ID, int Samples, GLenum Format, uint32_t Width, uint32_t Height, int index)
+    {
+        bool IsMultiSampled = Samples > 1;
+
+        if (IsMultiSampled)
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, Format, Width, Height, GL_FALSE);
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, Format, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(IsMultiSampled), ID, 0);
+    }
+
+    static void AttachDepthTexture(uint32_t ID, int Samples, GLenum Format, GLenum AttachmentType, uint32_t Width, uint32_t Height)
+    {
+        bool IsMultiSampled = Samples > 1;
+
+        if (IsMultiSampled)
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, Format, Width, Height, GL_FALSE);
+        else
+        {
+            glTexStorage2D(GL_TEXTURE_2D, 1, Format, Width, Height);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, AttachmentType, TextureTarget(IsMultiSampled), ID, 0);
+    }
+
+	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecifications& specs)
 	{
-        Invalidate(Width, Height);
+        m_Specs = specs;
+
+        for (auto format : m_Specs.Attachments.m_Attachments)
+        {
+            if (!IsDepthFormat(format.m_TextureFormat))
+                m_ColorAttachmentSpecs.emplace_back(format);
+            else
+                m_DepthAttachmentSpecs = format;
+        }
+
+        Invalidate();
 	}
 
-    void OpenGLFrameBuffer::Invalidate(uint32_t Width, uint32_t Height)
+    void OpenGLFrameBuffer::Invalidate()
     {
-        m_Width = Width;
-        m_Height = Height;
-
         if (m_ID)
         {
             glDeleteFramebuffers(1, &m_ID);
-            glDeleteTextures(1, &m_TextureID);
-            glDeleteTextures(1, &m_DepthTextureID);
+            
+            for (auto& TextureID : m_ColorAttachments)
+                glDeleteTextures(1, &TextureID);
 
-           m_ID = m_TextureID = m_DepthTextureID = 0u;
+            glDeleteTextures(1, &m_DepthAttachment);
+
+           m_ID = m_DepthAttachment = 0u;
+
+           m_ColorAttachments.clear();
         }
 
         glGenFramebuffers(1, &m_ID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
-        // create a color attachment texture
+        // Attachments
+        bool IsMultiSampled = m_Specs.Samples > 1;
 
-        glGenTextures(1, &m_TextureID);
-        glBindTexture(GL_TEXTURE_2D, m_TextureID);
+        // create color attachment textures
+        if (m_ColorAttachmentSpecs.size())
+        {
+            m_ColorAttachments.resize(m_ColorAttachmentSpecs.size());
+            
+            CreatTextures(IsMultiSampled, m_ColorAttachments.data(), m_ColorAttachments.size());
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            for (size_t i = 0; i < m_ColorAttachments.size(); i++)
+            {
+                BindTexture(IsMultiSampled, m_ColorAttachments[i]);
+                switch (m_ColorAttachmentSpecs[i].m_TextureFormat)
+                {
+                case FrameBufferTextureFormat::RGBA8 :
+                {
+                    AttachColorTexture(m_ColorAttachments[i], m_Specs.Samples,
+                        GL_RGBA8, m_Specs.Width, m_Specs.Height, i);
+                }
+                break;
+                default:
+                    break;
+                }
+            }
+        }
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0);
+        // create depth attachment texture
+        if (m_DepthAttachmentSpecs.m_TextureFormat != FrameBufferTextureFormat::None)
+        {
+            CreatTextures(IsMultiSampled, &m_DepthAttachment, 1);
+            BindTexture(IsMultiSampled, m_DepthAttachment);
 
+            switch (m_DepthAttachmentSpecs.m_TextureFormat)
+            {
+            case FrameBufferTextureFormat::DEPTH24STECNCIL8:
+            {
+                AttachDepthTexture(m_DepthAttachment, m_Specs.Samples, GL_DEPTH24_STENCIL8,
+                    GL_DEPTH_STENCIL_ATTACHMENT, m_Specs.Width, m_Specs.Height);
+            }
+            break;
+            default:
+                break;
+            }
+        }
 
-        // create a depth attachment texture
-        glGenTextures(1, &m_DepthTextureID);
-        glBindTexture(GL_TEXTURE_2D, m_DepthTextureID);
-
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_Width, m_Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Width, m_Height);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthTextureID, 0);
+        if (m_ColorAttachments.size() > 1)
+        {
+            SNAP_ASSERT_MSG(m_ColorAttachments.size() <= 4, "FrameBuffer Color Attachments Exceeding Max Attachments Which Is 4 Color Attachments");
+            GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+            glDrawBuffers(m_ColorAttachments.size(), buffers); // Enable Rendering of All Color Attachments
+        }
+        else if (m_ColorAttachments.empty())
+        {
+            // Only Depth Pass
+            glDrawBuffer(GL_NONE);
+        }
 
         // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -58,16 +171,22 @@ namespace SnapEngine
 
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
     {
-        glDeleteTextures(1, &m_TextureID);
-        glDeleteTextures(1, &m_DepthTextureID);
-
         glDeleteFramebuffers(1, &m_ID);
+
+        for (auto& TextureID : m_ColorAttachments)
+            glDeleteTextures(1, &TextureID);
+
+        glDeleteTextures(1, &m_DepthAttachment);
+
+        m_ID = m_DepthAttachment = 0u;
+
+        m_ColorAttachments.clear();
     }
 
     void OpenGLFrameBuffer::Bind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
-        glViewport(0, 0, m_Width, m_Height);
+        glViewport(0, 0, m_Specs.Width, m_Specs.Height);
     }
     void OpenGLFrameBuffer::UnBind() const
     {
@@ -81,6 +200,10 @@ namespace SnapEngine
             SNAP_ERROR("Attemp To Resize Frame Buffer To {0}, {1}", Width, Height);
             return;
         }
-        Invalidate(Width, Height);
+
+        m_Specs.Width = Width;
+        m_Specs.Height = Height;
+
+        Invalidate();
     }
 }

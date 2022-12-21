@@ -150,6 +150,7 @@ namespace SnapEngine
 		float m_FarClip = 1000.0f;
 
 		float m_Zoom = 0.0f;
+		float m_ZoomSpeed = 20.0f;
 
 
 		float sensitivity = 10.0f;

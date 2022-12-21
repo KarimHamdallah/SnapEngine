@@ -1,30 +1,78 @@
 #pragma once
 #include <Snap/Core/Core.h>
+#include <Snap/Core/asserts.h>
 #include <Snap/Renderer/Texture.h>
 
 namespace SnapEngine
 {
+	enum FrameBufferTextureFormat
+	{
+		None = 0,
+
+		// Color Attachment
+		RGBA8 = 1,
+
+		// Depth/stencil
+		DEPTH24STECNCIL8 = 2,
+
+		Depth = DEPTH24STECNCIL8
+	};
+
+	struct FrameBufferTextureSpecs
+	{
+		FrameBufferTextureSpecs() = default;
+		FrameBufferTextureSpecs(FrameBufferTextureFormat TextureFormat)
+			: m_TextureFormat(TextureFormat)
+		{}
+
+		FrameBufferTextureFormat m_TextureFormat;
+	};
+
+	struct FrameBufferAttachment
+	{
+		FrameBufferAttachment() = default;
+		FrameBufferAttachment(const std::initializer_list<FrameBufferTextureSpecs>& Attachments)
+			: m_Attachments(Attachments)
+		{}
+
+		std::vector<FrameBufferTextureSpecs> m_Attachments;
+	};
+
+	struct FrameBufferSpecifications
+	{
+		uint32_t Width = 0;
+		uint32_t Height = 0;
+		FrameBufferAttachment Attachments;
+		uint32_t Samples = 1;
+
+		bool SwapChainTarget = false; // vulkan
+	};
+
+
 	class FrameBuffer
 	{
 	public:
 		virtual ~FrameBuffer() {}
 
-		inline uint32_t GetWidth() const { return m_Width; }
-		inline uint32_t GetHeight() const { return m_Height; }
+		inline uint32_t GetWidth() const { return m_Specs.Width; }
+		inline uint32_t GetHeight() const { return m_Specs.Height; }
 		inline uint32_t GetID() const { return m_ID; }
-		inline uint32_t GetTextureID() const { return m_TextureID; }
+		inline uint32_t GetColorAttachmentTextureID(uint32_t index = 0) const { SNAP_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index]; }
+		inline uint32_t GetDepthAttachmentTextureID() const { return m_DepthAttachment; }
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 		virtual void Resize(uint32_t Width, uint32_t Height) = 0;
 		
-		static FrameBuffer* Creat(uint32_t Width, uint32_t Height);
+		static FrameBuffer* Creat(const FrameBufferSpecifications& specs);
 	protected:
 		uint32_t m_ID = 0u;
-		uint32_t m_Width = 0;
-		uint32_t m_Height = 0;
+		FrameBufferSpecifications m_Specs;
 
-		uint32_t m_TextureID = 0u;
-		uint32_t m_DepthTextureID = 0u;
+		std::vector<FrameBufferTextureSpecs> m_ColorAttachmentSpecs;
+		FrameBufferTextureSpecs m_DepthAttachmentSpecs = FrameBufferTextureFormat::None;
+
+		std::vector<uint32_t> m_ColorAttachments;
+		uint32_t m_DepthAttachment = 0u;
 	};
 }

@@ -14,13 +14,22 @@ namespace SnapEngine
 		EditorLayer()
 			: Layer("Example")
 		{
-			m_FrameBuffer = SnapPtr< FrameBuffer>(FrameBuffer::Creat(800.0f, 600.0f));
+			FrameBufferSpecifications FrameBufferSpecs;
+			FrameBufferSpecs.Attachments = 
+			{
+				FrameBufferTextureFormat::RGBA8, // Color Attachment For Rendering
+				FrameBufferTextureFormat::RGBA8, // Color Attachment For MousePicking
+				FrameBufferTextureFormat::DEPTH24STECNCIL8
+			};
+			FrameBufferSpecs.Width = 800.0f;
+			FrameBufferSpecs.Height = 600.0f;
+			m_FrameBuffer = SnapPtr< FrameBuffer>(FrameBuffer::Creat(FrameBufferSpecs));
+			m_RealTimeFrameBuffer = SnapPtr< FrameBuffer>(FrameBuffer::Creat(FrameBufferSpecs));
 
 
 			/// Scene ///////////////////////////////////////////////
 
 			m_Scene = CreatSnapPtr<Scene>();
-
 			m_SceneHierarchyPanel.SetScene(m_Scene);
 #if 0
 			m_Camera = m_Scene->CreatEntity("Camera");
@@ -47,19 +56,27 @@ namespace SnapEngine
 					m_FrameBuffer->Resize((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y); // Reset Frame Buffer To new ViewPort Window Size
 
 					// Change Scene Cameras Projection According To New Width and New Height of ViewPortWindow
-					m_Scene->ResizeViewPort(m_ViewPortSize.x, m_ViewPortSize.y);
 					m_EditorCamera.SetViewPortSize(m_ViewPortSize.x, m_ViewPortSize.y);
+				}
+
+				if (m_MainCameraViewSize.x > 0 && m_MainCameraViewSize.y > 0
+					&& (m_RealTimeFrameBuffer->GetWidth() != m_MainCameraViewSize.x || m_FrameBuffer->GetHeight() != m_MainCameraViewSize.y))
+				{
+					m_RealTimeFrameBuffer->Resize((uint32_t)m_MainCameraViewSize.x, (uint32_t)m_MainCameraViewSize.y); // Reset Frame Buffer To new ViewPort Window Size
+
+					// Change Scene Cameras Projection According To New Width and New Height of ViewPortWindow
+					m_Scene->ResizeViewPort(m_MainCameraViewSize.x, m_MainCameraViewSize.y);
 				}
 			}
 
 
 			// Update Scripts
-			if (m_ViewPortFocused)
+			if (m_MainCameraViewFocused && m_MainCameraViewHavored)
 			{
-				//m_Scene->UpdateRunTime(Time);
+				m_Scene->UpdateRunTime(Time);
 			}
-
-			m_EditorCamera.UpdateCamera(Time);
+			else
+				m_EditorCamera.UpdateCamera(Time);
 			
 
 			// Render
@@ -72,6 +89,20 @@ namespace SnapEngine
 			m_Scene->UpdateEditor(Time, m_EditorCamera);
 
 			m_FrameBuffer->UnBind(); // Stop Recording
+
+
+
+
+
+			m_RealTimeFrameBuffer->Bind(); // Record Scene into frame buffer
+
+			Renderer2D::ResetStats();
+			RendererCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+			RendererCommand::Clear();
+
+			m_Scene->Render();
+
+			m_RealTimeFrameBuffer->UnBind(); // Stop Recording
 		}
 
 		void ImGuiRender() override
@@ -199,7 +230,7 @@ namespace SnapEngine
 			ImVec2 viewportsize = ImGui::GetContentRegionAvail(); // Get This ImGui Window Size
 			m_ViewPortSize = { viewportsize.x, viewportsize.y };
 
-			ImGui::Image((ImTextureID)m_FrameBuffer->GetTextureID(), ImVec2{ m_ViewPortSize.x, m_ViewPortSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((ImTextureID)m_FrameBuffer->GetColorAttachmentTextureID(), ImVec2{ m_ViewPortSize.x, m_ViewPortSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			
 			
 			
@@ -252,11 +283,27 @@ namespace SnapEngine
 			ImGui::End();
 			ImGui::PopStyleVar();
 
+			ImGui::Begin("MainCameraView");
+
+			m_MainCameraViewFocused = ImGui::IsWindowFocused();
+			m_MainCameraViewHavored = ImGui::IsWindowHovered();
+
+			if(!m_ViewPortFocused || !m_ViewPortHavored)
+				Application::Get().GetImGuiLayer()->BlockEvents(!m_MainCameraViewFocused || !m_MainCameraViewHavored);
+
+			m_MainCameraViewSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
+
+			ImGui::Image((ImTextureID)m_RealTimeFrameBuffer->GetColorAttachmentTextureID(), ImVec2{ m_MainCameraViewSize.x, m_MainCameraViewSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::End();
+
+
+
 			ImGui::End();
 		}
 
 	private:
 		SnapPtr< FrameBuffer> m_FrameBuffer;
+		SnapPtr< FrameBuffer> m_RealTimeFrameBuffer;
 		SnapPtr<Scene> m_Scene;
 		
 		///////// Entites ////////////////
@@ -269,6 +316,10 @@ namespace SnapEngine
 		glm::vec2 m_ViewPortSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
 		bool m_ViewPortFocused = false;
 		bool m_ViewPortHavored = false;
+
+		glm::vec2 m_MainCameraViewSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
+		bool m_MainCameraViewFocused = false;
+		bool m_MainCameraViewHavored = false;
 		/////////////////////////////////////////////////////////
 
 		//////////////// Editor ///////////////
@@ -280,15 +331,19 @@ namespace SnapEngine
 
 		virtual void ProcessEvent(IEvent& e) override
 		{
-			m_Scene->ProcessEvents(&e);
-			m_EditorCamera.ProcessEvents(e);
+			if (m_MainCameraViewFocused && m_MainCameraViewHavored)
+				m_Scene->ProcessEvents(&e); // Process Scene Scripts Events
+			
+			if(m_ViewPortFocused && m_ViewPortHavored)
+				m_EditorCamera.ProcessEvents(e);
+
 			EventDispatcher dispatcher(e);
 			dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));
 		}
 
 		bool OnKeyPressed(KeyPressedEvent& e)
 		{
-			if (e.GetRepeatCount() > 0 || m_EditorCamera.IsActive())
+			if (e.GetRepeatCount() > 0 || m_EditorCamera.IsActive() || !m_ViewPortFocused)
 				return false;
 
 			switch ((Key)e.GetKeyCode())

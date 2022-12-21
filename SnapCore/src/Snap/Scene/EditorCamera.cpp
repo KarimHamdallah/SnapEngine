@@ -227,8 +227,10 @@ namespace SnapEngine
 	bool EditorCamera::OnMouseScroll(MouseScrollEvent& e)
 	{
 		m_Zoom = e.GetOffsetY() * -0.1f;
-		m_Fov += m_Zoom;
+		m_Fov += m_Zoom * m_ZoomSpeed;
 		m_Zoom = 0.0f;
+
+		m_Fov = std::clamp(m_Fov, 1.0f, 45.0f);
 
 		CalculateProjection();
 		
