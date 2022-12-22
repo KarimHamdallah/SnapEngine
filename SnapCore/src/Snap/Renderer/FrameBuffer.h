@@ -11,9 +11,10 @@ namespace SnapEngine
 
 		// Color Attachment
 		RGBA8 = 1,
+		RED_INTEGER = 2,
 
 		// Depth/stencil
-		DEPTH24STECNCIL8 = 2,
+		DEPTH24STECNCIL8 = 3,
 
 		Depth = DEPTH24STECNCIL8
 	};
@@ -60,9 +61,11 @@ namespace SnapEngine
 		inline uint32_t GetColorAttachmentTextureID(uint32_t index = 0) const { SNAP_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index]; }
 		inline uint32_t GetDepthAttachmentTextureID() const { return m_DepthAttachment; }
 
+
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
 		virtual void Resize(uint32_t Width, uint32_t Height) = 0;
+		virtual int ReadPixel(uint32_t AttachmentIndex, uint32_t x, uint32_t y) = 0;
 		
 		static FrameBuffer* Creat(const FrameBufferSpecifications& specs);
 	protected:

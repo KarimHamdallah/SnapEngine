@@ -18,7 +18,7 @@ namespace SnapEngine
 			FrameBufferSpecs.Attachments = 
 			{
 				FrameBufferTextureFormat::RGBA8, // Color Attachment For Rendering
-				FrameBufferTextureFormat::RGBA8, // Color Attachment For MousePicking
+				FrameBufferTextureFormat::RED_INTEGER, // Color Attachment For MousePicking
 				FrameBufferTextureFormat::DEPTH24STECNCIL8
 			};
 			FrameBufferSpecs.Width = 800.0f;
@@ -87,6 +87,22 @@ namespace SnapEngine
 			RendererCommand::Clear();
 
 			m_Scene->UpdateEditor(Time, m_EditorCamera);
+
+
+			auto [mx, my] = ImGui::GetMousePos();
+			mx -= m_ViewPortBounds[0].x;
+			my -= m_ViewPortBounds[0].y;
+
+			my = m_ViewPortSize.y - my;
+
+			int MouseX = (int)mx;
+			int MouseY = (int)my;
+
+			if (MouseX >= 0 && MouseY >= 0 && MouseX <= (int)m_ViewPortSize.x && MouseY <= (int)m_ViewPortSize.y)
+			{
+				int pixel = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
+				SNAP_DEBUG("pixel = {}", pixel);
+			}
 
 			m_FrameBuffer->UnBind(); // Stop Recording
 
@@ -222,6 +238,8 @@ namespace SnapEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 			ImGui::Begin("ViewPort");
 
+			auto ViewPortOffset = ImGui::GetCursorPos();
+
 			m_ViewPortFocused = ImGui::IsWindowFocused();
 			m_ViewPortHavored = ImGui::IsWindowHovered();
 
@@ -232,9 +250,17 @@ namespace SnapEngine
 
 			ImGui::Image((ImTextureID)m_FrameBuffer->GetColorAttachmentTextureID(), ImVec2{ m_ViewPortSize.x, m_ViewPortSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			
-			
-			
-			
+			// Calculate ViewPort Window Size 
+			auto WindowSize = ImGui::GetWindowSize();
+			ImVec2 minBound = ImGui::GetWindowPos();
+
+			minBound.x += ViewPortOffset.x;
+			minBound.y += ViewPortOffset.y;
+
+			ImVec2 maxBound = { minBound.x + WindowSize.x, minBound.y + WindowSize.y };
+			m_ViewPortBounds[0] = { minBound.x, minBound.y };
+			m_ViewPortBounds[1] = { maxBound.x, maxBound.y };
+
 			// Draw ImGuizmo inside ViewPort Widnow
 			Entity SelectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 
@@ -316,6 +342,8 @@ namespace SnapEngine
 		glm::vec2 m_ViewPortSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
 		bool m_ViewPortFocused = false;
 		bool m_ViewPortHavored = false;
+
+		glm::vec2 m_ViewPortBounds[2];
 
 		glm::vec2 m_MainCameraViewSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
 		bool m_MainCameraViewFocused = false;

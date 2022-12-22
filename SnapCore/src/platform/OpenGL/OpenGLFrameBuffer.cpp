@@ -30,15 +30,15 @@ namespace SnapEngine
         glCreateTextures(TextureTarget(IsMultiSampled), count, outID);
     }
 
-    static void AttachColorTexture(uint32_t ID, int Samples, GLenum Format, uint32_t Width, uint32_t Height, int index)
+    static void AttachColorTexture(uint32_t ID, int Samples, GLenum InternalFormat, GLenum Format, uint32_t Width, uint32_t Height, int index)
     {
         bool IsMultiSampled = Samples > 1;
 
         if (IsMultiSampled)
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, Format, Width, Height, GL_FALSE);
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, Samples, InternalFormat, Width, Height, GL_FALSE);
         else
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, Format, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Width, Height, 0, Format, GL_UNSIGNED_BYTE, nullptr);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -122,7 +122,13 @@ namespace SnapEngine
                 case FrameBufferTextureFormat::RGBA8 :
                 {
                     AttachColorTexture(m_ColorAttachments[i], m_Specs.Samples,
-                        GL_RGBA8, m_Specs.Width, m_Specs.Height, i);
+                        GL_RGBA8, GL_RGBA, m_Specs.Width, m_Specs.Height, i);
+                }
+                break;
+                case FrameBufferTextureFormat::RED_INTEGER:
+                {
+                    AttachColorTexture(m_ColorAttachments[i], m_Specs.Samples,
+                        GL_R32I, GL_RED_INTEGER, m_Specs.Width, m_Specs.Height, i);
                 }
                 break;
                 default:
@@ -205,5 +211,15 @@ namespace SnapEngine
         m_Specs.Height = Height;
 
         Invalidate();
+    }
+
+    int OpenGLFrameBuffer::ReadPixel(uint32_t AttachmentIndex, uint32_t x, uint32_t y)
+    {
+        SNAP_ASSERT_MSG(AttachmentIndex < m_ColorAttachments.size(), "AttachmentIndex exceeding ColorAttachments size");
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + AttachmentIndex);
+        int pixel;
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+
+        return pixel;
     }
 }
