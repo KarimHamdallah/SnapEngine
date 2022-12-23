@@ -85,6 +85,7 @@ namespace SnapEngine
 			Renderer2D::ResetStats();
 			RendererCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RendererCommand::Clear();
+			m_FrameBuffer->ClearAttachment(1, -1);
 
 			m_Scene->UpdateEditor(Time, m_EditorCamera);
 
@@ -105,8 +106,6 @@ namespace SnapEngine
 			}
 
 			m_FrameBuffer->UnBind(); // Stop Recording
-
-
 
 
 

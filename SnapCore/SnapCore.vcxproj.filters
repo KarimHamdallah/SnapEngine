@@ -10,6 +10,9 @@
     <Filter Include="src\Snap\Core">
       <UniqueIdentifier>{66F804AE-D2B8-80E4-9BF3-C9610773C5C0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snap\ECS">
+      <UniqueIdentifier>{987E5543-84E1-E4E7-2D67-1D9E19A9B06A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Snap\Events">
       <UniqueIdentifier>{72BB4648-DE46-B40C-E757-37015362100D}</UniqueIdentifier>
     </Filter>
@@ -102,6 +105,15 @@
     <ClInclude Include="src\Snap\Core\log.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\ECS\Component.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\ECS\ECS.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\ECS\Entity.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Events\AppEvent.h">
       <Filter>src\Snap\Events</Filter>
     </ClInclude>
@@ -164,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="src\Snap\Scene\Comps\Components.h">
       <Filter>src\Snap\Scene\Comps</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scene\EditorCamera.h">
+      <Filter>src\Snap\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Scene\Entity.h">
       <Filter>src\Snap\Scene</Filter>
@@ -1056,7 +1071,8 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Scene\EditorCamera.h" />
+    <ClInclude Include="src\Snap\ECS\EntityManager.h" />
+    <ClInclude Include="src\Snap\ECS\Components.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1070,6 +1086,15 @@
     </ClCompile>
     <ClCompile Include="src\Snap\Core\log.cpp">
       <Filter>src\Snap\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\ECS\Component.cpp">
+      <Filter>src\Snap\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\ECS\ECS.cpp">
+      <Filter>src\Snap\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\ECS\Entity.cpp">
+      <Filter>src\Snap\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp">
       <Filter>src\Snap\ImGui</Filter>
@@ -1115,6 +1140,9 @@
     </ClCompile>
     <ClCompile Include="src\Snap\Scene\Comps\Components.cpp">
       <Filter>src\Snap\Scene\Comps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scene\EditorCamera.cpp">
+      <Filter>src\Snap\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Scene\Entity.cpp">
       <Filter>src\Snap\Scene</Filter>
@@ -1167,6 +1195,7 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\Scene\EditorCamera.cpp" />
+    <ClCompile Include="src\Snap\ECS\EntityManager.cpp" />
+    <ClCompile Include="src\Snap\ECS\Components.cpp" />
   </ItemGroup>
 </Project>

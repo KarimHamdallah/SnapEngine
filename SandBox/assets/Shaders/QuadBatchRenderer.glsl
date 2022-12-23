@@ -26,7 +26,8 @@ void main()
 #type fragment
 
 #version 460 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out int MousePickingID;
         
 in vec2 v_TexCoords;
 in vec4 v_Color;
@@ -39,4 +40,5 @@ void main()
 {
    int index = int(v_TexID);
    FragColor = texture(u_Textures[index], v_TexCoords * v_TilingFactor) * v_Color;
+   MousePickingID = 50;
 }

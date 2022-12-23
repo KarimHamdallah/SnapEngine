@@ -148,6 +148,11 @@
     <ClInclude Include="src\Snap\Core\asserts.h" />
     <ClInclude Include="src\Snap\Core\key.h" />
     <ClInclude Include="src\Snap\Core\log.h" />
+    <ClInclude Include="src\Snap\ECS\Component.h" />
+    <ClInclude Include="src\Snap\ECS\Components.h" />
+    <ClInclude Include="src\Snap\ECS\ECS.h" />
+    <ClInclude Include="src\Snap\ECS\Entity.h" />
+    <ClInclude Include="src\Snap\ECS\EntityManager.h" />
     <ClInclude Include="src\Snap\Events\AppEvent.h" />
     <ClInclude Include="src\Snap\Events\Event.h" />
     <ClInclude Include="src\Snap\Events\KeyEvent.h" />
@@ -473,6 +478,11 @@
     <ClCompile Include="src\Snap\Core\LayerStack.cpp" />
     <ClCompile Include="src\Snap\Core\Timer.cpp" />
     <ClCompile Include="src\Snap\Core\log.cpp" />
+    <ClCompile Include="src\Snap\ECS\Component.cpp" />
+    <ClCompile Include="src\Snap\ECS\Components.cpp" />
+    <ClCompile Include="src\Snap\ECS\ECS.cpp" />
+    <ClCompile Include="src\Snap\ECS\Entity.cpp" />
+    <ClCompile Include="src\Snap\ECS\EntityManager.cpp" />
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Snap\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp" />
@@ -489,7 +499,9 @@
     <ClCompile Include="src\Snap\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Snap\Scene\Comps\Components.cpp" />
     <ClCompile Include="src\Snap\Scene\EditorCamera.cpp" />
-    <ClCompile Include="src\Snap\Scene\Entity.cpp" />
+    <ClCompile Include="src\Snap\Scene\Entity.cpp">
+      <ObjectFileName>$(IntDir)\Entity1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Snap\Scene\Scene.cpp" />
     <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Snap\Scene\SceneSerializer.cpp" />

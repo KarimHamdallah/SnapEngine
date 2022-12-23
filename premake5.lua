@@ -129,7 +129,8 @@ project "SandBox"
 		"SnapCore/src",
 		"%{Dependencies.ImGui}",
 		"%{Dependencies.GLM}",
-		"%{Dependencies.Entt}"
+		"%{Dependencies.Entt}",
+		"%{Dependencies.IMGUIZMO}"
 	}
 
 	links

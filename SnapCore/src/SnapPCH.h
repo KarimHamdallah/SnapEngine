@@ -15,6 +15,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <bitset>
 
 #ifdef SNAP_PLATFORM_WINDOWS
 #include <Windows.h>

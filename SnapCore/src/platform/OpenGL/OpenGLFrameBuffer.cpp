@@ -70,6 +70,18 @@ namespace SnapEngine
         glFramebufferTexture2D(GL_FRAMEBUFFER, AttachmentType, TextureTarget(IsMultiSampled), ID, 0);
     }
 
+    static GLenum FrameBufferTextureFormatToGL(FrameBufferTextureFormat format)
+    {
+        switch (format)
+        {
+        case FrameBufferTextureFormat::RGBA8:       return GL_RGBA8;
+        case FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+        }
+
+        SNAP_ASSERT(false);
+        return 0;
+    }
+
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecifications& specs)
 	{
         m_Specs = specs;
@@ -221,5 +233,14 @@ namespace SnapEngine
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
 
         return pixel;
+    }
+
+    void OpenGLFrameBuffer::ClearAttachment(uint32_t AttachmentIndex, int value)
+    {
+        SNAP_ASSERT_MSG(AttachmentIndex < m_ColorAttachments.size(), "AttachmentIndex exceeding ColorAttachments size");
+
+        auto& spec = m_ColorAttachmentSpecs[AttachmentIndex];
+        glClearTexImage(m_ColorAttachments[AttachmentIndex], 0,
+            FrameBufferTextureFormatToGL(spec.m_TextureFormat), GL_INT, &value);
     }
 }

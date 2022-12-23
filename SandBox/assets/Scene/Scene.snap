@@ -1,0 +1,46 @@
+Scene: Example Scene
+Entities List:
+  - EntityID: 3
+    TagComponent:
+      Tag: BackGround
+    TransformComponent:
+      Position: [-4.63520432, -1.33687782, -13.6199999]
+      Rotation: [0, -0, 0]
+      Scale: [55.5883942, 35.0022163, 1]
+    SpriteRendererComponent:
+      Color: [0.137037039, 0.137037039, 0.137037039, 1]
+  - EntityID: 2
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [-3.60795021, -0.584010601, 67.6558228]
+      Rotation: [0, -0, 0]
+      Scale: [0.395310044, 0.397062331, 1.00000012]
+    CameraComponent:
+      ProjectionType: 0
+      OrthoGraphicSize: 10
+      OrthoGraphicNear: -100
+      OrthoGraphicFar: 100
+      PerspectiveFov: 0.92956233
+      PerspectiveNear: 0.00999999978
+      PerspectiveFar: 1000
+      IsMain: true
+      FixedAspectRatio: false
+  - EntityID: 1
+    TagComponent:
+      Tag: Player
+    TransformComponent:
+      Position: [0, 0.209999993, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0.422222197, 0, 1]
+  - EntityID: 0
+    TagComponent:
+      Tag: Platform
+    TransformComponent:
+      Position: [-3.04861498, -4.56254673, 0]
+      Rotation: [0, -0, 0]
+      Scale: [30.8523979, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.0222222805, 1, 0, 1]

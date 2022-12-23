@@ -66,6 +66,7 @@ namespace SnapEngine
 		virtual void UnBind() const = 0;
 		virtual void Resize(uint32_t Width, uint32_t Height) = 0;
 		virtual int ReadPixel(uint32_t AttachmentIndex, uint32_t x, uint32_t y) = 0;
+		virtual void ClearAttachment(uint32_t AttachmentIndex, int value) = 0;
 		
 		static FrameBuffer* Creat(const FrameBufferSpecifications& specs);
 	protected:
