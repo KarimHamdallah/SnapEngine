@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\SnapEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />

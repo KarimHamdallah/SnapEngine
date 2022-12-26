@@ -61,6 +61,15 @@ namespace SnapEngine
 			
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 0.0f));
 			ImGui::ImageButton((ImTextureID)Icon->getID(), { thumbnailsize, thumbnailsize }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
+			
+			if (ImGui::BeginDragDropSource())
+			{
+				const wchar_t* itempath = RelativePath.c_str();
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itempath, wcslen(itempath) * sizeof(wchar_t), ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+			
+			
 			ImGui::PopStyleColor();
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) // Is Folder
