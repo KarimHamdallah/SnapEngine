@@ -111,9 +111,6 @@
     <ClInclude Include="src\Snap\ECS\ECS.h">
       <Filter>src\Snap\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\ECS\Entity.h">
-      <Filter>src\Snap\ECS</Filter>
-    </ClInclude>
     <ClInclude Include="src\Snap\Events\AppEvent.h">
       <Filter>src\Snap\Events</Filter>
     </ClInclude>
@@ -1091,9 +1088,6 @@
       <Filter>src\Snap\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\ECS\ECS.cpp">
-      <Filter>src\Snap\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Snap\ECS\Entity.cpp">
       <Filter>src\Snap\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp">

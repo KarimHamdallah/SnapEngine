@@ -1,18 +1,20 @@
 #include "SnapPCH.h"
 #include "EntityManager.h"
-#include <Snap/Core/asserts.h>
 
-Entity& EntityManager::CreatEntity()
+namespace enttt
 {
-	Entity* entity = new Entity();
-	entity->m_ID = Current_Entity_ID++;
+	EntityManager::EntityManager(uint32_t MaxEntityCount, uint32_t MaxComponentCountPerEntity)
+		: m_MaxEntityCount(MaxEntityCount), m_MaxComponentCount(MaxComponentCountPerEntity)
+	{
+		m_Entities.resize(m_MaxEntityCount, (uint32_t)-1);
+		ComponentList.resize(m_MaxEntityCount * m_MaxComponentCount);
+		ComponentSet.resize(m_MaxEntityCount * m_MaxComponentCount);
+	}
 
-	m_Entities[entity->m_ID] = SnapEngine::SnapUniquePtr<Entity>(entity);
-	return *m_Entities[entity->m_ID];
-}
-
-Entity& EntityManager::GetEntity(uint32_t ID)
-{
-	SNAP_ASSERT_MSG(ID <= Current_Entity_ID, "Entity ID Is Out Of Range!");
-	return *m_Entities[ID];
+	Entity EntityManager::CreatEntity()
+	{
+		Entity entity = Current_Entity_ID++;
+		m_Entities[entity] = entity;
+		return entity;
+	}
 }

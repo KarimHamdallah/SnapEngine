@@ -34,7 +34,8 @@ namespace SnapEngine
 			BufferElement(ShaderDataType::Float4, "aColor"),
 			BufferElement(ShaderDataType::Float2, "aTexCoords"),
 			BufferElement(ShaderDataType::Float,  "aTexID"),
-			BufferElement(ShaderDataType::Float,  "aTilingFactor")
+			BufferElement(ShaderDataType::Float,  "aTilingFactor"),
+			BufferElement(ShaderDataType::Int,  "aEntityID")
 		};
 
 		s_Data->Quad_VBO->SetBufferLayout(Quad_VBO_Layout);
@@ -315,33 +316,6 @@ namespace SnapEngine
 		s_Data->Stats.m_QuadCount++; // Add Quad
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color)
-	{
-		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
-			FlushAndReset();
-
-		float tex_index = 0.0f; // White Texture
-		float TilingFactor = 1.0f;
-
-		//                                Top Right      Bottom Right      Bottom Left      Top Left
-		const glm::vec2 TexCoords[] = { {1.0f, 1.0f}, { 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 1.0f } };
-
-		const int QuadVerticesCount = 4;
-
-		for (int i = 0; i < QuadVerticesCount; i++)
-		{
-			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
-			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i]; // Top Right
-			s_Data->QuadVertexPtr->m_Color = Color;
-			s_Data->QuadVertexPtr->m_TexCoords = TexCoords[i];
-			s_Data->QuadVertexPtr->m_TexID = tex_index;
-			s_Data->QuadVertexPtr->m_TilingFactor = TilingFactor;
-			s_Data->QuadVertexPtr++;
-		}
-
-		s_Data->Stats.m_QuadCount++; // Add Quad
-	}
-
 	void Renderer2D::DrawQuad(
 		const SnapPtr<SubTexture2D>& subtexture,
 		const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color, float TilingFactor)
@@ -448,5 +422,99 @@ namespace SnapEngine
 		}
 
 		s_Data->Stats.m_QuadCount++; // Add Quad
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	void Renderer2D::DrawQuad(const glm::mat4& Transform, const glm::vec4& Color, int EntityID)
+	{
+		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
+			FlushAndReset();
+
+		float tex_index = 0.0f; // White Texture
+		float TilingFactor = 1.0f;
+
+		//                                Top Right      Bottom Right      Bottom Left      Top Left
+		const glm::vec2 TexCoords[] = { {1.0f, 1.0f}, { 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 1.0f } };
+
+		const int QuadVerticesCount = 4;
+
+		for (int i = 0; i < QuadVerticesCount; i++)
+		{
+			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
+			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i]; // Top Right
+			s_Data->QuadVertexPtr->m_Color = Color;
+			s_Data->QuadVertexPtr->m_TexCoords = TexCoords[i];
+			s_Data->QuadVertexPtr->m_TexID = tex_index;
+			s_Data->QuadVertexPtr->m_TilingFactor = TilingFactor;
+			s_Data->QuadVertexPtr->m_EntityID = EntityID;
+			s_Data->QuadVertexPtr++;
+		}
+
+		s_Data->Stats.m_QuadCount++; // Add Quad
+	}
+
+	void Renderer2D::DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color, int EntityID)
+	{
+		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
+			FlushAndReset();
+
+		float tex_index = 0.0f; // White Texture
+		float TilingFactor = 1.0f;
+
+		// Find Passed Texture in s_Data->TextureSlots Array
+		// if you find it give me it's index
+		for (int i = 1; i < s_Data->TextureSlotIndex; i++)
+		{
+			if (s_Data->TextureSlots[i]->IsEqual(*Tex.get()))
+			{
+				tex_index = (float)i;
+				break;
+			}
+		}
+
+		// if ypu didn't find it in s_Data->TextureSlots Array Add it at TextureSlotIndex
+		if (tex_index == 0.0f)
+		{
+			tex_index = (float)s_Data->TextureSlotIndex;
+			s_Data->TextureSlots[s_Data->TextureSlotIndex] = Tex;
+			s_Data->TextureSlotIndex++;
+		}
+
+
+
+		//                                Top Right      Bottom Right      Bottom Left      Top Left
+		const glm::vec2 TexCoords[] = { {1.0f, 1.0f}, { 1.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 1.0f } };
+
+		const int QuadVerticesCount = 4;
+
+		for (int i = 0; i < QuadVerticesCount; i++)
+		{
+			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
+			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i]; // Top Right
+			s_Data->QuadVertexPtr->m_Color = Color;
+			s_Data->QuadVertexPtr->m_TexCoords = TexCoords[i];
+			s_Data->QuadVertexPtr->m_TexID = tex_index;
+			s_Data->QuadVertexPtr->m_TilingFactor = TilingFactor;
+			s_Data->QuadVertexPtr->m_EntityID = EntityID;
+			s_Data->QuadVertexPtr++;
+		}
+
+		s_Data->Stats.m_QuadCount++; // Add Quad
+	}
+
+
+	void Renderer2D::DrawSprite(const glm::mat4& Transform, SpriteRendererComponent& SpriteRenderer, int EntityID)
+	{
+		DrawQuad(Transform, SpriteRenderer, EntityID);
 	}
 }

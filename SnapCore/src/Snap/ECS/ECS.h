@@ -18,6 +18,3 @@ inline ComponentTypeID GetComponentTypeID()
 	static const ComponentTypeID TypeID = GetUniqueID();
 	return TypeID;
 }
-
-#define MAX_ENTITY_COUNT 100000
-#define MAX_COMPONENTS_COUNT 1000

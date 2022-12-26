@@ -41,7 +41,7 @@ namespace SnapEngine
             for (auto entity : group)
             {
                 auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                Renderer2D::DrawQuad(transform, sprite_renderer);
+                Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
             }
         }
 
@@ -99,7 +99,7 @@ namespace SnapEngine
                 for (auto entity : group)
                 {
                     auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                    Renderer2D::DrawQuad(transform, sprite_renderer);
+                    Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
                 }
             }
 

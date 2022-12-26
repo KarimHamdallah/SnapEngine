@@ -12,6 +12,7 @@ namespace SnapEngine
 
 		void SetScene(const SnapPtr<Scene>& scene);
 		Entity GetSelectedEntity() { return m_SelectedEntity; }
+		void SetSelectedEntity(Entity e) { m_SelectedEntity = e; }
 
 		void ImGuiRender();
 

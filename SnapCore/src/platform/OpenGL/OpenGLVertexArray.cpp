@@ -57,17 +57,45 @@ namespace SnapEngine
 		const auto& layout = vertexbuffer->GetBufferLayout();
 		for (const auto& element : layout)
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(
-				index,
-				element.GetComponentCount(),
-				ShaderDatTypeToGLDataType(element.m_Type),
-				element.m_Normalize ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.m_Offset
-			);
-
-			index++;
+			switch (element.m_Type)
+			{
+			case SnapEngine::ShaderDataType::Float:
+			case SnapEngine::ShaderDataType::Float2:
+			case SnapEngine::ShaderDataType::Float3:
+			case SnapEngine::ShaderDataType::Float4:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribPointer(
+					index,
+					element.GetComponentCount(),
+					ShaderDatTypeToGLDataType(element.m_Type),
+					element.m_Normalize ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
+					(const void*)element.m_Offset
+				);
+				index++;
+			}
+			break;
+			case SnapEngine::ShaderDataType::Int:
+			case SnapEngine::ShaderDataType::Int2:
+			case SnapEngine::ShaderDataType::Int3:
+			case SnapEngine::ShaderDataType::Int4:
+			case SnapEngine::ShaderDataType::Bool:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribIPointer(
+					index,
+					element.GetComponentCount(),
+					ShaderDatTypeToGLDataType(element.m_Type),
+					layout.GetStride(),
+					(const void*)element.m_Offset
+				);
+				index++;
+			}
+			break;
+			default:
+				break;
+			}
 		}
 
 		m_VertexBuffers.push_back(vertexbuffer);

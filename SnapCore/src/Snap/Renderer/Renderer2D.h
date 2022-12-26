@@ -6,6 +6,8 @@
 #include <Snap/Scene/Camera.h>
 #include <Snap/Scene/EditorCamera.h>
 
+#include <Snap/Scene/Comps/Components.h>
+
 namespace SnapEngine
 {
 	class Renderer2D
@@ -31,14 +33,19 @@ namespace SnapEngine
 		static void DrawQuad(const SnapPtr<Texture2D>& Texture, const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
 		static void DrawQuad(const SnapPtr<Texture2D>& Texture, const glm::vec3& Position, const glm::vec3& Scale, float Rotation, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
 		
-		static void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f));
-		
 		static void DrawQuad(
 			const SnapPtr<SubTexture2D>& subtexture,
 			const glm::vec3& Position, const glm::vec3& Scale, float Rotation, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
 		static void DrawQuad(
 			const SnapPtr<SubTexture2D>& subtexture,
 			const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f);
+
+
+
+
+		static void DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
+		static void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
+		static void DrawSprite(const glm::mat4& Transform, SpriteRendererComponent& SpriteRenderer, int EntityID);
 
 		static void Flush();
 	private:
@@ -50,6 +57,9 @@ namespace SnapEngine
 			glm::vec2 m_TexCoords;
 			float m_TexID;
 			float m_TilingFactor;
+
+			// Editor only
+			int m_EntityID = -1;
 		};
 		
 		struct RendererStatistics

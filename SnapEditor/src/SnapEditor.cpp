@@ -1,6 +1,7 @@
 #include <SnapEngine.h>
 #include <Snap/Scene/Scripts/CameraControllerScript.h>
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 #include <platform/Utils/PlatformUtils.h>
 
@@ -102,7 +103,8 @@ namespace SnapEngine
 			if (MouseX >= 0 && MouseY >= 0 && MouseX <= (int)m_ViewPortSize.x && MouseY <= (int)m_ViewPortSize.y)
 			{
 				int pixel = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
-				SNAP_DEBUG("pixel = {}", pixel);
+				m_HoveredEntity = pixel == -1 ? Entity() : Entity((Entity::Handel)pixel, m_Scene.get());
+				//SNAP_DEBUG("pixel = {}", pixel);
 			}
 
 			m_FrameBuffer->UnBind(); // Stop Recording
@@ -219,6 +221,7 @@ namespace SnapEngine
 			}
 
 			m_SceneHierarchyPanel.ImGuiRender();
+			m_ContentBrowserPanel.ImGuiRender();
 
 			ImGui::Begin("Settings");
 			static bool check = true;
@@ -312,16 +315,19 @@ namespace SnapEngine
 
 			m_MainCameraViewFocused = ImGui::IsWindowFocused();
 			m_MainCameraViewHavored = ImGui::IsWindowHovered();
-
-			if(!m_ViewPortFocused || !m_ViewPortHavored)
+			
+			if (!m_ViewPortFocused || !m_ViewPortHavored)
 				Application::Get().GetImGuiLayer()->BlockEvents(!m_MainCameraViewFocused || !m_MainCameraViewHavored);
 
 			m_MainCameraViewSize = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
 
 			ImGui::Image((ImTextureID)m_RealTimeFrameBuffer->GetColorAttachmentTextureID(), ImVec2{ m_MainCameraViewSize.x, m_MainCameraViewSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			
 			ImGui::End();
 
 
+			if (m_ContentBrowserPanel.IsWindowFocused() && m_ContentBrowserPanel.IsWindowHovered())
+				Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 			ImGui::End();
 		}
@@ -351,9 +357,11 @@ namespace SnapEngine
 
 		//////////////// Editor ///////////////
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 		int m_GizmoType = 0;
 		float m_Snapping = 0.5f;
 		EditorCamera m_EditorCamera;
+		Entity m_HoveredEntity;
 	private:
 
 		virtual void ProcessEvent(IEvent& e) override
@@ -363,9 +371,13 @@ namespace SnapEngine
 			
 			if(m_ViewPortFocused && m_ViewPortHavored)
 				m_EditorCamera.ProcessEvents(e);
+			
+			if(m_ContentBrowserPanel.IsWindowFocused() && m_ContentBrowserPanel.IsWindowHovered())
+				m_ContentBrowserPanel.ProcessEvents(e);
 
 			EventDispatcher dispatcher(e);
 			dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));
+			dispatcher.DispatchEvent<MousePressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnMousePressed));
 		}
 
 		bool OnKeyPressed(KeyPressedEvent& e)
@@ -448,6 +460,16 @@ namespace SnapEngine
 			};
 
 			return true;
+		}
+
+		bool EditorLayer::OnMousePressed(MousePressedEvent& e)
+		{
+			if (e.GetMouseButton() == (int)MouseButton::MouseButtonLeft)
+			{
+				if (m_ViewPortHavored && !ImGuizmo::IsOver() && !m_EditorCamera.IsActive())
+					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
+			return false;
 		}
 	};
 
