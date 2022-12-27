@@ -463,13 +463,12 @@ namespace SnapEngine
 		s_Data->Stats.m_QuadCount++; // Add Quad
 	}
 
-	void Renderer2D::DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color, int EntityID)
+	void Renderer2D::DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color, float TilingFactor, int EntityID)
 	{
 		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
 			FlushAndReset();
 
 		float tex_index = 0.0f; // White Texture
-		float TilingFactor = 1.0f;
 
 		// Find Passed Texture in s_Data->TextureSlots Array
 		// if you find it give me it's index
@@ -515,6 +514,9 @@ namespace SnapEngine
 
 	void Renderer2D::DrawSprite(const glm::mat4& Transform, SpriteRendererComponent& SpriteRenderer, int EntityID)
 	{
-		DrawQuad(Transform, SpriteRenderer, EntityID);
+		if(!SpriteRenderer.m_Texture)
+			DrawQuad(Transform, SpriteRenderer, EntityID);
+		else
+			DrawQuad(SpriteRenderer.m_Texture, Transform, SpriteRenderer.m_Color, SpriteRenderer.m_TilingFactor, EntityID);
 	}
-}
+}          

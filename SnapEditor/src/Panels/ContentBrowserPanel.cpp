@@ -8,12 +8,12 @@
 
 namespace SnapEngine
 {
-	static const std::filesystem::path s_AssetPath = "assets";
+	extern const std::filesystem::path g_AssetPath = "assets";
 	static float padding = 16.0f;
-	static float thumbnailsize = 128.0f;
+	static float thumbnailsize = 90.0f;
 	
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(s_AssetPath)
+		: m_CurrentDirectory(g_AssetPath)
 	{
 		m_DirectoryIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/folder.png"));
 		m_FileIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/file.png"));
@@ -25,7 +25,7 @@ namespace SnapEngine
 	{
 		ImGui::Begin("ContentBrowser");
 
-		if (m_CurrentDirectory != s_AssetPath)
+		if (m_CurrentDirectory != g_AssetPath)
 		{
 			if (ImGui::Button("<"))
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
@@ -40,11 +40,14 @@ namespace SnapEngine
 
 		ImGui::Columns(columncount, 0, false);
 
+
 		for (auto& p : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
+
 			std::filesystem::path path = p.path(); // Path = assets/Editor
-			auto& RelativePath = std::filesystem::relative(path, s_AssetPath); // RelativePath = Editor
-			
+			auto& RelativePath = std::filesystem::relative(path, g_AssetPath); // RelativePath = Editor
+
+			ImGui::PushID(RelativePath.filename().string().c_str());
 			SnapPtr<Texture2D> Icon;
 			if (p.is_directory())
 				Icon = m_DirectoryIcon;
@@ -65,7 +68,7 @@ namespace SnapEngine
 			if (ImGui::BeginDragDropSource())
 			{
 				const wchar_t* itempath = RelativePath.c_str();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itempath, wcslen(itempath) * sizeof(wchar_t), ImGuiCond_Once);
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itempath, (wcslen(itempath) + 1) * sizeof(wchar_t));
 				ImGui::EndDragDropSource();
 			}
 			
@@ -79,6 +82,8 @@ namespace SnapEngine
 			}
 			ImGui::TextWrapped(RelativePath.filename().string().c_str());
 			ImGui::NextColumn();
+
+			ImGui::PopID();
 		}
 
 		ImGui::Columns(1);

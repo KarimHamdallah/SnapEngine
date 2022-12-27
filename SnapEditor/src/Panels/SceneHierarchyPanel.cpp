@@ -1,11 +1,14 @@
 #include "SceneHierarchyPanel.h"
 #include <Snap/Scene/Comps/Components.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace SnapEngine
 {
+	extern const std::filesystem::path g_AssetPath;
+
 	static void DrawVec3Control(const std::string& lable, glm::vec3& value, float resetvalue = 0.0f,float Speed = 0.01f, float colwidth = 80.0f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -331,6 +334,27 @@ namespace SnapEngine
 			{
 				glm::vec4& Color = Component.m_Color;
 				ImGui::ColorEdit4("Color", glm::value_ptr(Color));
+				
+				ImGui::Button("Texture", { 100.0f, 0.0f });
+				
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+					{
+						const wchar_t* path = (const wchar_t*)payload->Data;
+						auto filepath = std::filesystem::path(g_AssetPath) / path;
+
+						if (filepath.extension().string() == ".png" || filepath.extension().string() == ".jpg")
+						{
+							SnapPtr<Texture2D> Tex = SnapPtr<Texture2D>(Texture2D::Creat(filepath.string()));
+							Component.m_Texture = Tex;
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+
+				ImGui::DragFloat("TilingFactor", &Component.m_TilingFactor, 0.01f, 1.0f, 10.0f);
 			});
 	}
 }

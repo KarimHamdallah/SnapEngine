@@ -9,6 +9,7 @@
 
 namespace SnapEngine
 {
+	extern const std::filesystem::path g_AssetPath;
 
 	class EditorLayer : public SnapEngine::Layer
 	{
@@ -122,7 +123,14 @@ namespace SnapEngine
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+				if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					auto filepath = std::filesystem::path(g_AssetPath) / path;
+					
+					if(filepath.extension().string() == ".snap")
+						OpenScene(filepath);
+				}
 				ImGui::EndDragDropTarget();
 			}
 
@@ -209,6 +217,7 @@ private:
 		void EndDockSpace();
 
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& path);
 		void NewScene();
 		void SaveScene();
 

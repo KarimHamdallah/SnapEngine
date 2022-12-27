@@ -43,8 +43,8 @@ namespace SnapEngine
 
 
 
-		static void DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
 		static void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
+		static void DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f, int EntityID = -1);
 		static void DrawSprite(const glm::mat4& Transform, SpriteRendererComponent& SpriteRenderer, int EntityID);
 
 		static void Flush();

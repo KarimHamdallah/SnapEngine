@@ -3,9 +3,6 @@
 #include <Snap/ECS/Components.h>
 #include "Mathf.h"
 
-#define MAX_ENTITY_COUNT 100
-#define MAX_COMPONENT_COUNT 5
-
 using namespace enttt;
 
 class ExampleLayer : public SnapEngine::Layer
@@ -15,7 +12,7 @@ public:
 		: Layer("ExampleLayer")
 	{
 
-		Registry = SnapEngine::SnapPtr<EntityManager>(new EntityManager(MAX_ENTITY_COUNT, MAX_COMPONENT_COUNT));
+		Registry = SnapEngine::CreatSnapPtr<EntityManager>();
 
 		Entity Player = Registry->CreatEntity();
 		Registry->AddComponent<TagComponent>(Player, "Player");
@@ -29,18 +26,19 @@ public:
 		Entity Enemy2 = Registry->CreatEntity();
 		Registry->AddComponent<TagComponent>(Enemy2, "Enemy");
 		Registry->AddComponent<TransformComponent>(Enemy2, glm::vec3(122.0f, 7.0f, 130.0f), glm::vec3(70.0f, 18.0f, 11.0f), glm::vec3(1.0f, 1.5f, 3.0f));
-
 		
 		Registry->Each<TransformComponent>([=](uint32_t entityID, TransformComponent& comp)
 			{
 				comp.m_Position.x++;
 			});
+		
 
-		auto& group = Registry->View<TransformComponent>();
+		auto& group = Registry->View<TransformComponent, SpriteRendererComponent>();
 		for (auto& entity : group)
 		{
 			Registry->GetComponent<TransformComponent>(entity).m_Position.x++;
 		}
+		
 
 
 		glm::vec3 pos1 = Registry->GetComponent<TransformComponent>(Player).m_Position;

@@ -3,6 +3,7 @@
 #include <glm/gtx/transform.hpp>
 #include <Snap/Scene/SceneCamera.h>
 #include <Snap/Scene/Scripts/CppScript.h>
+#include <Snap/Renderer/Texture.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -59,12 +60,15 @@ namespace SnapEngine
 	{
 	public:
 		SpriteRendererComponent(const glm::vec4& Color = glm::vec4(1.0f)) : m_Color(Color) {}
+		SpriteRendererComponent(const SnapPtr<Texture2D>& Tex, const glm::vec4& Color = glm::vec4(1.0f)) : m_Texture(Tex), m_Color(Color) {}
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 
 		operator const glm::vec4& () { return m_Color; }
 
 
 		glm::vec4 m_Color;
+		SnapPtr<Texture2D> m_Texture = nullptr;
+		float m_TilingFactor = 1.0f;
 	};
 
 

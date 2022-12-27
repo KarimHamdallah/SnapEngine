@@ -8,12 +8,20 @@ namespace SnapEngine
 		std::string filepath = FileDialoge::OpenFile("Snap Scene (*.snap)\0*.snap\0");
 		if (!filepath.empty())
 		{
+			OpenScene(filepath);
+		}
+	}
+
+	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
+	{
+		if (!filepath.empty())
+		{
 			m_Scene = CreatSnapPtr<Scene>();
 			m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
 			m_SceneHierarchyPanel.SetScene(m_Scene);
 
 			SceneSerializer serializer(m_Scene);
-			serializer.DeSerializeScene(filepath);
+			serializer.DeSerializeScene(filepath.string());
 		}
 	}
 

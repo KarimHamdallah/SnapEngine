@@ -105,9 +105,6 @@
     <ClInclude Include="src\Snap\Core\log.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\ECS\Component.h">
-      <Filter>src\Snap\ECS</Filter>
-    </ClInclude>
     <ClInclude Include="src\Snap\ECS\ECS.h">
       <Filter>src\Snap\ECS</Filter>
     </ClInclude>
@@ -1083,9 +1080,6 @@
     </ClCompile>
     <ClCompile Include="src\Snap\Core\log.cpp">
       <Filter>src\Snap\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Snap\ECS\Component.cpp">
-      <Filter>src\Snap\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\ECS\ECS.cpp">
       <Filter>src\Snap\ECS</Filter>

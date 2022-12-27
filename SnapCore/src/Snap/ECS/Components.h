@@ -1,6 +1,7 @@
 #pragma once
 #include <Snap/ECS/Component.h>
 #include <glm/glm.hpp>
+#include <Snap/Core/asserts.h>
 
 struct TransformComponent : public Component
 {
