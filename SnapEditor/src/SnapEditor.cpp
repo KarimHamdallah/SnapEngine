@@ -111,20 +111,35 @@ namespace SnapEngine
 
 	bool EditorLayer::OnMousePressed(MousePressedEvent& e)
 	{
-		if (e.GetMouseButton() == (int)MouseButton::MouseButtonLeft)
+		if (m_CurrentSceneState == SceneState::EDIT)
 		{
-			if (m_ViewPortHavored && !ImGuizmo::IsOver() && !m_EditorCamera.IsActive())
-				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			if (e.GetMouseButton() == (int)MouseButton::MouseButtonLeft && m_ViewPortFocused)
+			{
+				if (m_ViewPortHavored && !ImGuizmo::IsOver() && !m_EditorCamera.IsActive())
+					m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
 		}
 		return false;
 	}
 
 	void EditorLayer::ProcessEvent(IEvent& e)
 	{
-		m_Scene->ProcessEvents(&e); // Process Scene Scripts Events
-
-		if (m_ViewPortFocused && m_ViewPortHavored)
-			m_EditorCamera.ProcessEvents(e);
+		switch (m_CurrentSceneState)
+		{
+		case SnapEngine::EditorLayer::SceneState::PLAY:
+		{
+			m_Scene->ProcessEvents(&e); // Process Scene Scripts Events
+		}
+			break;
+		case SnapEngine::EditorLayer::SceneState::EDIT:
+		{
+			if (m_ViewPortFocused && m_ViewPortHavored)
+				m_EditorCamera.ProcessEvents(e);
+		}
+			break;
+		default:
+			break;
+		}
 
 		if (m_ContentBrowserPanel.IsWindowFocused() && m_ContentBrowserPanel.IsWindowHovered())
 			m_ContentBrowserPanel.ProcessEvents(e);
@@ -219,6 +234,55 @@ namespace SnapEngine
 	void EditorLayer::EndDockSpace()
 	{
 		ImGui::End();
+	}
+
+	void EditorLayer::UIToolbar()
+	{
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 2.0f });
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, { 0.0f, 0.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.0f, 0.0f, 0.0f, 0.0f });
+
+		ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		
+
+		SnapPtr<Texture2D> Icon;
+
+		switch (m_CurrentSceneState)
+		{
+		case SnapEngine::EditorLayer::SceneState::PLAY: Icon = m_StopIcon;
+			break;
+		case SnapEngine::EditorLayer::SceneState::EDIT: Icon = m_PlayIcon;
+			break;
+		default:
+			break;
+		}
+		
+		float size = ImGui::GetWindowHeight() - 4.0f;
+
+		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.5f) - (size * 0.5f));
+		if (ImGui::ImageButton((ImTextureID)Icon->getID(), ImVec2{ size, size }))
+		{
+			if (m_CurrentSceneState == SceneState::EDIT)
+				PlayScene();
+			else if(m_CurrentSceneState == SceneState::PLAY)
+				StopScene();
+		}
+
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+		ImGui::End();
+	}
+
+	void EditorLayer::PlayScene()
+	{
+		m_CurrentSceneState = SceneState::PLAY;
+	}
+
+	void EditorLayer::StopScene()
+	{
+		m_CurrentSceneState = SceneState::EDIT;
 	}
 
 

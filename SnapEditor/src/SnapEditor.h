@@ -17,6 +17,10 @@ namespace SnapEngine
 		EditorLayer()
 			: Layer("Example")
 		{
+			m_PlayIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PlayButton.png"));
+			m_StopIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PauseButton.png"));
+
+
 			FrameBufferSpecifications FrameBufferSpecs;
 			FrameBufferSpecs.Attachments =
 			{
@@ -54,10 +58,6 @@ namespace SnapEngine
 				}
 			}
 
-			
-			m_EditorCamera.UpdateCamera(Time);
-
-
 			// Render
 			m_FrameBuffer->Bind(); // Record Scene into frame buffer
 
@@ -66,25 +66,43 @@ namespace SnapEngine
 			RendererCommand::Clear();
 			m_FrameBuffer->ClearAttachment(1, -1);
 
-			m_Scene->UpdateEditor(Time, m_EditorCamera);
-
-
-			auto [mx, my] = ImGui::GetMousePos();
-			mx -= m_ViewPortBounds[0].x;
-			my -= m_ViewPortBounds[0].y;
-
-			my = m_ViewPortSize.y - my;
-
-			int MouseX = (int)mx;
-			int MouseY = (int)my;
-
-			if (MouseX >= 0 && MouseY >= 0 && MouseX <= (int)m_ViewPortSize.x && MouseY <= (int)m_ViewPortSize.y)
+			switch (m_CurrentSceneState)
 			{
-				int pixel = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
-				m_HoveredEntity = pixel == -1 ? Entity() : Entity((Entity::Handel)pixel, m_Scene.get());
-				//SNAP_DEBUG("pixel = {}", pixel);
+			case SnapEngine::EditorLayer::SceneState::EDIT:
+			{
+				if (m_ViewPortFocused)
+					m_EditorCamera.UpdateCamera(Time);
+				
+				m_Scene->UpdateEditor(Time, m_EditorCamera);// EditorRenderFunction
+
+				// mouse picking
+				auto [mx, my] = ImGui::GetMousePos();
+				mx -= m_ViewPortBounds[0].x;
+				my -= m_ViewPortBounds[0].y;
+
+				my = m_ViewPortSize.y - my;
+
+				int MouseX = (int)mx;
+				int MouseY = (int)my;
+
+				if (MouseX >= 0 && MouseY >= 0 && MouseX <= (int)m_ViewPortSize.x && MouseY <= (int)m_ViewPortSize.y)
+				{
+					int pixel = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
+					m_HoveredEntity = pixel == -1 ? Entity() : Entity((Entity::Handel)pixel, m_Scene.get());
+					//SNAP_DEBUG("pixel = {}", pixel);
+				}
+			}
+				break;
+			case SnapEngine::EditorLayer::SceneState::PLAY:
+			{
+				m_Scene->Render(); // RealTimeRenderFunction
+			}
+				break;
+			default:
+				break;
 			}
 
+			Renderer2D::End();
 			m_FrameBuffer->UnBind(); // Stop Recording
 
 		}
@@ -95,7 +113,7 @@ namespace SnapEngine
 
 			m_SceneHierarchyPanel.ImGuiRender();
 			m_ContentBrowserPanel.ImGuiRender();
-
+			UIToolbar();
 
 
 			ImGui::Begin("Settings");
@@ -151,7 +169,7 @@ namespace SnapEngine
 			// Draw ImGuizmo inside ViewPort Widnow
 			Entity SelectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 
-			if (SelectedEntity)
+			if (SelectedEntity && m_CurrentSceneState == SceneState::EDIT)
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
@@ -210,11 +228,26 @@ namespace SnapEngine
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity;
 		/////////////////////////////////////////////////////////
-	
+
+
+
+		enum class SceneState
+		{
+			PLAY = 0,
+			EDIT = 1
+		};
+
+		SceneState m_CurrentSceneState = SceneState::EDIT;
+		SnapPtr<Texture2D> m_PlayIcon, m_StopIcon;
 
 private:
 		void StartDockSpace();
 		void EndDockSpace();
+
+		void UIToolbar();
+
+		void PlayScene();
+		void StopScene();
 
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);

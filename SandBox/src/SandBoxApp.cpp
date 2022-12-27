@@ -33,7 +33,7 @@ public:
 			});
 		
 
-		auto& group = Registry->View<TransformComponent, SpriteRendererComponent>();
+		auto& group = Registry->View<TransformComponent>();
 		for (auto& entity : group)
 		{
 			Registry->GetComponent<TransformComponent>(entity).m_Position.x++;

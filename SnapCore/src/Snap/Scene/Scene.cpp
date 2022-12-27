@@ -102,8 +102,6 @@ namespace SnapEngine
                     Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
                 }
             }
-
-            Renderer2D::End();
         }
     }
 
