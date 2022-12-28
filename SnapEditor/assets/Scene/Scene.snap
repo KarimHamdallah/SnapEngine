@@ -4,18 +4,18 @@ Entities List:
     TagComponent:
       Tag: BackGround
     TransformComponent:
-      Position: [-4.63520432, -1.33687782, -13.6199999]
+      Position: [0.482516527, -1.33687782, -13.6199999]
       Rotation: [0, -0, 0]
-      Scale: [55.5883942, 35.0022163, 1]
+      Scale: [69.2486877, 50.788475, 1]
     SpriteRendererComponent:
       Color: [0.137037039, 0.137037039, 0.137037039, 1]
   - EntityID: 2
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [-3.60795021, -0.584010601, 67.6558228]
+      Position: [0, 0, 18.1452351]
       Rotation: [0, -0, 0]
-      Scale: [0.395310044, 0.397062331, 1.00000012]
+      Scale: [1, 1, 1.00000012]
     CameraComponent:
       ProjectionType: 0
       OrthoGraphicSize: 10
@@ -30,17 +30,37 @@ Entities List:
     TagComponent:
       Tag: Player
     TransformComponent:
-      Position: [0, 0.209999993, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Position: [-2.36924934, 2.61269474, 0]
+      Rotation: [0, -0, 32.7169952]
+      Scale: [0.999988914, 0.999988914, 1]
     SpriteRendererComponent:
       Color: [1, 0.422222197, 0, 1]
+    RigidBody2DComponent:
+      RigidBody2DType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [0.5, 0.5]
+      Offset: [0, 0]
+      Density: 1
+      Friction: 0.310000002
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
   - EntityID: 0
     TagComponent:
       Tag: Platform
     TransformComponent:
-      Position: [-3.04861498, -4.56254673, 0]
+      Position: [0, -7.48494911, 0]
       Rotation: [0, -0, 0]
       Scale: [30.8523979, 1, 1]
     SpriteRendererComponent:
       Color: [0.0222222805, 1, 0, 1]
+    RigidBody2DComponent:
+      RigidBody2DType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [0.5, 0.5]
+      Offset: [0, 0]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5

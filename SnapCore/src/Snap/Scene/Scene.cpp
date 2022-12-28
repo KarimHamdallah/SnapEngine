@@ -6,8 +6,26 @@
 #include <Snap/Renderer/RendererCommand.h>
 #include <Snap/Renderer/Renderer2D.h>
 
+#include <box2d/b2_world.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_fixture.h>
+#include <box2d/b2_polygon_shape.h>
+
 namespace SnapEngine
 {
+    static b2BodyType RgidBody2DTypeToBox2DType(RigidBody2DComponent::RigidBodyType Type)
+    {
+        switch (Type)
+        {
+        case SnapEngine::RigidBody2DComponent::RigidBodyType::STATIC: return b2BodyType::b2_staticBody;
+        case SnapEngine::RigidBody2DComponent::RigidBodyType::DYNAMIC: return b2BodyType::b2_dynamicBody;
+        case SnapEngine::RigidBody2DComponent::RigidBodyType::KINEMATIC: return b2BodyType::b2_kinematicBody;
+        }
+
+        SNAP_ASSERT_MSG(false, "Unkown Type!");
+        return b2_staticBody;
+    }
+
     Entity& Scene::CreatEntity(
         const std::string& name,
         const glm::vec3& Position,
@@ -64,9 +82,31 @@ namespace SnapEngine
                     cppSc.m_Instance->Update(Time);
                 });
         }
+
+        { // Physics
+            const uint32_t VelocityIterations = 6;
+            const uint32_t PositionIterations = 2;
+
+            m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
+
+            // Get transform From Box2D
+            auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
+            for (auto entity : group)
+            {
+                Entity e = { entity, this };
+                auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
+
+                b2Body* body = (b2Body*)rb2d.RunTimeBody;
+                const auto& Position = body->GetPosition();
+                SNAP_DEBUG("Rotaion {0}", body->GetAngle());
+                transform.m_Position.x = Position.x;
+                transform.m_Position.y = Position.y;
+                transform.m_Rotation.z = glm::degrees(body->GetAngle());
+            }
+        }
     }
 
-    void Scene::Render()
+    void Scene::RunTimeRender()
     {
         SceneCamera* MainCamera = nullptr;
         glm::mat4 MainCameraTransform;
@@ -157,6 +197,56 @@ namespace SnapEngine
         return {};
     }
 
+    void Scene::OnRunTimeStart()
+    {
+        m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
+
+        auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
+        for (auto entity : group)
+        {
+            Entity e = { entity, this };
+            auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
+
+            
+            b2BodyDef Def;
+            Def.position.Set(transform.m_Position.x, transform.m_Position.y);
+            Def.angle = glm::radians(transform.m_Rotation.z);
+            Def.type = RgidBody2DTypeToBox2DType(rb2d.m_Type);
+            b2Body* body = m_PhysicsWorld->CreateBody(&Def);
+            body->SetFixedRotation(rb2d.m_FixedRotation);
+            rb2d.RunTimeBody = body;
+
+            if (e.HasComponent<BoxCollider2DComponent>())
+            {
+                auto& collider = e.GetComponent<BoxCollider2DComponent>();
+
+                b2PolygonShape shape;
+                shape.SetAsBox(collider.m_Size.x * transform.m_Scale.x, collider.m_Size.y * transform.m_Scale.y);
+                b2FixtureDef Def;
+                Def.shape = &shape;
+                Def.density = collider.m_Density;
+                Def.friction = collider.m_Friction;
+                Def.restitution = collider.m_Restitution;
+                Def.restitutionThreshold = collider.m_RestitutionThreshold;
+                collider.RunTimeFixture = body->CreateFixture(&Def);
+            }
+        }
+    }
+
+    void Scene::OnRunTimeStop()
+    {
+        { // Delete Bodies 
+            auto& group = registry.view<RigidBody2DComponent>();
+            for (auto entity : group)
+            {
+                auto& rb2d = group.get<RigidBody2DComponent>(entity);
+                m_PhysicsWorld->DestroyBody((b2Body*)rb2d.RunTimeBody);
+            }
+        }
+
+        delete m_PhysicsWorld;
+    }
+
 
     template<typename T>
     void Scene::OnComponentAdded(Entity entity, T& component)
@@ -187,6 +277,15 @@ namespace SnapEngine
 
     template<>
     void Scene::OnComponentAdded<CppScriptComponent>(Entity entity, CppScriptComponent& component)
+    {
+    }
+
+    template<>
+    void Scene::OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
     {
     }
 }

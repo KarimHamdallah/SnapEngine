@@ -278,11 +278,13 @@ namespace SnapEngine
 	void EditorLayer::PlayScene()
 	{
 		m_CurrentSceneState = SceneState::PLAY;
+		m_Scene->OnRunTimeStart();
 	}
 
 	void EditorLayer::StopScene()
 	{
 		m_CurrentSceneState = SceneState::EDIT;
+		m_Scene->OnRunTimeStop();
 	}
 
 

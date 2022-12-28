@@ -2,10 +2,55 @@
 #include "SceneSerializer.h"
 
 #include <yaml-cpp/yaml.h>
+#include <Snap/Scene/Comps/Components.h>
 
+
+static std::string Rigidbody2DTypeToString(SnapEngine::RigidBody2DComponent::RigidBodyType Type)
+{
+	switch (Type)
+	{
+	    case SnapEngine::RigidBody2DComponent::RigidBodyType::STATIC: return "Static";
+	    case SnapEngine::RigidBody2DComponent::RigidBodyType::DYNAMIC: return "Dynamic";
+	    case SnapEngine::RigidBody2DComponent::RigidBodyType::KINEMATIC: return "Kinematic";
+
+		SNAP_ASSERT_MSG(false, "Unkown Type!");
+		return "";
+	}
+}
+
+static SnapEngine::RigidBody2DComponent::RigidBodyType Rigidbody2DTypeFromString(const std::string& Type)
+{
+	if (Type == "Static")     { return SnapEngine::RigidBody2DComponent::RigidBodyType::STATIC; }
+	if (Type == "Dynamic")    { return SnapEngine::RigidBody2DComponent::RigidBodyType::DYNAMIC; }
+	if (Type == "Kinematic")  { return SnapEngine::RigidBody2DComponent::RigidBodyType::KINEMATIC; }
+
+	return SnapEngine::RigidBody2DComponent::RigidBodyType::STATIC;
+}
 
 namespace YAML
 {
+	template<>
+	struct convert<glm::vec2>
+	{
+		static YAML::Node encode(const glm::vec2& rhs)
+		{
+			YAML::Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			return node;
+		}
+
+		static bool decode(const YAML::Node& node, glm::vec2& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
 	template<>
 	struct convert<glm::vec3>
 	{
@@ -61,6 +106,13 @@ namespace YAML
 
 namespace SnapEngine
 {
+	YAML::Emitter& operator <<(YAML::Emitter& out, const glm::vec2& v)
+	{
+		out << YAML::Flow; // [x, y]
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+		return out;
+	}
+
 	YAML::Emitter& operator <<(YAML::Emitter& out, const glm::vec3& v)
 	{
 		out << YAML::Flow; // [x, y, z]
@@ -137,6 +189,36 @@ namespace SnapEngine
 			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cam.m_FixedAspectRatio;
 
 			out << YAML::EndMap; // CameraComponent
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			out << YAML::Key << "RigidBody2DComponent";
+			out << YAML::BeginMap; // RigidBody2DComponent
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+
+			out << YAML::Key << "RigidBody2DType" << YAML::Value << Rigidbody2DTypeToString(rb2d.m_Type);
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2d.m_FixedRotation;
+
+			out << YAML::EndMap; // RigidBody2DComponent
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap; // BoxCollider2DComponent
+			auto& collider = entity.GetComponent<BoxCollider2DComponent>();
+
+			out << YAML::Key << "Size" << YAML::Value << collider.m_Size;
+			out << YAML::Key << "Offset" << YAML::Value << collider.m_Offset;
+
+			out << YAML::Key << "Density" << YAML::Value << collider.m_Density;
+			out << YAML::Key << "Friction" << YAML::Value << collider.m_Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << collider.m_Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << collider.m_RestitutionThreshold;
+
+
+			out << YAML::EndMap; // BoxCollider2DComponent
 		}
 		
 		out << YAML::EndMap; // EntityID
@@ -263,6 +345,39 @@ namespace SnapEngine
 						CamComp.m_IsMain = IsMain;
 						CamComp.m_FixedAspectRatio;
 					}
+				}
+
+				if (entity["RigidBody2DComponent"])
+				{
+					auto& RigidBody2DComponentNode = entity["RigidBody2DComponent"];
+
+					auto Type = RigidBody2DComponentNode["RigidBody2DType"].as<std::string>();
+					auto FixedRotation = RigidBody2DComponentNode["FixedRotation"].as<bool>();
+
+				    auto& Comp = e.AddComponent<RigidBody2DComponent>();
+					Comp.m_Type = Rigidbody2DTypeFromString(Type);
+					Comp.m_FixedRotation = FixedRotation;
+				}
+
+				if (entity["BoxCollider2DComponent"])
+				{
+					auto& RigidBody2DComponentNode = entity["BoxCollider2DComponent"];
+
+					auto Size = RigidBody2DComponentNode["Size"].as<glm::vec2>();
+					auto Offset = RigidBody2DComponentNode["Offset"].as<glm::vec2>();
+
+					auto Density = RigidBody2DComponentNode["Density"].as<float>();
+					auto Friction = RigidBody2DComponentNode["Friction"].as<float>();
+					auto Restitution = RigidBody2DComponentNode["Restitution"].as<float>();
+					auto RestitutionThreshold = RigidBody2DComponentNode["RestitutionThreshold"].as<float>();
+
+					auto& Comp = e.AddComponent<BoxCollider2DComponent>();
+					Comp.m_Size = Size;
+					Comp.m_Offset = Offset;
+					Comp.m_Density = Density;
+					Comp.m_Friction = Friction;
+					Comp.m_Restitution = Restitution;
+					Comp.m_RestitutionThreshold = RestitutionThreshold;
 				}
 			}
 		}

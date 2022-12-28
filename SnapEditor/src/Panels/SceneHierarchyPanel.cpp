@@ -203,8 +203,6 @@ namespace SnapEngine
 	{
 		if (entity.HasComponent<TagComponent>())
 		{
-			//ImGui::Separator();
-
 			auto& Tag = entity.GetComponent<TagComponent>().m_Tag; // Get Tag
 			
 			char buffer[256];
@@ -247,10 +245,22 @@ namespace SnapEngine
 					m_SelectedEntity.AddComponent<SpriteRendererComponent>();
 				else
 					SNAP_WARN("Entity With Tag {0}, Already Has SpriteRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+			
+			if (ImGui::MenuItem("RigidBody2D Component"))
+				if (!m_SelectedEntity.HasComponent<RigidBody2DComponent>())
+					m_SelectedEntity.AddComponent<RigidBody2DComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has RigidBody2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+			
+			if (ImGui::MenuItem("BoxCollider2D Component"))
+				if (!m_SelectedEntity.HasComponent<BoxCollider2DComponent>())
+					m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has BoxCollider2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
 
 			ImGui::EndPopup();
 		}
-			ImGui::PopItemWidth();
+		ImGui::PopItemWidth();
 
 
 		DrawComponent<TransformComponent>("Transform", entity, [&](TransformComponent& Component)
@@ -355,6 +365,57 @@ namespace SnapEngine
 
 
 				ImGui::DragFloat("TilingFactor", &Component.m_TilingFactor, 0.01f, 1.0f, 10.0f);
+			});
+
+		
+		DrawComponent<RigidBody2DComponent>("RigidBody2D", entity, [&](RigidBody2DComponent& component)
+		{
+				bool Changed = false;
+
+				int BodyType = (int)component.m_Type;
+				const char* BodyTypeStrings[3] = { "Static", "Dynamic", "Kinematic" };
+				const char* CurrentBodyTypeString = BodyTypeStrings[BodyType];
+
+				if (ImGui::BeginCombo("Body Type", CurrentBodyTypeString))
+				{
+					for (size_t i = 0; i < 3; i++)
+					{
+						bool IsSelected = CurrentBodyTypeString == BodyTypeStrings[i];
+						if (ImGui::Selectable(BodyTypeStrings[i], IsSelected))
+						{
+							// Change Type To new Type
+							CurrentBodyTypeString = BodyTypeStrings[i];
+							component.m_Type = (RigidBody2DComponent::RigidBodyType)i;
+							Changed = true;
+						}
+
+						if (IsSelected)
+							ImGui::SetItemDefaultFocus();
+					}
+
+					ImGui::EndCombo();
+				}
+
+				ImGui::Checkbox("Fixed Rotation", &component.m_FixedRotation);
+		});
+
+		DrawComponent<BoxCollider2DComponent>("BoxCollider2D", entity, [&](BoxCollider2DComponent& component)
+			{
+				glm::vec2 m_Size = { 0.5f, 0.5f };
+				glm::vec2 m_Offset = { 0.0f, 0.0f };
+
+				float m_Density = 0.0f;
+				float m_Friction = 0.5f;
+				float m_Restitution = 0.0f;
+				float m_RestitutionThreshold = 0.5f;
+
+				ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size), 0.01f);
+				ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset), 0.01f);
+
+				ImGui::DragFloat("Density", &component.m_Density, 0.01f);
+				ImGui::DragFloat("Friction", &component.m_Friction, 0.01f);
+				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
+
 			});
 	}
 }

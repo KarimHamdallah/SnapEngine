@@ -105,7 +105,16 @@
     <ClInclude Include="src\Snap\Core\log.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\ECS\Component.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\ECS\Components.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\ECS\ECS.h">
+      <Filter>src\Snap\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\ECS\EntityManager.h">
       <Filter>src\Snap\ECS</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Events\AppEvent.h">
@@ -1065,9 +1074,6 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\ECS\EntityManager.h" />
-    <ClInclude Include="src\Snap\ECS\Components.h" />
-    <ClInclude Include="src\Snap\ECS\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1082,7 +1088,16 @@
     <ClCompile Include="src\Snap\Core\log.cpp">
       <Filter>src\Snap\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\ECS\Component.cpp">
+      <Filter>src\Snap\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\ECS\Components.cpp">
+      <Filter>src\Snap\ECS</Filter>
+    </ClCompile>
     <ClCompile Include="src\Snap\ECS\ECS.cpp">
+      <Filter>src\Snap\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\ECS\EntityManager.cpp">
       <Filter>src\Snap\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp">
@@ -1184,8 +1199,5 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\ECS\EntityManager.cpp" />
-    <ClCompile Include="src\Snap\ECS\Components.cpp" />
-    <ClCompile Include="src\Snap\ECS\Component.cpp" />
   </ItemGroup>
 </Project>

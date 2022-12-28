@@ -11,6 +11,30 @@ namespace enttt
 
 	class EntityManager
 	{
+
+		class view
+		{
+		public:
+			template<typename T>
+			inline T& get(Entity entity)
+			{
+				return m_Manager->GetComponentAlreaddyPresent<T>(entity);
+			}
+
+			template<typename T1, typename T2>
+			inline std::pair<T1&, T2&> get(Entity entity)
+			{
+				std::pair<T1&, T2&> p;
+				p.first = m_Manager->GetComponentAlreaddyPresent<T1>(entity);
+				p.second = m_Manager->GetComponentAlreaddyPresent<T2>(entity);
+				return p;
+			}
+
+		private:
+			std::vector<Entity> m_Entities;
+			EntityManager* m_Manager = nullptr;
+		};
+
 	public:
 		EntityManager() = default;
 		virtual ~EntityManager() {}
@@ -55,7 +79,7 @@ namespace enttt
 			std::vector<uint32_t> IDs = View<T>();
 
 			for (uint32_t entityID : IDs)
-				func(entityID, this->GetComponent<T>(entityID));
+				func(entityID, this->GetComponentAlreaddyPresent<T>(entityID));
 		}
 
 
@@ -88,6 +112,14 @@ namespace enttt
 		{
 			SNAP_ASSERT_MSG(this->HasComponent<T>(entity), "Entity not Has Component Type Required!");	
 			
+			const CompsMap& ComponentsMap = m_EntityList.at(entity);
+			auto CompPtr = ComponentsMap.at(GetComponentTypeID<T>());
+			return *static_cast<T*>(CompPtr.get());
+		}
+
+		template<typename T>
+		inline T& GetComponentAlreaddyPresent(Entity entity) const
+		{
 			const CompsMap& ComponentsMap = m_EntityList.at(entity);
 			auto CompPtr = ComponentsMap.at(GetComponentTypeID<T>());
 			return *static_cast<T*>(CompPtr.get());

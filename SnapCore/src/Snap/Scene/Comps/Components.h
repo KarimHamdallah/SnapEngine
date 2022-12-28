@@ -101,4 +101,33 @@ namespace SnapEngine
 			DestroyScript = [](CppScriptComponent* cppSc) { delete cppSc->m_Instance; cppSc->m_Instance = nullptr; };
 		}
 	};
+
+	struct RigidBody2DComponent
+	{
+		enum class RigidBodyType { STATIC = 0, DYNAMIC, KINEMATIC };
+		
+		RigidBody2DComponent() = default;
+		RigidBody2DComponent(const RigidBody2DComponent&) = default;
+
+		RigidBodyType m_Type = RigidBodyType::STATIC;
+		bool m_FixedRotation = false;
+
+		void* RunTimeBody = nullptr;
+	};
+
+	struct BoxCollider2DComponent
+	{
+		BoxCollider2DComponent() = default;
+		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+
+		glm::vec2 m_Size = { 0.5f, 0.5f };
+		glm::vec2 m_Offset = { 0.0f, 0.0f };
+
+		float m_Density = 1.0f;
+		float m_Friction = 0.5f;
+		float m_Restitution = 0.5f;
+		float m_RestitutionThreshold = 0.5f;
+
+		void* RunTimeFixture= nullptr;
+	};
 }

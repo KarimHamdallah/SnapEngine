@@ -1,7 +1,6 @@
 #pragma once
 #include <snap/Scene/Scene.h>
 #include <Snap/Scene/Entity.h>
-#include <Snap/Scene/Comps/Components.h>
 
 namespace SnapEngine
 {

@@ -20,11 +20,13 @@ Dependencies["STB"] = "SnapCore/vendor/STB"
 Dependencies["Entt"] = "SnapCore/vendor/Entt/include"
 Dependencies["YAML"] = "SnapCore/vendor/YAML/include"
 Dependencies["IMGUIZMO"] = "SnapCore/vendor/imguizmo"
+Dependencies["Box2D"] = "SnapCore/vendor/Box2D/include"
 
 include "SnapCore/vendor/GLFW"
 include "SnapCore/vendor/GLAD"
 include "SnapCore/vendor/imgui"
 include "SnapCore/vendor/YAML"
+include "SnapCore/vendor/Box2D"
 
 project "SnapCore"
     location "SnapCore"
@@ -59,7 +61,8 @@ project "SnapCore"
 		"%{Dependencies.STB}",
 		"%{Dependencies.Entt}",
 		"%{Dependencies.YAML}",
-		"%{Dependencies.IMGUIZMO}"
+		"%{Dependencies.IMGUIZMO}",
+		"%{Dependencies.Box2D}"
 	}
 
 	links
@@ -68,6 +71,7 @@ project "SnapCore"
 		"GLAD",
 		"ImGui",
 		"yaml-cpp",
+		"Box2D",
 		"opengl32.lib"
 	}
 

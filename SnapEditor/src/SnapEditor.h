@@ -95,7 +95,8 @@ namespace SnapEngine
 				break;
 			case SnapEngine::EditorLayer::SceneState::PLAY:
 			{
-				m_Scene->Render(); // RealTimeRenderFunction
+				m_Scene->UpdateRunTime(Time);
+				m_Scene->RunTimeRender(); // RunTimeRenderFunction
 			}
 				break;
 			default:

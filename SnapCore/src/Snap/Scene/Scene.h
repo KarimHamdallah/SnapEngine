@@ -7,6 +7,8 @@
 
 #define MAX_ENTITIES 10000
 
+class b2World;
+
 namespace SnapEngine
 {
 	class Entity;
@@ -32,7 +34,7 @@ namespace SnapEngine
 
 		void UpdateEditor(const TimeStep& Time, const EditorCamera& Camera);
 		void UpdateRunTime(const TimeStep& Time);
-		void Render();
+		void RunTimeRender();
 
 
 		// Editor Functions
@@ -41,6 +43,9 @@ namespace SnapEngine
 		void ProcessEvents(IEvent* e);
 
 		Entity GetMainCameraEntity();
+
+		void OnRunTimeStart(); // Called When play button clicked
+		void OnRunTimeStop(); // Called When Stop button clicked
 
 	private:
 		template<typename T>
@@ -53,5 +58,7 @@ namespace SnapEngine
 
 		// Editor Attribs
 		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;
+
+		b2World* m_PhysicsWorld = nullptr;
 	};
 }
