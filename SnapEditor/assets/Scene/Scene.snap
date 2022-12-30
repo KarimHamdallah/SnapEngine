@@ -13,7 +13,7 @@ Entities List:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [0, 0, 18.1452351]
+      Position: [0, 0, 27.7312183]
       Rotation: [0, -0, 0]
       Scale: [1, 1, 1.00000012]
     CameraComponent:
@@ -30,9 +30,9 @@ Entities List:
     TagComponent:
       Tag: Player
     TransformComponent:
-      Position: [-2.36924934, 2.61269474, 0]
-      Rotation: [0, -0, 32.7169952]
-      Scale: [0.999988914, 0.999988914, 1]
+      Position: [-0.983997345, 6.34819078, 0]
+      Rotation: [0, -0, 29.8139992]
+      Scale: [0.999969363, 0.999969363, 1]
     SpriteRendererComponent:
       Color: [1, 0.422222197, 0, 1]
     RigidBody2DComponent:
@@ -42,7 +42,7 @@ Entities List:
       Size: [0.5, 0.5]
       Offset: [0, 0]
       Density: 1
-      Friction: 0.310000002
+      Friction: 0.519999981
       Restitution: 0.5
       RestitutionThreshold: 0.5
   - EntityID: 0

@@ -33,13 +33,69 @@ namespace SnapEngine
         const glm::vec3& Rotation
     )
     {
+        return CreatEntityWithUUID(UUID(), name, Position, Scale, Rotation);
+    }
+
+    Entity& Scene::CreatEntityWithUUID(
+        UUID uuid,
+        const std::string& name,
+        const glm::vec3& Position,
+        const glm::vec3& Scale,
+        const glm::vec3& Rotation
+    )
+    {
         Entity* entity = new Entity(registry.create(), this);
+        entity->AddComponent<IDComponent>(uuid);
         entity->AddComponent<TransformComponent>(Position, Scale, Rotation);
         entity->AddComponent<TagComponent>(name);
         entity->GetComponent<TagComponent>().m_Tag.empty() ? std::string("Entity_") + std::to_string(EntityCounter) : name;
         m_Entities[EntityCounter] = SnapPtr<Entity>(entity);
         EntityCounter++;
         return *entity;
+    }
+
+    template<typename T>
+    void CopyComponent(entt::registry& src, entt::registry& dest, const std::unordered_map<UUID, entt::entity>& Map)
+    {
+        auto& group = src.view<T>();
+        for (auto src_entity : group)
+        {
+            auto dest_entity = Map.at(src.get<IDComponent>(src_entity).ID); // Get Dist Entity With Same UUID
+            auto& Component = src.get<T>(src_entity);
+            dest.emplace_or_replace<T>(dest_entity, Component);
+        }
+    }
+
+
+    SnapPtr<Scene> Scene::Copy(const SnapPtr<Scene>& other)
+    {
+        // From Other To NewScene
+        SnapPtr<Scene> NewScene = CreatSnapPtr<Scene>();
+
+        NewScene->m_ViewPortWidth = other->m_ViewPortWidth;
+        NewScene->m_ViewPortHeight = other->m_ViewPortHeight;
+
+        auto& srcRegistry = other->registry;
+        auto& destRegistry = NewScene->registry;
+        std::unordered_map<UUID, entt::entity> UUIDMap;
+
+        auto& idView = srcRegistry.view<IDComponent>();
+
+        for (auto& entity : idView)
+        {
+            auto& UUID = idView.get<IDComponent>(entity).ID;
+            auto& Tag = srcRegistry.get<TagComponent>(entity).m_Tag;
+            UUIDMap[UUID] = NewScene->CreatEntityWithUUID(UUID, Tag); // Add Entity Into NewScene
+        }
+
+        CopyComponent<TransformComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<SpriteRendererComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<CameraComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<CppScriptComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<RigidBody2DComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<BoxCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
+
+        return NewScene;
     }
 
     void Scene::DestroyEntity(Entity entity)
@@ -98,7 +154,6 @@ namespace SnapEngine
 
                 b2Body* body = (b2Body*)rb2d.RunTimeBody;
                 const auto& Position = body->GetPosition();
-                SNAP_DEBUG("Rotaion {0}", body->GetAngle());
                 transform.m_Position.x = Position.x;
                 transform.m_Position.y = Position.y;
                 transform.m_Rotation.z = glm::degrees(body->GetAngle());
@@ -252,6 +307,11 @@ namespace SnapEngine
     void Scene::OnComponentAdded(Entity entity, T& component)
     {
         static_assert(false);
+    }
+
+    template<>
+    void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
+    {
     }
 
     template<>

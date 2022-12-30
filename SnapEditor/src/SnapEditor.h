@@ -118,6 +118,7 @@ namespace SnapEngine
 
 
 			ImGui::Begin("Settings");
+			ImGui::Checkbox("Keep RunTime Changes", &m_KeepRunTimeChanges);
 			ImGui::End();
 
 			
@@ -212,6 +213,7 @@ namespace SnapEngine
 	private:
 		SnapPtr< FrameBuffer> m_FrameBuffer;
 		SnapPtr<Scene> m_Scene;
+		SnapPtr<Scene> m_TempScene; // hold Active Scene data before Playing it then reload TempScene Again
 
 		/////////////////// ViewPort ////////////////////////////
 		glm::vec2 m_ViewPortSize = { 800.0f, 600.0f }; // ImGui ViewPort Window Size
@@ -228,6 +230,7 @@ namespace SnapEngine
 		float m_Snapping = 0.1f;
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity;
+		bool m_KeepRunTimeChanges = false;
 		/////////////////////////////////////////////////////////
 
 

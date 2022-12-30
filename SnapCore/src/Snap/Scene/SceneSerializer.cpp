@@ -135,8 +135,12 @@ namespace SnapEngine
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
+		SNAP_ASSERT_MSG(entity.HasComponent< IDComponent>(), "Entity dosen't have UUIDComponent!");
+
+		//SNAP_DEBUG("ID = {0}, UUID = {1}",entity.GetID(), entity.GetComponent<IDComponent>().ID);
+
 		out << YAML::BeginMap; // EntityID
-		out << YAML::Key << "EntityID" << YAML::Value << std::to_string(entity.GetID());
+		out << YAML::Key << "EntityID" << YAML::Value << entity.GetComponent<IDComponent>().ID;
 		
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -296,7 +300,7 @@ namespace SnapEngine
 				auto TagComp = entity["TagComponent"];
 				if (TagComp)
 					tag = TagComp["Tag"].as<std::string>();
-				Entity e = m_Scene->CreatEntity(tag);
+				Entity e = m_Scene->CreatEntityWithUUID(EntityID, tag);
 
 				if (entity["TransformComponent"])
 				{

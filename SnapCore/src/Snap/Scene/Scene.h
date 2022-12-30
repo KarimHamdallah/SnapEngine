@@ -2,6 +2,7 @@
 #include <entt.hpp>
 #include <glm/glm.hpp>
 #include <Snap/Core/Core.h>
+#include <Snap/Core/UUID.h>
 
 #include <Snap/Scene/EditorCamera.h>
 
@@ -28,7 +29,18 @@ namespace SnapEngine
 			const glm::vec3& Rotation = glm::vec3(0.0f)
 		);
 
+		Entity& CreatEntityWithUUID(
+			UUID uuid,
+			const std::string& name = std::string(),
+			const glm::vec3& Position = glm::vec3(0.0f),
+			const glm::vec3& Scale = glm::vec3(1.0f),
+			const glm::vec3& Rotation = glm::vec3(0.0f)
+		);
+
+		static SnapPtr<Scene> Copy(const SnapPtr<Scene>& other);
+		
 		void DestroyEntity(Entity entity);
+
 
 		const Resgistry& GetRegistry() const noexcept { return registry; }
 
@@ -53,7 +65,7 @@ namespace SnapEngine
 	private:
 		Resgistry registry;
 		std::vector<SnapPtr<Entity>> m_Entities;
-		inline static std::atomic_uint64_t EntityCounter = 0;
+		inline static uint32_t EntityCounter = 0;
 		friend Entity;
 
 		// Editor Attribs

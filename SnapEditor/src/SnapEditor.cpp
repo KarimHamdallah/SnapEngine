@@ -14,14 +14,22 @@ namespace SnapEngine
 
 	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
 	{
+		if (m_CurrentSceneState != SceneState::EDIT)
+			StopScene();
+
 		if (!filepath.empty())
 		{
-			m_Scene = CreatSnapPtr<Scene>();
+
+			m_Scene = CreatSnapPtr<Scene>(); // Creat Empty New Scene
+			
+			SceneSerializer serializer(m_Scene); // Load Into New Scene
+			serializer.DeSerializeScene(filepath.string());
+
 			m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
 			m_SceneHierarchyPanel.SetScene(m_Scene);
 
-			SceneSerializer serializer(m_Scene);
-			serializer.DeSerializeScene(filepath.string());
+			// TempScene Is Another Reference To the same object
+			m_TempScene = m_Scene;
 		}
 	}
 
@@ -278,6 +286,9 @@ namespace SnapEngine
 	void EditorLayer::PlayScene()
 	{
 		m_CurrentSceneState = SceneState::PLAY;
+
+		if(!m_KeepRunTimeChanges)
+			m_Scene = Scene::Copy(m_TempScene);
 		m_Scene->OnRunTimeStart();
 	}
 
@@ -285,7 +296,26 @@ namespace SnapEngine
 	{
 		m_CurrentSceneState = SceneState::EDIT;
 		m_Scene->OnRunTimeStop();
+
+		if (!m_KeepRunTimeChanges)
+			m_Scene = m_TempScene;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

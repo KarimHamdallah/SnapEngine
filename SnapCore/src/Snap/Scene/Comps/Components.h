@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <Snap/Core/UUID.h>
 #include <glm/gtx/transform.hpp>
 #include <Snap/Scene/SceneCamera.h>
 #include <Snap/Scene/Scripts/CppScript.h>
@@ -10,6 +11,15 @@
 
 namespace SnapEngine
 {
+	struct IDComponent
+	{
+		IDComponent() = default;
+		IDComponent(UUID uuid) : ID(uuid) {}
+		IDComponent(const IDComponent&) = default;
+
+		UUID ID;
+	};
+
 	struct TransformComponent
 	{
 	public:

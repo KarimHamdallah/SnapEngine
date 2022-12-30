@@ -93,6 +93,9 @@
     <ClInclude Include="src\Snap\Core\Timer.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Core\UUID.h">
+      <Filter>src\Snap\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Core\Window.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
@@ -1083,6 +1086,9 @@
       <Filter>src\Snap\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Core\Timer.cpp">
+      <Filter>src\Snap\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Core\UUID.cpp">
       <Filter>src\Snap\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Core\log.cpp">

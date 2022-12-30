@@ -144,6 +144,7 @@
     <ClInclude Include="src\Snap\Core\LayerStack.h" />
     <ClInclude Include="src\Snap\Core\TimeStep.h" />
     <ClInclude Include="src\Snap\Core\Timer.h" />
+    <ClInclude Include="src\Snap\Core\UUID.h" />
     <ClInclude Include="src\Snap\Core\Window.h" />
     <ClInclude Include="src\Snap\Core\asserts.h" />
     <ClInclude Include="src\Snap\Core\key.h" />
@@ -476,6 +477,7 @@
     <ClCompile Include="src\Snap\Core\Application.cpp" />
     <ClCompile Include="src\Snap\Core\LayerStack.cpp" />
     <ClCompile Include="src\Snap\Core\Timer.cpp" />
+    <ClCompile Include="src\Snap\Core\UUID.cpp" />
     <ClCompile Include="src\Snap\Core\log.cpp" />
     <ClCompile Include="src\Snap\ECS\Component.cpp" />
     <ClCompile Include="src\Snap\ECS\Components.cpp" />
