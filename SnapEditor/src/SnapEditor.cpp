@@ -285,6 +285,8 @@ namespace SnapEngine
 
 	void EditorLayer::PlayScene()
 	{
+		// TempScene Is Another Reference To the same object
+		m_TempScene = m_Scene;
 		m_CurrentSceneState = SceneState::PLAY;
 
 		if(!m_KeepRunTimeChanges)
