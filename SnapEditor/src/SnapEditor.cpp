@@ -19,7 +19,7 @@ namespace SnapEngine
 
 		if (!filepath.empty())
 		{
-
+			m_CurrentDeserializedScenePath = filepath;
 			m_Scene = CreatSnapPtr<Scene>(); // Creat Empty New Scene
 			
 			SceneSerializer serializer(m_Scene); // Load Into New Scene
@@ -40,14 +40,21 @@ namespace SnapEngine
 		m_SceneHierarchyPanel.SetScene(m_Scene);
 	}
 
+	void EditorLayer::SaveScene(const std::filesystem::path& path)
+	{
+		if (!path.empty())
+		{
+			m_CurrentDeserializedScenePath = path;
+			SceneSerializer serializer(m_Scene);
+			serializer.SerializeScene(path.string());
+		}
+	}
+
 	void EditorLayer::SaveScene()
 	{
 		std::string filepath = FileDialoge::SaveFile("Snap Scene (*.snap)\0*.snap\0");
 		if (!filepath.empty())
-		{
-			SceneSerializer serializer(m_Scene);
-			serializer.SerializeScene(filepath);
-		}
+			SaveScene(filepath);
 	}
 
 
@@ -57,7 +64,7 @@ namespace SnapEngine
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	{
-		if (e.GetRepeatCount() > 0 || m_EditorCamera.IsActive() || !m_ViewPortFocused)
+		if (e.GetRepeatCount() > 0 || m_EditorCamera.IsActive() || !m_ViewPortFocused || m_CurrentSceneState != SceneState::EDIT)
 			return false;
 
 		switch ((Key)e.GetKeyCode())
@@ -69,7 +76,14 @@ namespace SnapEngine
 			bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 
 			if (cntrl && shift)
-				SaveScene();
+				SaveScene(); // Dialoge
+			else if (cntrl && !shift)
+			{
+				if (m_CurrentDeserializedScenePath.empty())
+					SaveScene(); // Dialoge
+				else
+					SaveScene(m_CurrentDeserializedScenePath);
+			}
 		}
 		break;
 
@@ -87,6 +101,13 @@ namespace SnapEngine
 			bool cntrl = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 			if (cntrl)
 				NewScene();
+		}
+		break;
+
+		case Key::D:
+		{
+			if (Input::IsKeyPressed(Key::LeftControl))
+				OnDuplicateEntity();
 		}
 		break;
 
@@ -301,6 +322,15 @@ namespace SnapEngine
 
 		if (!m_KeepRunTimeChanges)
 			m_Scene = m_TempScene;
+	}
+
+	void EditorLayer::OnDuplicateEntity()
+	{
+		if (m_CurrentSceneState != SceneState::EDIT)
+			return;
+
+		Entity SelctedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		m_Scene->DuplicateEntity(SelctedEntity);
 	}
 
 

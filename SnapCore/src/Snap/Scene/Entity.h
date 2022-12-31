@@ -23,6 +23,13 @@ namespace SnapEngine
 			mScene->OnComponentAdded<T>(*this, Comp);
 			return Comp;
 		}
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			T& Comp = mScene->registry.emplace_or_replace<T>(entity, std::forward<Args>(args)...);
+			mScene->OnComponentAdded<T>(*this, Comp);
+			return Comp;
+		}
 
 		template<typename T>
 		void RemoveComponent()

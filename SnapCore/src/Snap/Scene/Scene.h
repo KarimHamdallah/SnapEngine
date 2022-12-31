@@ -40,6 +40,7 @@ namespace SnapEngine
 		static SnapPtr<Scene> Copy(const SnapPtr<Scene>& other);
 		
 		void DestroyEntity(Entity entity);
+		void DuplicateEntity(Entity entity);
 
 
 		const Resgistry& GetRegistry() const noexcept { return registry; }

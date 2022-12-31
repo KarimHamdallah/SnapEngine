@@ -66,6 +66,12 @@ namespace SnapEngine
         }
     }
 
+    template<typename T>
+    void CopyComponentIfExist(Entity& src, Entity& dest)
+    {
+        if (src.HasComponent<T>())
+            dest.AddOrReplaceComponent<T>(src.GetComponent<T>());
+    }
 
     SnapPtr<Scene> Scene::Copy(const SnapPtr<Scene>& other)
     {
@@ -96,6 +102,18 @@ namespace SnapEngine
         CopyComponent<BoxCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
 
         return NewScene;
+    }
+
+    void Scene::DuplicateEntity(Entity entity)
+    {
+        Entity NewEntity = CreatEntity(entity.GetComponent<TagComponent>().m_Tag);
+
+        CopyComponentIfExist<TransformComponent>(entity, NewEntity);
+        CopyComponentIfExist<SpriteRendererComponent>(entity, NewEntity);
+        CopyComponentIfExist<CameraComponent>(entity, NewEntity);
+        CopyComponentIfExist<CppScriptComponent>(entity, NewEntity);
+        CopyComponentIfExist<RigidBody2DComponent>(entity, NewEntity);
+        CopyComponentIfExist<BoxCollider2DComponent>(entity, NewEntity);
     }
 
     void Scene::DestroyEntity(Entity entity)

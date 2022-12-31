@@ -255,13 +255,18 @@ private:
 
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
-		void NewScene();
 		void SaveScene();
+		void SaveScene(const std::filesystem::path& path);
+		void NewScene();
+
+		void OnDuplicateEntity();
 
 		virtual void ProcessEvent(IEvent& e) override;
 		
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMousePressed(MousePressedEvent& e);
+
+		std::filesystem::path m_CurrentDeserializedScenePath = "";
 	};
 
 
