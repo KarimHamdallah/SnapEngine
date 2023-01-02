@@ -42,10 +42,11 @@ namespace SnapEngine
 
 
 
-
+		static void DrawCircle(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), float Thickness = 1.0f, float Fade = 0.005f, int EntityID = -1);
 		static void DrawQuad(const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
 		static void DrawQuad(SnapPtr<Texture2D> Tex, const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f, int EntityID = -1);
 		static void DrawSprite(const glm::mat4& Transform, SpriteRendererComponent& SpriteRenderer, int EntityID);
+		static void DrawCircle(const glm::mat4& Transform, CircleRendererComponent& CircleRenderer, int EntityID = -1);
 
 		static void Flush();
 	private:
@@ -61,10 +62,23 @@ namespace SnapEngine
 			// Editor only
 			int m_EntityID = -1;
 		};
+
+		struct CircleVertex
+		{
+			glm::vec3 m_Position;
+			glm::vec3 m_LocalPosition;
+			glm::vec4 m_Color;
+			float m_Thickness;
+			float m_Fade;
+
+			// Editor only
+			int m_EntityID = -1;
+		};
 		
 		struct RendererStatistics
 		{
 			uint32_t m_QuadCount = 0;
+			uint32_t m_CircleCount = 0;
 			uint32_t m_DrawCalls = 0;
 
 			uint32_t GetTotalQuadsVertixCount() { return m_QuadCount * 4; }
@@ -82,14 +96,23 @@ namespace SnapEngine
 			std::array<SnapPtr<Texture2D>, MaxTextureSlots> TextureSlots;
 			uint32_t TextureSlotIndex = 1; // White Texture at slot 0
 
+			// Quad
 			QuadVertex* QuadVertexBatchBuffer = nullptr;
 			QuadVertex* QuadVertexPtr = nullptr;
 
 			SnapPtr<VertexArray> m_QuadVertexArray;
 			SnapPtr<VertexBuffer> Quad_VBO;
 
+			// Circle
+			CircleVertex* CircleVertexBatchBuffer = nullptr;
+			CircleVertex* CircleVertexPtr = nullptr;
+
+			SnapPtr<VertexArray> m_CircleVertexArray;
+			SnapPtr<VertexBuffer> Circle_VBO;
+
 
 			SnapPtr<Shader> m_BatchRendererShader;
+			SnapPtr<Shader> m_CircleShader;
 			SnapPtr<Texture2D> m_WhiteTexture; // 1x1 White Texture 2D used as 1 value in Texture shader
 
 			glm::mat4 m_ProjectionViewMatrix = glm::mat4(1.0f);
@@ -108,5 +131,6 @@ namespace SnapEngine
 		inline static void ResetStats() { memset(&s_Data->Stats, 0, sizeof(RendererStatistics)); }
 	private:
 		static void FlushAndReset();
+		static void CircleFlushAndReset();
 	};
 }

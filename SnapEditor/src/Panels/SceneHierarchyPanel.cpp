@@ -245,7 +245,14 @@ namespace SnapEngine
 					m_SelectedEntity.AddComponent<SpriteRendererComponent>();
 				else
 					SNAP_WARN("Entity With Tag {0}, Already Has SpriteRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
-			
+
+			if (ImGui::MenuItem("CircleRenderer Component"))
+				if (!m_SelectedEntity.HasComponent<CircleRendererComponent>())
+					m_SelectedEntity.AddComponent<CircleRendererComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has CircleRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+
+
 			if (ImGui::MenuItem("RigidBody2D Component"))
 				if (!m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 					m_SelectedEntity.AddComponent<RigidBody2DComponent>();
@@ -365,6 +372,13 @@ namespace SnapEngine
 
 
 				ImGui::DragFloat("TilingFactor", &Component.m_TilingFactor, 0.01f, 1.0f, 10.0f);
+			});
+
+		DrawComponent<CircleRendererComponent>("CircleRenderer", entity, [&](CircleRendererComponent& component)
+			{
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.m_Color));
+				ImGui::DragFloat("Thickness", &component.m_Thickness, 0.001f, 0.0f, 1.0f);
+				ImGui::DragFloat("Fade", &component.m_Fade, 0.001f, 0.0f, 1.0f);
 			});
 
 		

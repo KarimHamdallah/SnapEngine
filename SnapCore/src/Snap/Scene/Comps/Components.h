@@ -81,6 +81,18 @@ namespace SnapEngine
 		float m_TilingFactor = 1.0f;
 	};
 
+	struct CircleRendererComponent
+	{
+	public:
+		CircleRendererComponent(const glm::vec4& Color = glm::vec4(1.0f), float Thickness = 1.0f, float Fade = 0.005f)
+			: m_Color(Color), m_Thickness(Thickness), m_Fade(Fade) {}
+		CircleRendererComponent(const CircleRendererComponent&) = default;
+
+		glm::vec4 m_Color;
+		float m_Thickness;
+		float m_Fade;
+	};
+
 
 	struct CameraComponent
 	{

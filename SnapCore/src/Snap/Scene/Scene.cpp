@@ -96,6 +96,7 @@ namespace SnapEngine
 
         CopyComponent<TransformComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<SpriteRendererComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<CircleRendererComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<CameraComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<CppScriptComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<RigidBody2DComponent>(srcRegistry, destRegistry, UUIDMap);
@@ -110,6 +111,7 @@ namespace SnapEngine
 
         CopyComponentIfExist<TransformComponent>(entity, NewEntity);
         CopyComponentIfExist<SpriteRendererComponent>(entity, NewEntity);
+        CopyComponentIfExist<CircleRendererComponent>(entity, NewEntity);
         CopyComponentIfExist<CameraComponent>(entity, NewEntity);
         CopyComponentIfExist<CppScriptComponent>(entity, NewEntity);
         CopyComponentIfExist<RigidBody2DComponent>(entity, NewEntity);
@@ -134,6 +136,17 @@ namespace SnapEngine
             {
                 auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                 Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
+            }
+        }
+
+        {// Render Circles
+
+            auto& group = registry.view<TransformComponent, CircleRendererComponent>();
+
+            for (auto entity : group)
+            {
+                auto [transform, circle_renderer] = group.get<TransformComponent, CircleRendererComponent>(entity);
+                Renderer2D::DrawCircle(transform, circle_renderer, (int)entity);
             }
         }
 
@@ -213,6 +226,17 @@ namespace SnapEngine
                 {
                     auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                     Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
+                }
+            }
+
+            {// Render Circles
+
+                auto& group = registry.view<TransformComponent, CircleRendererComponent>();
+
+                for (auto entity : group)
+                {
+                    auto [transform, circle_renderer] = group.get<TransformComponent, CircleRendererComponent>(entity);
+                    Renderer2D::DrawCircle(transform, circle_renderer, (int)entity);
                 }
             }
         }
@@ -350,6 +374,11 @@ namespace SnapEngine
 
     template<>
     void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+    {
+    }
+
+    template<>
+    void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
     {
     }
 
