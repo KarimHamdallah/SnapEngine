@@ -264,6 +264,12 @@ namespace SnapEngine
 					m_SelectedEntity.AddComponent<BoxCollider2DComponent>();
 				else
 					SNAP_WARN("Entity With Tag {0}, Already Has BoxCollider2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+			
+			if (ImGui::MenuItem("CircleCollider2D Component"))
+				if (!m_SelectedEntity.HasComponent<CircleCollider2DComponent>())
+					m_SelectedEntity.AddComponent<CircleCollider2DComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has CircleCollider2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
 
 			ImGui::EndPopup();
 		}
@@ -415,14 +421,6 @@ namespace SnapEngine
 
 		DrawComponent<BoxCollider2DComponent>("BoxCollider2D", entity, [&](BoxCollider2DComponent& component)
 			{
-				glm::vec2 m_Size = { 0.5f, 0.5f };
-				glm::vec2 m_Offset = { 0.0f, 0.0f };
-
-				float m_Density = 0.0f;
-				float m_Friction = 0.5f;
-				float m_Restitution = 0.0f;
-				float m_RestitutionThreshold = 0.5f;
-
 				ImGui::DragFloat2("Size", glm::value_ptr(component.m_Size), 0.01f);
 				ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset), 0.01f);
 
@@ -430,6 +428,16 @@ namespace SnapEngine
 				ImGui::DragFloat("Friction", &component.m_Friction, 0.01f);
 				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
 
+			});
+
+		DrawComponent<CircleCollider2DComponent>("CircleCollider2D", entity, [&](CircleCollider2DComponent& component)
+			{
+				ImGui::DragFloat2("Offset", glm::value_ptr(component.m_Offset), 0.01f);
+				ImGui::DragFloat("Raduis", &component.m_Raduis, 0.01f);
+
+				ImGui::DragFloat("Density", &component.m_Density, 0.01f);
+				ImGui::DragFloat("Friction", &component.m_Friction, 0.01f);
+				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
 			});
 	}
 }

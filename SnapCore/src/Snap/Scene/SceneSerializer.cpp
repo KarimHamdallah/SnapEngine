@@ -171,6 +171,7 @@ namespace SnapEngine
 			auto& sprite_renderer = entity.GetComponent<SpriteRendererComponent>();
 
 			out << YAML::Key << "Color" << YAML::Value << sprite_renderer.m_Color;
+			//out << YAML::Key << "TexturePath" << YAML::Value << sprite_renderer.m_Texture->getFilePath().c_str();
 
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
@@ -236,6 +237,24 @@ namespace SnapEngine
 
 
 			out << YAML::EndMap; // BoxCollider2DComponent
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>())
+		{
+			out << YAML::Key << "CircleCollider2DComponent";
+			out << YAML::BeginMap; // CircleCollider2DComponent
+			auto& collider = entity.GetComponent<CircleCollider2DComponent>();
+
+			out << YAML::Key << "Offset" << YAML::Value << collider.m_Offset;
+			out << YAML::Key << "Raduis" << YAML::Value << collider.m_Raduis;
+
+			out << YAML::Key << "Density" << YAML::Value << collider.m_Density;
+			out << YAML::Key << "Friction" << YAML::Value << collider.m_Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << collider.m_Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << collider.m_RestitutionThreshold;
+
+
+			out << YAML::EndMap; // CircleCollider2DComponent
 		}
 		
 		out << YAML::EndMap; // EntityID
@@ -329,7 +348,14 @@ namespace SnapEngine
 				{
 					auto& SpriteRendererComponentNode = entity["SpriteRendererComponent"];
 					glm::vec4 Color = SpriteRendererComponentNode["Color"].as<glm::vec4>();
+					
+					/*
+					std::string TextureFilePath = SpriteRendererComponentNode["TexturePath"].as<std::string>();
 
+					SnapPtr<Texture2D> Texture = nullptr;
+					if(!TextureFilePath.empty())
+						Texture = SnapPtr<Texture2D>(Texture2D::Creat(TextureFilePath));
+					*/
 					e.AddComponent<SpriteRendererComponent>(Color);
 				}
 
@@ -400,6 +426,27 @@ namespace SnapEngine
 
 					auto& Comp = e.AddComponent<BoxCollider2DComponent>();
 					Comp.m_Size = Size;
+					Comp.m_Offset = Offset;
+					Comp.m_Density = Density;
+					Comp.m_Friction = Friction;
+					Comp.m_Restitution = Restitution;
+					Comp.m_RestitutionThreshold = RestitutionThreshold;
+				}
+
+				if (entity["CircleCollider2DComponent"])
+				{
+					auto& RigidBody2DComponentNode = entity["CircleCollider2DComponent"];
+
+					auto Raduis = RigidBody2DComponentNode["Raduis"].as<float>();
+					auto Offset = RigidBody2DComponentNode["Offset"].as<glm::vec2>();
+
+					auto Density = RigidBody2DComponentNode["Density"].as<float>();
+					auto Friction = RigidBody2DComponentNode["Friction"].as<float>();
+					auto Restitution = RigidBody2DComponentNode["Restitution"].as<float>();
+					auto RestitutionThreshold = RigidBody2DComponentNode["RestitutionThreshold"].as<float>();
+
+					auto& Comp = e.AddComponent<CircleCollider2DComponent>();
+					Comp.m_Raduis = Raduis;
 					Comp.m_Offset = Offset;
 					Comp.m_Density = Density;
 					Comp.m_Friction = Friction;

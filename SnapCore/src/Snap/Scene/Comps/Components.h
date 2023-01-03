@@ -152,4 +152,20 @@ namespace SnapEngine
 
 		void* RunTimeFixture= nullptr;
 	};
+
+	struct CircleCollider2DComponent
+	{
+		CircleCollider2DComponent() = default;
+		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
+
+		glm::vec2 m_Offset = { 0.0f, 0.0f };
+		float m_Raduis = 0.5f;
+
+		float m_Density = 1.0f;
+		float m_Friction = 0.5f;
+		float m_Restitution = 0.5f;
+		float m_RestitutionThreshold = 0.5f;
+
+		void* RunTimeFixture = nullptr;
+	};
 }

@@ -10,6 +10,7 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_circle_shape.h>
 
 namespace SnapEngine
 {
@@ -101,6 +102,7 @@ namespace SnapEngine
         CopyComponent<CppScriptComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<RigidBody2DComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<BoxCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<CircleCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
 
         return NewScene;
     }
@@ -116,6 +118,7 @@ namespace SnapEngine
         CopyComponentIfExist<CppScriptComponent>(entity, NewEntity);
         CopyComponentIfExist<RigidBody2DComponent>(entity, NewEntity);
         CopyComponentIfExist<BoxCollider2DComponent>(entity, NewEntity);
+        CopyComponentIfExist<CircleCollider2DComponent>(entity, NewEntity);
     }
 
     void Scene::DestroyEntity(Entity entity)
@@ -327,6 +330,22 @@ namespace SnapEngine
                 Def.restitutionThreshold = collider.m_RestitutionThreshold;
                 collider.RunTimeFixture = body->CreateFixture(&Def);
             }
+
+            if (e.HasComponent<CircleCollider2DComponent>())
+            {
+                auto& collider = e.GetComponent<CircleCollider2DComponent>();
+
+                b2CircleShape shape;
+                shape.m_p.Set(collider.m_Offset.x, collider.m_Offset.y); //position, relative to body position
+                shape.m_radius = collider.m_Raduis * transform.m_Scale.x; //radius
+                b2FixtureDef Def;
+                Def.shape = &shape;
+                Def.density = collider.m_Density;
+                Def.friction = collider.m_Friction;
+                Def.restitution = collider.m_Restitution;
+                Def.restitutionThreshold = collider.m_RestitutionThreshold;
+                collider.RunTimeFixture = body->CreateFixture(&Def);
+            }
         }
     }
 
@@ -393,6 +412,10 @@ namespace SnapEngine
     }
     template<>
     void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
     {
     }
 }
