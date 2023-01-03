@@ -18,6 +18,10 @@ namespace SnapEngine
 
 		virtual void DrawIndexed(const SnapPtr<VertexArray>& vertexArray, uint32_t count = 0) = 0;
 
+		virtual void DrawLines(const SnapPtr<VertexArray>& vertexArray, uint32_t VerticesCount) = 0;
+
+		virtual void SetLineWidth(float LineWidth = 1.0f) = 0;
+
 		inline static API GetAPI() { return s_API; }
 
 	private:

@@ -1,40 +1,16 @@
 Scene: Example Scene
 Entities List:
-  - EntityID: 3
+  - EntityID: 18391567744361814025
     TagComponent:
-      Tag: BackGround
+      Tag: Circle
     TransformComponent:
-      Position: [0.482516527, -1.33687782, -20.4549065]
+      Position: [1.16345143, 7.56918192, 0]
       Rotation: [0, -0, 0]
-      Scale: [69.2486877, 50.7884712, 1]
-    SpriteRendererComponent:
-      Color: [0.137037039, 0.137037039, 0.137037039, 1]
-  - EntityID: 2
-    TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Position: [0, 0, 38.2113457]
-      Rotation: [0, -0, 0]
-      Scale: [1, 1, 1.00000012]
-    CameraComponent:
-      ProjectionType: 0
-      OrthoGraphicSize: 10
-      OrthoGraphicNear: -100
-      OrthoGraphicFar: 100
-      PerspectiveFov: 0.92956233
-      PerspectiveNear: 0.00999999978
-      PerspectiveFar: 1000
-      IsMain: true
-      FixedAspectRatio: false
-  - EntityID: 1
-    TagComponent:
-      Tag: Player
-    TransformComponent:
-      Position: [-3.20226026, 2.19091201, 0]
-      Rotation: [0, -0, 192.763214]
-      Scale: [0.999969363, 0.999969363, 1]
-    SpriteRendererComponent:
-      Color: [1, 0.422222197, 0, 1]
+      Scale: [1.94000006, 1.94000006, 1.94000006]
+    CircleRendererComponent:
+      Color: [1, 0.399999976, 0, 1]
+      Fade: 0.00499999989
+      Thickness: 0.141000003
     RigidBody2DComponent:
       RigidBody2DType: Dynamic
       FixedRotation: false
@@ -42,16 +18,16 @@ Entities List:
       Size: [0.5, 0.5]
       Offset: [0, 0]
       Density: 1
-      Friction: 0.519999981
+      Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - EntityID: 0
+  - EntityID: 15779504475249784800
     TagComponent:
       Tag: Platform
     TransformComponent:
-      Position: [9.45330429, 4.63607645, 0]
-      Rotation: [0, -0, 30.6781712]
-      Scale: [15.0116692, 1, 1]
+      Position: [-5.25076914, -1.91364956, 0]
+      Rotation: [0, -0, -37.9256325]
+      Scale: [14.9911823, 0.99999994, 1]
     SpriteRendererComponent:
       Color: [0.0222222805, 1, 0, 1]
     RigidBody2DComponent:
@@ -83,13 +59,13 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - EntityID: 15779504475249784800
+  - EntityID: 0
     TagComponent:
       Tag: Platform
     TransformComponent:
-      Position: [-5.25076914, -1.91364956, 0]
-      Rotation: [0, -0, -37.9256325]
-      Scale: [14.9911823, 0.99999994, 1]
+      Position: [9.45330429, 4.63607645, 0]
+      Rotation: [0, -0, 30.6781712]
+      Scale: [15.0116692, 1, 1]
     SpriteRendererComponent:
       Color: [0.0222222805, 1, 0, 1]
     RigidBody2DComponent:
@@ -102,3 +78,48 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
+  - EntityID: 1
+    TagComponent:
+      Tag: Player
+    TransformComponent:
+      Position: [-3.20226026, 2.19091201, 0]
+      Rotation: [0, -0, -167.236755]
+      Scale: [0.999969363, 0.999969363, 1]
+    SpriteRendererComponent:
+      Color: [1, 0.422222197, 0, 1]
+    RigidBody2DComponent:
+      RigidBody2DType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [0.5, 0.5]
+      Offset: [0, 0]
+      Density: 1
+      Friction: 0.519999981
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - EntityID: 2
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 0, 38.2113457]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1.00000012]
+    CameraComponent:
+      ProjectionType: 0
+      OrthoGraphicSize: 10
+      OrthoGraphicNear: -100
+      OrthoGraphicFar: 100
+      PerspectiveFov: 0.92956233
+      PerspectiveNear: 0.00999999978
+      PerspectiveFar: 1000
+      IsMain: true
+      FixedAspectRatio: false
+  - EntityID: 3
+    TagComponent:
+      Tag: BackGround
+    TransformComponent:
+      Position: [0.482516527, -1.33687782, -20.4549065]
+      Rotation: [0, -0, 0]
+      Scale: [69.2486877, 50.7884712, 1]
+    SpriteRendererComponent:
+      Color: [0.137037039, 0.137037039, 0.137037039, 1]

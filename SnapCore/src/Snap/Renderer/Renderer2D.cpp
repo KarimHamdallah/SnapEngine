@@ -14,6 +14,7 @@ namespace SnapEngine
 		// Init BatchRenderer2D Shader
 		s_Data->m_BatchRendererShader = Shader::Creat("assets/Shaders/QuadBatchRenderer.glsl");
 		s_Data->m_CircleShader = Shader::Creat("assets/Shaders/CircleShader.glsl");
+		s_Data->m_LineShader = Shader::Creat("assets/Shaders/LineShader.glsl");
 
 		// Init White Texture
 		s_Data->m_WhiteTexture = SnapPtr<Texture2D>(Texture2D::Creat(1, 1));
@@ -91,11 +92,27 @@ namespace SnapEngine
 		s_Data->m_CircleVertexArray->AddIndexBuffer(Quad_EBO);
 
 
+		// Line
+		s_Data->m_LineVertexArray = SnapPtr<VertexArray>(VertexArray::Creat());
+		// Dynamic Vertex Buffer Setup
+		s_Data->Line_VBO = SnapPtr<VertexBuffer>(VertexBuffer::Creat(sizeof(LineVertex) * s_Data->MaxVertices));
+		BufferLayout Line_VBO_Layout =
+		{
+			BufferElement(ShaderDataType::Float3, "aPosition"),
+			BufferElement(ShaderDataType::Float4, "aColor"),
+			BufferElement(ShaderDataType::Int,  "aEntityID")
+		};
+		s_Data->Line_VBO->SetBufferLayout(Line_VBO_Layout);
+		// Add Vertex Buffer To Vertex Array
+		s_Data->m_LineVertexArray->AddVertexBuffer(s_Data->Line_VBO);
+
+
 
 
 		int max_vertices = s_Data->MaxVertices;
 		s_Data->QuadVertexBatchBuffer = new QuadVertex[max_vertices];
 		s_Data->CircleVertexBatchBuffer = new CircleVertex[max_vertices];
+		s_Data->LineVertexBatchBuffer = new LineVertex[max_vertices];
 
 		/////////////// Textures ////////////////
 		s_Data->TextureSlots[0] = s_Data->m_WhiteTexture; // Set index 0 to white texture
@@ -144,6 +161,15 @@ namespace SnapEngine
 		CircleShader->UploadMat4("u_ProjectionView", s_Data->m_ProjectionViewMatrix);
 		CircleShader->UnBind();
 
+		// Line
+		// Point To First Element of LineVertexBatchBuffer Array
+		s_Data->LineVertexPtr = s_Data->LineVertexBatchBuffer;
+
+		auto LineShader = s_Data->m_LineShader;
+		LineShader->Bind();
+		LineShader->UploadMat4("u_ProjectionView", s_Data->m_ProjectionViewMatrix);
+		LineShader->UnBind();
+
 
 		/// ////////////////// Textures /////////////////
 		s_Data->TextureSlotIndex = 1; // Reset TextureSlotIndex to 1
@@ -157,6 +183,9 @@ namespace SnapEngine
 		
 		uint32_t circle_data_size = (uint8_t*)s_Data->CircleVertexPtr - (uint8_t*)s_Data->CircleVertexBatchBuffer;
 		s_Data->Circle_VBO->SetData(s_Data->CircleVertexBatchBuffer, circle_data_size);
+
+		uint32_t line_data_size = (uint8_t*)s_Data->LineVertexPtr - (uint8_t*)s_Data->LineVertexBatchBuffer;
+		s_Data->Line_VBO->SetData(s_Data->LineVertexBatchBuffer, line_data_size);
 
 		Flush();
 	}
@@ -175,10 +204,15 @@ namespace SnapEngine
 
 
 
-		s_Data->m_CircleShader->Bind();
-
 		// Circle Draw Call
+		s_Data->m_CircleShader->Bind();
 		RendererCommand::DrawIndexed(s_Data->m_CircleVertexArray, s_Data->Stats.m_CircleCount * 6);
+		s_Data->Stats.m_DrawCalls++;
+
+		// Line Draw Call
+		s_Data->m_LineShader->Bind();
+		RendererCommand::SetLineWidth(s_Data->m_LineWidth);
+		RendererCommand::DrawLines(s_Data->m_LineVertexArray, s_Data->Stats.m_LineCount * 2);
 		s_Data->Stats.m_DrawCalls++;
 	}
 
@@ -203,6 +237,16 @@ namespace SnapEngine
 		s_Data->QuadVertexPtr = s_Data->QuadVertexBatchBuffer;
 
 		s_Data->TextureSlotIndex = 1; // Reset TextureSlotIndex to 1
+	}
+	
+	void Renderer2D::LineFlushAndReset()
+	{
+		End();
+
+		s_Data->Stats.m_LineCount = 0;
+
+		// Point To First Element of LineVertexBatchBuffer Array
+		s_Data->LineVertexPtr = s_Data->LineVertexBatchBuffer;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& Position, const glm::vec3& Scale, const glm::vec4& Color, float TilingFactor)
@@ -488,6 +532,56 @@ namespace SnapEngine
 
 
 
+
+
+	void Renderer2D::DrawRect(const glm::vec3& Position, const glm::vec2& Size, const glm::vec4& Color, int EntityID)
+	{
+		glm::vec3 p0 = glm::vec3(Position.x - Size.x * 0.5f, Position.y + Size.y * 0.5f, Position.z); // Top Left
+		glm::vec3 p1 = glm::vec3(Position.x + Size.x * 0.5f, Position.y + Size.y * 0.5f, Position.z); // Top Right
+		glm::vec3 p2 = glm::vec3(Position.x + Size.x * 0.5f, Position.y - Size.y * 0.5f, Position.z); // Bottom Right
+		glm::vec3 p3 = glm::vec3(Position.x - Size.x * 0.5f, Position.y - Size.y * 0.5f, Position.z); // Bottom Left
+		
+		
+		DrawLine(p0, p1, Color, EntityID);
+		DrawLine(p1, p2, Color, EntityID);
+		DrawLine(p2, p3, Color, EntityID);
+		DrawLine(p0, p3, Color, EntityID);
+	}
+
+
+
+	void Renderer2D::DrawRect(const glm::mat4& Transform, const glm::vec4& Color, int EntityID)
+	{
+		glm::vec3 p0 = Transform * s_Data->QuadVertices[0];
+		glm::vec3 p1 = Transform * s_Data->QuadVertices[1];
+		glm::vec3 p2 = Transform * s_Data->QuadVertices[2];
+		glm::vec3 p3 = Transform * s_Data->QuadVertices[3];
+
+		DrawLine(p0, p1, Color, EntityID);
+		DrawLine(p1, p2, Color, EntityID);
+		DrawLine(p2, p3, Color, EntityID);
+		DrawLine(p0, p3, Color, EntityID);
+	}
+
+
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& Color, int EntityID)
+	{
+		if (s_Data->Stats.m_LineCount * 2 >= s_Data->MaxVertices)
+			LineFlushAndReset();
+
+		// Push Line (2 Vertices) To LineVertexBacthBuffer
+		s_Data->LineVertexPtr->m_Position = p0;
+		s_Data->LineVertexPtr->m_Color = Color;
+		s_Data->LineVertexPtr->m_EntityID = EntityID;
+		s_Data->LineVertexPtr++;
+
+		s_Data->LineVertexPtr->m_Position = p1;
+		s_Data->LineVertexPtr->m_Color = Color;
+		s_Data->LineVertexPtr->m_EntityID = EntityID;
+		s_Data->LineVertexPtr++;
+
+		s_Data->Stats.m_LineCount++; // Add Circle
+	}
 
 
 	void Renderer2D::DrawCircle(const glm::mat4& Transform, const glm::vec4& Color, float Thickness, float Fade, int EntityID)

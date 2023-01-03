@@ -32,6 +32,16 @@ namespace SnapEngine
 			s_RendererAPI->DrawIndexed(vertexArray, count);
 		}
 
+		inline static void DrawLines(const SnapPtr<VertexArray>& vertexArray, uint32_t VerticesCount = 0)
+		{
+			s_RendererAPI->DrawLines(vertexArray, VerticesCount);
+		}
+
+		inline static void SetLineWidth(float LineWidth = 1.0f)
+		{
+			s_RendererAPI->SetLineWidth(LineWidth);
+		}
+
 	private:
 		static RendererAPI* s_RendererAPI;
 	};

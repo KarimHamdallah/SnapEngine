@@ -36,4 +36,16 @@ namespace SnapEngine
 		glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	void OpenGLRendererAPI::DrawLines(const SnapPtr<VertexArray>& vertexArray, uint32_t VerticesCount)
+	{
+		vertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, VerticesCount);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void OpenGLRendererAPI::SetLineWidth(float LineWidth)
+	{
+		glLineWidth(LineWidth);
+	}
 }

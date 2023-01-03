@@ -175,6 +175,19 @@ namespace SnapEngine
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
 
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap; // CircleRendererComponent
+			auto& circle_renderer = entity.GetComponent<CircleRendererComponent>();
+
+			out << YAML::Key << "Color" << YAML::Value << circle_renderer.m_Color;
+			out << YAML::Key << "Fade" << YAML::Value << circle_renderer.m_Fade;
+			out << YAML::Key << "Thickness" << YAML::Value << circle_renderer.m_Thickness;
+
+			out << YAML::EndMap; // CircleRendererComponent
+		}
+
 		if (entity.HasComponent<CameraComponent>())
 		{
 			out << YAML::Key << "CameraComponent";
@@ -318,6 +331,16 @@ namespace SnapEngine
 					glm::vec4 Color = SpriteRendererComponentNode["Color"].as<glm::vec4>();
 
 					e.AddComponent<SpriteRendererComponent>(Color);
+				}
+
+				if (entity["CircleRendererComponent"])
+				{
+					auto& CircleRendererComponentNode = entity["CircleRendererComponent"];
+					glm::vec4 Color = CircleRendererComponentNode["Color"].as<glm::vec4>();
+					float Thickness = CircleRendererComponentNode["Thickness"].as<float>();
+					float Fade = CircleRendererComponentNode["Fade"].as<float>();
+
+					e.AddComponent<CircleRendererComponent>(Color, Thickness, Fade);
 				}
 
 				if (entity["CameraComponent"])
