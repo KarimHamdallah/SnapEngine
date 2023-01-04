@@ -245,6 +245,74 @@ namespace SnapEngine
         }
     }
 
+    void Scene::UpdateAndRenderSimulation(const TimeStep& Time, const EditorCamera& Camera)
+    {
+        { // Physics Update
+            const uint32_t VelocityIterations = 6;
+            const uint32_t PositionIterations = 2;
+
+            m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
+
+            // Get transform From Box2D
+            auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
+            for (auto entity : group)
+            {
+                Entity e = { entity, this };
+                auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
+
+                b2Body* body = (b2Body*)rb2d.RunTimeBody;
+                const auto& Position = body->GetPosition();
+                transform.m_Position.x = Position.x;
+                transform.m_Position.y = Position.y;
+                transform.m_Rotation.z = glm::degrees(body->GetAngle());
+            }
+        }
+
+        /*--------------------------------------------------------------------*/
+
+
+        { // Render Editor Camera View
+            Renderer2D::Begin(Camera);
+
+            {// Render Sprites
+
+                auto& group = registry.view<TransformComponent, SpriteRendererComponent>();
+
+                for (auto entity : group)
+                {
+                    auto [transform, sprite_renderer] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                    Renderer2D::DrawSprite(transform, sprite_renderer, (int)entity);
+                }
+            }
+
+            {// Render Circles
+
+                auto& group = registry.view<TransformComponent, CircleRendererComponent>();
+
+                for (auto entity : group)
+                {
+                    auto [transform, circle_renderer] = group.get<TransformComponent, CircleRendererComponent>(entity);
+                    Renderer2D::DrawCircle(transform, circle_renderer, (int)entity);
+                }
+            }
+
+            Renderer2D::End();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     void Scene::ResizeViewPort(uint32_t Width, uint32_t Height)
     {
         m_ViewPortWidth = Width;
@@ -297,7 +365,42 @@ namespace SnapEngine
         return {};
     }
 
+
+
+
+
     void Scene::OnRunTimeStart()
+    {
+        Physics2DStart();
+    }
+
+    void Scene::OnRunTimeStop()
+    {
+        Physics2DStop();
+    }
+
+
+    void Scene::OnSimulationStart()
+    {
+        Physics2DStart();
+    }
+
+    void Scene::OnSimulationStop()
+    {
+        Physics2DStop();
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    void Scene::Physics2DStart()
     {
         m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
@@ -307,7 +410,7 @@ namespace SnapEngine
             Entity e = { entity, this };
             auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
 
-            
+
             b2BodyDef Def;
             Def.position.Set(transform.m_Position.x, transform.m_Position.y);
             Def.angle = glm::radians(transform.m_Rotation.z);
@@ -349,7 +452,7 @@ namespace SnapEngine
         }
     }
 
-    void Scene::OnRunTimeStop()
+    void Scene::Physics2DStop()
     {
         { // Delete Bodies 
             auto& group = registry.view<RigidBody2DComponent>();
@@ -361,7 +464,28 @@ namespace SnapEngine
         }
 
         delete m_PhysicsWorld;
+        m_PhysicsWorld = nullptr;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     template<typename T>

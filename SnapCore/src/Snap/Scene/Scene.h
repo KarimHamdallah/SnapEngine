@@ -49,6 +49,8 @@ namespace SnapEngine
 		void UpdateRunTime(const TimeStep& Time);
 		void RunTimeRender();
 
+		void UpdateAndRenderSimulation(const TimeStep& Time, const EditorCamera& Camera);
+
 
 		// Editor Functions
 		void ResizeViewPort(uint32_t Width, uint32_t Height); // Update All Scene Cameras Projection According To ViewPort Size Changes
@@ -60,6 +62,11 @@ namespace SnapEngine
 		void OnRunTimeStart(); // Called When play button clicked
 		void OnRunTimeStop(); // Called When Stop button clicked
 
+		void OnSimulationStart(); // Called When Simulate button clicked
+		void OnSimulationStop(); // Called When Stop Simulation button clicked
+
+
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
@@ -68,6 +75,9 @@ namespace SnapEngine
 		std::vector<SnapPtr<Entity>> m_Entities;
 		inline static uint32_t EntityCounter = 0;
 		friend Entity;
+
+		void Physics2DStart();
+		void Physics2DStop();
 
 		// Editor Attribs
 		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;

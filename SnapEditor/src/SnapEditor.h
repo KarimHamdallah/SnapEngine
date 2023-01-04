@@ -19,6 +19,7 @@ namespace SnapEngine
 		{
 			m_PlayIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PlayButton.png"));
 			m_StopIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PauseButton.png"));
+			m_SimulateIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/SimaulateButton.png"));
 
 
 			FrameBufferSpecifications FrameBufferSpecs;
@@ -99,11 +100,22 @@ namespace SnapEngine
 				m_Scene->RunTimeRender(); // RunTimeRenderFunction
 			}
 				break;
+			case SnapEngine::EditorLayer::SceneState::Simulate:
+			{
+				if (m_ViewPortFocused)
+					m_EditorCamera.UpdateCamera(Time);
+				m_Scene->UpdateAndRenderSimulation(Time, m_EditorCamera); // SimulateUpdateAndRenderFunction
+			}
+			break;
 			default:
 				break;
 			}
 
 			Renderer2D::End();
+
+			if(m_VisualiseColliders)
+				RenderOverLayer();
+
 			m_FrameBuffer->UnBind(); // Stop Recording
 
 		}
@@ -119,6 +131,7 @@ namespace SnapEngine
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Keep RunTime Changes", &m_KeepRunTimeChanges);
+			ImGui::Checkbox("Visualise Colliders",  &m_VisualiseColliders);
 			ImGui::End();
 
 			
@@ -231,6 +244,7 @@ namespace SnapEngine
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity;
 		bool m_KeepRunTimeChanges = false;
+		bool m_VisualiseColliders = false;
 		/////////////////////////////////////////////////////////
 
 
@@ -238,11 +252,12 @@ namespace SnapEngine
 		enum class SceneState
 		{
 			PLAY = 0,
-			EDIT = 1
+			EDIT = 1,
+			Simulate = 3
 		};
 
 		SceneState m_CurrentSceneState = SceneState::EDIT;
-		SnapPtr<Texture2D> m_PlayIcon, m_StopIcon;
+		SnapPtr<Texture2D> m_PlayIcon, m_StopIcon, m_SimulateIcon;
 
 private:
 		void StartDockSpace();
@@ -253,6 +268,9 @@ private:
 		void PlayScene();
 		void StopScene();
 
+		void PlaySimulateScene();
+		void StopSimulationScene();
+
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveScene();
@@ -260,6 +278,8 @@ private:
 		void NewScene();
 
 		void OnDuplicateEntity();
+
+		void RenderOverLayer();
 
 		virtual void ProcessEvent(IEvent& e) override;
 		

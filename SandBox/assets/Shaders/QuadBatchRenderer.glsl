@@ -12,7 +12,7 @@ uniform mat4 u_ProjectionView;
 
 out vec2 v_TexCoords;
 out vec4 v_Color;
-out float v_TexID;
+out flat float v_TexID;
 out float v_TilingFactor;
 out flat int v_EntityID;
 
@@ -34,7 +34,7 @@ layout(location = 1) out int MousePickingID;
         
 in vec2 v_TexCoords;
 in vec4 v_Color;
-in float v_TexID;
+in flat float v_TexID;
 in float v_TilingFactor;
 in flat int v_EntityID;
 

@@ -1,37 +1,11 @@
 Scene: Example Scene
 Entities List:
-  - EntityID: 2
-    TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Position: [8.72999954, -3.51999998, -8.46000004]
-      Rotation: [-17.7000008, 118.900002, -2.4000001]
-      Scale: [1, 1, 1]
-    CameraComponent:
-      ProjectionType: 0
-      OrthoGraphicSize: 11
-      OrthoGraphicNear: -100
-      OrthoGraphicFar: 100
-      PerspectiveFov: 0.829205871
-      PerspectiveNear: 0.00999999978
-      PerspectiveFar: 1000
-      IsMain: true
-      FixedAspectRatio: false
-  - EntityID: 1
-    TagComponent:
-      Tag: Sprite
-    TransformComponent:
-      Position: [0, 0.340000004, 0]
-      Rotation: [0, 0, 82.9000015]
-      Scale: [1, 1, 0]
-    SpriteRendererComponent:
-      Color: [1, 0, 0, 1]
-  - EntityID: 0
+  - EntityID: 1048576
     TagComponent:
       Tag: WhiteSprite
     TransformComponent:
-      Position: [1.5, 0, 0]
-      Rotation: [0, 0, -45]
-      Scale: [1, 1, 0]
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 0.321568638]
+      Color: [1, 1, 1, 1]

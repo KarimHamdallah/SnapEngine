@@ -14,8 +14,12 @@ namespace SnapEngine
 
 	void EditorLayer::OpenScene(const std::filesystem::path& filepath)
 	{
-		if (m_CurrentSceneState != SceneState::EDIT)
-			StopScene();
+		switch (m_CurrentSceneState)
+		{
+		case SnapEngine::EditorLayer::SceneState::PLAY: StopScene(); break;
+		case SnapEngine::EditorLayer::SceneState::Simulate: StopSimulationScene(); break;
+		default: break;
+		}
 
 		if (!filepath.empty())
 		{
@@ -275,14 +279,20 @@ namespace SnapEngine
 		ImGui::Begin("##Toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		
 
-		SnapPtr<Texture2D> Icon;
+		SnapPtr<Texture2D> PlayIcon = m_PlayIcon;
+		SnapPtr<Texture2D> SimulateIcon = m_SimulateIcon;
 
 		switch (m_CurrentSceneState)
 		{
-		case SnapEngine::EditorLayer::SceneState::PLAY: Icon = m_StopIcon;
-			break;
-		case SnapEngine::EditorLayer::SceneState::EDIT: Icon = m_PlayIcon;
-			break;
+		case SnapEngine::EditorLayer::SceneState::PLAY: PlayIcon = m_StopIcon; break;
+		case SnapEngine::EditorLayer::SceneState::Simulate: SimulateIcon = m_StopIcon; break;
+		/*
+		case SnapEngine::EditorLayer::SceneState::EDIT:
+		{
+			PlayIcon = m_PlayIcon;
+			SimulateIcon = m_SimulateIcon;
+		} break;
+		*/
 		default:
 			break;
 		}
@@ -290,12 +300,22 @@ namespace SnapEngine
 		float size = ImGui::GetWindowHeight() - 4.0f;
 
 		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton((ImTextureID)Icon->getID(), ImVec2{ size, size }))
+		if (ImGui::ImageButton((ImTextureID)PlayIcon->getID(), ImVec2{ size, size }))
 		{
 			if (m_CurrentSceneState == SceneState::EDIT)
 				PlayScene();
 			else if(m_CurrentSceneState == SceneState::PLAY)
 				StopScene();
+		}
+
+		ImGui::SameLine();
+		
+		if (ImGui::ImageButton((ImTextureID)SimulateIcon->getID(), ImVec2{ size, size })) // Simulate
+		{
+			if (m_CurrentSceneState == SceneState::EDIT)
+				PlaySimulateScene();
+			else if (m_CurrentSceneState == SceneState::Simulate)
+				StopSimulationScene();
 		}
 
 		ImGui::PopStyleVar();
@@ -324,6 +344,26 @@ namespace SnapEngine
 			m_Scene = m_TempScene;
 	}
 
+	void EditorLayer::PlaySimulateScene()
+	{
+		// TempScene Is Another Reference To the same object
+		m_TempScene = m_Scene;
+		m_CurrentSceneState = SceneState::Simulate;
+
+		if (!m_KeepRunTimeChanges)
+			m_Scene = Scene::Copy(m_TempScene);
+		m_Scene->OnSimulationStart(); // Start 2D Physics Setup
+	}
+
+	void EditorLayer::StopSimulationScene()
+	{
+		m_CurrentSceneState = SceneState::EDIT;
+		m_Scene->OnSimulationStop(); // Stop 2D Physics
+
+		if (!m_KeepRunTimeChanges)
+			m_Scene = m_TempScene;
+	}
+
 	void EditorLayer::OnDuplicateEntity()
 	{
 		if (m_CurrentSceneState != SceneState::EDIT)
@@ -331,6 +371,89 @@ namespace SnapEngine
 
 		Entity SelctedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		m_Scene->DuplicateEntity(SelctedEntity);
+	}
+
+	void EditorLayer::RenderOverLayer()
+	{
+		Renderer2D::RendererCamera rcam;
+		if (m_CurrentSceneState == SceneState::PLAY)
+		{
+			if (auto& maincamera = m_Scene->GetMainCameraEntity())
+			{
+				auto& CamTransform = maincamera.GetComponent<TransformComponent>();
+				auto& cam = maincamera.GetComponent<CameraComponent>().m_Camera;
+
+				rcam.Projection = cam.GetProjectionMatrix();
+				rcam.View = glm::inverse(CamTransform.GetTransformMatrix());
+			}
+		}
+		else
+		{
+			rcam.Projection = m_EditorCamera.GetProjectionMatrix();
+			rcam.View = m_EditorCamera.GetViewMatrix();
+		}
+
+		Renderer2D::Begin(rcam);
+		
+		{ // BoxCollider
+			auto group = m_Scene->GetRegistry().view<TransformComponent, BoxCollider2DComponent>();
+
+			for (auto entity : group)
+			{
+				auto [transform, collider] = group.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+				glm::vec3 Position =
+				{
+				  transform.m_Position.x + collider.m_Offset.x,
+				  transform.m_Position.y + collider.m_Offset.y,
+				  transform.m_Position.z + 0.01f
+				};
+
+				glm::vec3 Scale =
+				{
+				  transform.m_Scale.x * collider.m_Size.x * 2.0f,
+				  transform.m_Scale.y * collider.m_Size.y * 2.0f,
+				  1.0f
+				};
+
+				Scale.x += 0.01f;
+				Scale.y += 0.01f;
+
+				// Exclude Roation form original transform
+				glm::mat4 Transform =
+					glm::translate(glm::mat4(1.0f), Position) *
+					glm::rotate(glm::mat4(1.0f), glm::radians(transform.m_Rotation.z), {0, 0, 1}) *
+					glm::scale(glm::mat4(1.0f), Scale);
+
+				Renderer2D::SetLineWidth(3.0f);
+				Renderer2D::DrawRect(Transform, { 0.0f, 1.0f, 0.0f, 1.0f });
+			}
+		}
+
+		{ // CircleCollider
+			auto group = m_Scene->GetRegistry().view<TransformComponent, CircleCollider2DComponent>();
+
+			for (auto entity : group)
+			{
+				auto [transform, collider] = group.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+				float ColliderThickness = 0.05f;
+
+				glm::vec2 Position = glm::vec2(transform.m_Position) + collider.m_Offset;
+				glm::vec3 Scale = transform.m_Scale * glm::vec3(collider.m_Raduis * 2.0f);
+				Scale += ColliderThickness;
+
+				// Exclude Roation form original transform
+				glm::mat4 Transform =
+					glm::translate(glm::mat4(1.0f), { Position.x , Position.y, transform.m_Position.z }) *
+					glm::scale(glm::mat4(1.0f), { Scale.x, Scale.y, 1.0f });
+
+				Renderer2D::DrawCircle(Transform, { 0.0f, 1.0f, 0.0f, 1.0f }, ColliderThickness);
+			}
+		}
+
+
+		Renderer2D::End();
 	}
 
 
