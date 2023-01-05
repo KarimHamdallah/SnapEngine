@@ -341,6 +341,8 @@ namespace SnapEngine
 		if(!m_KeepRunTimeChanges)
 			m_Scene = Scene::Copy(m_TempScene);
 		m_Scene->OnRunTimeStart();
+
+		m_SceneHierarchyPanel.SetScene(m_Scene); // Added To Modify Scene At RunTime From inspector
 	}
 
 	void EditorLayer::StopScene()
@@ -350,6 +352,8 @@ namespace SnapEngine
 
 		if (!m_KeepRunTimeChanges)
 			m_Scene = m_TempScene;
+
+		m_SceneHierarchyPanel.SetScene(m_Scene); // Added To Modify Scene At RunTime From inspector
 	}
 
 	void EditorLayer::PlaySimulateScene()
@@ -361,6 +365,8 @@ namespace SnapEngine
 		if (!m_KeepRunTimeChanges)
 			m_Scene = Scene::Copy(m_TempScene);
 		m_Scene->OnSimulationStart(); // Start 2D Physics Setup
+
+		m_SceneHierarchyPanel.SetScene(m_Scene); // Added To Modify Scene At RunTime From inspector
 	}
 
 	void EditorLayer::StopSimulationScene()
@@ -370,6 +376,8 @@ namespace SnapEngine
 
 		if (!m_KeepRunTimeChanges)
 			m_Scene = m_TempScene;
+
+		m_SceneHierarchyPanel.SetScene(m_Scene); // Added To Modify Scene At RunTime From inspector
 	}
 
 	void EditorLayer::OnDuplicateEntity()

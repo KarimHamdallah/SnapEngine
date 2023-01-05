@@ -38,6 +38,51 @@ namespace SnapEngine
 
 			m_Scene = CreatSnapPtr<Scene>();
 			m_SceneHierarchyPanel.SetScene(m_Scene);
+
+
+			////////////////////// Scripts //////////////////
+
+			class SpriteScalerScript : public CppScript
+			{
+			public:
+				virtual void Update(TimeStep Time) override
+				{
+					float Speed = 10.0f;
+					if (HasComponent<CameraComponent>())
+					{
+						CameraComponent& cam = GetComponent<CameraComponent>();
+						float CamSize = cam.m_Camera.GetOrthoGraphicSize();
+
+						if (Input::IsKeyPressed(Key::Right))
+							cam.m_Camera.SetOrthoGraphicSize(CamSize - Time * Speed);
+						if (Input::IsKeyPressed(Key::Left))
+							cam.m_Camera.SetOrthoGraphicSize(CamSize + Time * Speed);
+					}
+					else
+					{
+						TransformComponent& transform = GetComponent<TransformComponent>();
+						if (Input::IsKeyPressed(Key::Right))
+							transform.m_Scale.x += Time * Speed;
+						if (Input::IsKeyPressed(Key::Left))
+							transform.m_Scale.x -= Time * Speed;
+						if (Input::IsKeyPressed(Key::Up))
+							transform.m_Scale.y += Time * Speed;
+						if (Input::IsKeyPressed(Key::Down))
+							transform.m_Scale.y -= Time * Speed;
+					}
+				}
+			};
+
+
+
+			///////////// Scene Setup /////////////
+			Entity Sprite = m_Scene->CreatEntity("Sprite");
+			Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(0.8f, 0.3f, 0.4f, 1.0f));
+			Sprite.AddComponent<CppScriptComponent>().Bind<SpriteScalerScript>();
+
+			Entity Camera = m_Scene->CreatEntity("Camera", glm::vec3(0.0f, 0.0f, 10.0f));
+			Camera.AddComponent<CameraComponent>().m_IsMain = true;
+			Camera.AddComponent<CppScriptComponent>().Bind<SpriteScalerScript>();
 		}
 
 		~EditorLayer() {}
