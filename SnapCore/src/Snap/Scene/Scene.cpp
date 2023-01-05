@@ -424,7 +424,8 @@ namespace SnapEngine
                 auto& collider = e.GetComponent<BoxCollider2DComponent>();
 
                 b2PolygonShape shape;
-                shape.SetAsBox(collider.m_Size.x * transform.m_Scale.x, collider.m_Size.y * transform.m_Scale.y);
+                shape.SetAsBox(collider.m_Size.x * transform.m_Scale.x, collider.m_Size.y * transform.m_Scale.y,
+                    b2Vec2(collider.m_Offset.x, collider.m_Offset.y), 0.0f);
                 b2FixtureDef Def;
                 Def.shape = &shape;
                 Def.density = collider.m_Density;

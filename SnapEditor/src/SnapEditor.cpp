@@ -254,6 +254,14 @@ namespace SnapEngine
 				if (ImGui::MenuItem("Open...", "Cntrl+O"))
 					OpenScene();
 
+				if (ImGui::MenuItem("Save...", "Cntrl+S"))
+				{
+					if (m_CurrentDeserializedScenePath.empty())
+						SaveScene(); // Dialoge
+					else
+						SaveScene(m_CurrentDeserializedScenePath);
+				}
+
 				if (ImGui::MenuItem("Save As...", "Cntrl+Shift+S"))
 					SaveScene();
 

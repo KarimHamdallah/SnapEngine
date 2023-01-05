@@ -171,7 +171,9 @@ namespace SnapEngine
 			auto& sprite_renderer = entity.GetComponent<SpriteRendererComponent>();
 
 			out << YAML::Key << "Color" << YAML::Value << sprite_renderer.m_Color;
-			//out << YAML::Key << "TexturePath" << YAML::Value << sprite_renderer.m_Texture->getFilePath().c_str();
+			if(sprite_renderer.m_Texture)
+				out << YAML::Key << "TexturePath" << YAML::Value << sprite_renderer.m_Texture->getFilePath().c_str();
+			out << YAML::Key << "TilingFactor" << YAML::Value << sprite_renderer.m_TilingFactor;
 
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
@@ -315,7 +317,16 @@ namespace SnapEngine
 		std::stringstream strstream;
 		strstream << file.rdbuf();
 
-		YAML::Node data = YAML::Load(strstream.str());
+		YAML::Node data;
+		try
+		{
+			data = YAML::Load(strstream.str());
+		}
+		catch (const YAML::ParserException& e)
+		{
+			SNAP_ERROR("Yaml Failed to load {0}.snap file, {1}", filepath, e.what());
+			return false;
+		}
 		if (!data["Scene"])
 			return false;
 
@@ -349,14 +360,13 @@ namespace SnapEngine
 					auto& SpriteRendererComponentNode = entity["SpriteRendererComponent"];
 					glm::vec4 Color = SpriteRendererComponentNode["Color"].as<glm::vec4>();
 					
-					/*
-					std::string TextureFilePath = SpriteRendererComponentNode["TexturePath"].as<std::string>();
-
-					SnapPtr<Texture2D> Texture = nullptr;
-					if(!TextureFilePath.empty())
-						Texture = SnapPtr<Texture2D>(Texture2D::Creat(TextureFilePath));
-					*/
-					e.AddComponent<SpriteRendererComponent>(Color);
+					auto& comp = e.AddComponent<SpriteRendererComponent>(Color);
+					if (SpriteRendererComponentNode["TexturePath"])
+					{
+						std::string TextureFilePath = SpriteRendererComponentNode["TexturePath"].as<std::string>();
+						comp.m_Texture = SnapPtr<Texture2D>(Texture2D::Creat(TextureFilePath));
+					}
+					comp.m_TilingFactor = SpriteRendererComponentNode["TilingFactor"].as<float>();
 				}
 
 				if (entity["CircleRendererComponent"])
