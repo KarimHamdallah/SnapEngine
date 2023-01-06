@@ -31,6 +31,9 @@
     <Filter Include="src\Snap\Scene\Scripts">
       <UniqueIdentifier>{22650DCE-0E5F-3620-F7CB-CC30E3649C8C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snap\Scripting">
+      <UniqueIdentifier>{D00100C4-BCE5-C019-2546-BB6C1149AB9B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
     </Filter>
@@ -206,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h">
       <Filter>src\Snap\Scene\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Scripting\ScriptingEngine.h">
+      <Filter>src\Snap\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\SnapEngine.h">
       <Filter>src</Filter>
@@ -1168,6 +1174,9 @@
     </ClCompile>
     <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp">
       <Filter>src\Snap\Scene\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Scripting\ScriptingEngine.cpp">
+      <Filter>src\Snap\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="src\SnapPCH.cpp">
       <Filter>src</Filter>

@@ -21,6 +21,13 @@ Dependencies["Entt"] = "SnapCore/vendor/Entt/include"
 Dependencies["YAML"] = "SnapCore/vendor/YAML/include"
 Dependencies["IMGUIZMO"] = "SnapCore/vendor/imguizmo"
 Dependencies["Box2D"] = "SnapCore/vendor/Box2D/include"
+Dependencies["mono"] = "SnapCore/vendor/mono/include"
+
+LibraryDirectories = {}
+LibraryDirectories["mono"] = "%{wks.location}/SnapCore/vendor/mono/lib/Debug"
+
+Library = {}
+Library["mono"] = "%{LibraryDirectories.mono}/libmono-static-sgen.lib"
 
 include "SnapCore/vendor/GLFW"
 include "SnapCore/vendor/GLAD"
@@ -28,7 +35,7 @@ include "SnapCore/vendor/imgui"
 include "SnapCore/vendor/YAML"
 include "SnapCore/vendor/Box2D"
 
-project "SnapCore"
+project "SnapCore"                                                       -- SnapCore
     location "SnapCore"
 	kind "StaticLib"
 	language "C++"
@@ -62,7 +69,8 @@ project "SnapCore"
 		"%{Dependencies.Entt}",
 		"%{Dependencies.YAML}",
 		"%{Dependencies.IMGUIZMO}",
-		"%{Dependencies.Box2D}"
+		"%{Dependencies.Box2D}",
+		"%{Dependencies.mono}"
 	}
 
 	links
@@ -72,7 +80,9 @@ project "SnapCore"
 		"ImGui",
 		"yaml-cpp",
 		"Box2D",
-		"opengl32.lib"
+		"opengl32.lib",
+		--"%{Library.mono}"
+		"%{LibraryDirectories.mono}/%{cfg.buildcgf}/mono-2.0-sgen.lib"
 	}
 
 	filter "files:vendor/imguizmo/**.cpp"
@@ -91,6 +101,14 @@ project "SnapCore"
 		"SNAP_PLATFORM_WINDOWS",
 		"SNAP_ENABLE_ASSERTION",
 		"YAML_CPP_STATIC_DEFINE"
+	}
+
+	links
+	{
+		"ws2_32.lib",
+		"winmm.lib",
+		"version.lib",
+		"Bcrypt.lib"
 	}
 	
 	 filter "configurations:Debug"
@@ -111,7 +129,7 @@ project "SnapCore"
 	 	runtime "Release"
 	 	optimize "on"
 
-project "SandBox"
+project "SandBox"                                                                -- SandBox
     location "SandBox"
 	kind "ConsoleApp"
 	language "C++"
@@ -171,7 +189,7 @@ project "SandBox"
 		runtime "Release"
 		optimize "on"
 
-project "SnapEditor"
+project "SnapEditor"                                                             -- SnapEditor
     location "SnapEditor"
 	kind "ConsoleApp"
 	language "C++"
@@ -231,3 +249,31 @@ project "SnapEditor"
 		buildoptions "/MT"
 		runtime "Release"
 		optimize "on"
+
+
+project "Snap-ScriptCore"                                                               -- Snap-ScriptCore
+    location "Snap-ScriptCore"
+	kind "SharedLib"
+	language "C#"
+	dotnetframework "4.7.2"
+
+	targetdir ("%{wks.location}/SnapEditor/Resources/Scripts")
+	objdir ("Build/intermediate/SnapEditor/Resources/Scripts/intermediate")
+
+	files
+	{
+	    "%{prj.name}/Source/**.cs",
+        "%{prj.name}/Properties/**.cs"
+	}
+
+	filter "configurations:Debug"
+		optimize "off"
+		symbols "Default"
+
+	filter "configurations:Release"
+		optimize "on"
+		symbols "Default"
+
+	filter "configurations:Distribution"
+		optimize "full"
+		symbols "off"

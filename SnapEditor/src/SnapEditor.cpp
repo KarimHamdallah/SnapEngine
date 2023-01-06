@@ -39,6 +39,7 @@ namespace SnapEngine
 
 	void EditorLayer::NewScene()
 	{
+		m_CurrentDeserializedScenePath = "";
 		m_Scene = CreatSnapPtr<Scene>();
 		m_Scene->ResizeViewPort((uint32_t)m_ViewPortSize.x, (uint32_t)m_ViewPortSize.y);
 		m_SceneHierarchyPanel.SetScene(m_Scene);

@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glad", "SnapCore\vendor\GLA
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "SnapCore\vendor\imgui\ImGui.vcxproj", "{C0FF640D-2C14-8DBE-F595-301E616989EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snap-ScriptCore", "Snap-ScriptCore\Snap-ScriptCore.csproj", "{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapCore", "SnapCore\SnapCore.vcxproj", "{002CE712-ECF8-411E-1512-30C6013E77AC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnapEditor", "SnapEditor\SnapEditor.vcxproj", "{DECE406D-CA86-82BA-338E-5B161F651DAB}"
@@ -54,6 +56,12 @@ Global
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Distribution|x64.Build.0 = Distribution|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.ActiveCfg = Release|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.Build.0 = Release|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Debug|x64.ActiveCfg = Debug|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Debug|x64.Build.0 = Debug|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Distribution|x64.ActiveCfg = Distribution|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Distribution|x64.Build.0 = Distribution|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Release|x64.ActiveCfg = Release|x64
+		{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}.Release|x64.Build.0 = Release|x64
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Debug|x64.ActiveCfg = Debug|x64
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Debug|x64.Build.0 = Debug|x64
 		{002CE712-ECF8-411E-1512-30C6013E77AC}.Distribution|x64.ActiveCfg = Distribution|x64
