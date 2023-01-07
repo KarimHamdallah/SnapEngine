@@ -14,6 +14,8 @@ namespace SnapEngine
 	{
 		s_Instance = this;
 
+		Scripting::ScriptingEngine::Init();
+		
 		WindowProps props;
 		props.Title = name;
 		props.Width = Width;
@@ -29,7 +31,6 @@ namespace SnapEngine
 		// Initialize Renderer
 		Renderer::Init();
 		Renderer2D::Init();
-		Scripting::ScriptingEngine::Init();
 	}
 
 	Application::~Application()

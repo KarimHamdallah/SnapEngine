@@ -21,7 +21,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

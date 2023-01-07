@@ -1083,6 +1083,7 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Scripting\ScriptGlue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1214,5 +1215,6 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\Scripting\ScriptGlue.cpp" />
   </ItemGroup>
 </Project>

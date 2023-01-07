@@ -1,3 +1,4 @@
+#include <filesystem>
 
 namespace Scripting
 {
@@ -6,5 +7,7 @@ namespace Scripting
 	public:
 		static void Init();
 		static void ShutDown();
+
+		static void LoadAssembly(const std::filesystem::path& DllFilePath);
 	};
 }

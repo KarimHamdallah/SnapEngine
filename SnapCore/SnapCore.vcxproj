@@ -182,6 +182,7 @@
     <ClInclude Include="src\Snap\Scene\Scripts\CameraControllerScript.h" />
     <ClInclude Include="src\Snap\Scene\Scripts\ChangeColor.h" />
     <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h" />
+    <ClInclude Include="src\Snap\Scripting\ScriptGlue.h" />
     <ClInclude Include="src\Snap\Scripting\ScriptingEngine.h" />
     <ClInclude Include="src\SnapEngine.h" />
     <ClInclude Include="src\SnapPCH.h" />
@@ -507,6 +508,7 @@
     <ClCompile Include="src\Snap\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Snap\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp" />
+    <ClCompile Include="src\Snap\Scripting\ScriptGlue.cpp" />
     <ClCompile Include="src\Snap\Scripting\ScriptingEngine.cpp" />
     <ClCompile Include="src\SnapPCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
