@@ -168,4 +168,12 @@ namespace SnapEngine
 
 		void* RunTimeFixture = nullptr;
 	};
+
+	struct ScriptComponent
+	{
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+
+		std::string ClassName;
+	};
 }

@@ -7,6 +7,9 @@
 #include <mono/metadata/assembly.h>
 
 #include "ScriptGlue.h"
+#include <Snap/Core/UUID.h>
+
+#include <Snap/Scene/Comps/Components.h>
 
 namespace Scripting
 {
@@ -66,9 +69,9 @@ namespace Scripting
 			return assembly;
 		}
 
-		void PrintAssemblyTypes(MonoAssembly* assembly)
+		static void PrintAssemblyTypes(MonoAssembly* Assembly, MonoImage* Image)
 		{
-			MonoImage* image = mono_assembly_get_image(assembly);
+			MonoImage* image = mono_assembly_get_image(Assembly);
 			const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 			int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
@@ -80,7 +83,9 @@ namespace Scripting
 				const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
 				const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-				printf("%s.%s\n", nameSpace, name);
+				MonoClass* mono_class = mono_class_from_name(Image, nameSpace, name);
+
+				SNAP_DEBUG("NmaeSpce-> {}, ClassName-> {}", nameSpace, name);
 			}
 		}
 	}
@@ -99,6 +104,10 @@ namespace Scripting
 
 		MonoAssembly* CoreAssembly = nullptr;
 		MonoImage* CoreAssemblyImage = nullptr;
+
+		std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> m_EntityClasses;
+		std::unordered_map<SnapEngine::UUID, SnapEngine::SnapPtr<ScriptInstance>> m_EntityScriptInstances;
+		SnapEngine::Scene* SceneContext = nullptr;
 	};
 
 
@@ -131,10 +140,92 @@ namespace Scripting
 	void ScriptingEngine::LoadAssembly(const std::filesystem::path& DllFilePath)
 	{
 		s_Data->CoreAssembly = Utils::LoadCSharpAssembly(DllFilePath.string().c_str());
-		Utils::PrintAssemblyTypes(s_Data->CoreAssembly);
-
-		// Get C# Class From Dll File Which is Loaded And Stored in s_Data->CoreAssembly
 		s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
+		
+		//Utils::PrintAssemblyTypes(s_Data->CoreAssembly, s_Data->CoreAssemblyImage);
+	}
+
+	void ScriptingEngine::LoadCSharpAssemblyClasses(MonoAssembly* Assembly, MonoImage* Image)
+	{
+		MonoImage* image = mono_assembly_get_image(Assembly);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+		
+		MonoClass* EntityClass = mono_class_from_name(Image, "SnapEngine", "Entity");
+
+		for (int32_t i = 0; i < numTypes; i++)
+		{
+			uint32_t cols[MONO_TYPEDEF_SIZE];
+			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+
+			std::string fullname;
+			if (strlen(nameSpace) != 0)
+				fullname = fmt::format("{}.{}", nameSpace, name);
+			else
+				fullname = name;
+
+			MonoClass* mono_class = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace, name);
+			
+			bool IsEntitySubClass = mono_class_is_subclass_of(mono_class, EntityClass, false);
+			if (IsEntitySubClass)
+				s_Data->m_EntityClasses[fullname] = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name);
+			
+			SNAP_DEBUG("NmaeSpce>> {}, ClassName>> {}", nameSpace, name);
+		}
+	}
+
+	std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> ScriptingEngine::GetEntityClassesMap()
+	{
+		return s_Data->m_EntityClasses;
+	}
+
+	bool ScriptingEngine::IsEntityClassExist(std::string ClassName)
+	{
+		return s_Data->m_EntityClasses.find(ClassName) != s_Data->m_EntityClasses.end();
+	}
+
+	void ScriptingEngine::OnCreatEntity(SnapEngine::Entity e)
+	{
+		const auto& sc = e.GetComponent<SnapEngine::ScriptComponent>();
+		auto& uuid = e.GetComponent<SnapEngine::IDComponent>().ID;
+
+		if (IsEntityClassExist(sc.ClassName))
+		{
+			// Get Script Class From Component ClassName
+			SnapEngine::SnapPtr<ScriptClass> script_class = s_Data->m_EntityClasses[sc.ClassName];
+			// Creat Script Instance From ScriptClass
+			SnapEngine::SnapPtr<ScriptInstance> instance = SnapEngine::CreatSnapPtr<ScriptInstance>(script_class);
+			// Add Instance to Map with uuid keyvalue
+			s_Data->m_EntityScriptInstances[uuid] = instance;
+			// run C# OnCreat Method From Instance With This UUID
+			instance->InvokeOnCreatMethod();
+		}
+	}
+
+	void ScriptingEngine::OnUpdateEntity(SnapEngine::Entity e, SnapEngine::TimeStep Time)
+	{
+		const auto& sc = e.GetComponent<SnapEngine::ScriptComponent>();
+		if (IsEntityClassExist(sc.ClassName))
+		{
+			auto& uuid = e.GetComponent<SnapEngine::IDComponent>().ID;
+
+			// run C# OnUpdate Method From Instance With This UUID
+			s_Data->m_EntityScriptInstances[uuid]->InvokeOnUpdateMethod(Time);
+		}
+	}
+
+	void ScriptingEngine::OnRunTimeStart(SnapEngine::Scene* Scene)
+	{
+		s_Data->SceneContext = Scene;
+	}
+
+	void ScriptingEngine::OnRunTimeStop()
+	{
+		s_Data->SceneContext = nullptr;
 	}
 
 	void ScriptingEngine::Init()
@@ -143,37 +234,9 @@ namespace Scripting
 
 		InitMono(); // Setup MonoDomain(Root & App), MonoAssembly(CoreAssembly)
 		LoadAssembly("Resources/Scripts/Snap-ScriptCore.dll"); // Load dll file
+		LoadCSharpAssemblyClasses(s_Data->CoreAssembly, s_Data->CoreAssemblyImage); // Load Classes
 
 		ScriptGlue::RegisterGlue(); // Setup C# Internal Calls
-
-		// Read Class
-		MonoClass* monoClass = mono_class_from_name(s_Data->CoreAssemblyImage, "SnapEngine", "Main");
-
-		// 1. Creat an Object and Call Constructor
-		MonoObject* instance = mono_object_new(s_Data->AppDomain, monoClass);
-		mono_runtime_object_init(instance);
-
-		// 2. Call Function PrintMessage
-		MonoMethod* PrintMessageFunc = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
-		mono_runtime_invoke(PrintMessageFunc, instance, nullptr, nullptr);
-
-		// 3. Call Function Printvalue
-		MonoMethod* PrintvalueFunc = mono_class_get_method_from_name(monoClass, "Printvalue", 1);
-
-		float value = 50.0f;
-		void* param = &value;
-
-		mono_runtime_invoke(PrintvalueFunc, instance, &param, nullptr);
-
-		// 3. Call Function PrintCustomMessage
-		MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello Karim From C#");
-		MonoMethod* PrintCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
-
-		void* Stringparam = monoString;
-
-		mono_runtime_invoke(PrintCustomMessageFunc, instance, &Stringparam, nullptr);
-
-		//SNAP_ASSERT(false);
 	}
 
 	void ScriptingEngine::ShutDown()
@@ -181,5 +244,61 @@ namespace Scripting
 		ShutdownMonon();
 		delete s_Data;
 		s_Data = nullptr;
+	}
+
+
+
+
+	MonoObject* ScriptingEngine::InstantiateClass(MonoClass* monoClass)
+	{
+		// Creat an Object and Call Constructor
+		MonoObject* instance = mono_object_new(s_Data->AppDomain, monoClass);
+		mono_runtime_object_init(instance);
+		return instance;
+	}
+
+
+
+
+
+	ScriptClass::ScriptClass(const std::string& nameSpace, const std::string& name)
+		: m_NameSpace(nameSpace), mName(name)
+	{
+		m_MonoClass = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace.c_str(), name.c_str());
+	}
+
+	MonoObject* ScriptClass::Instantiate()
+	{
+		return ScriptingEngine::InstantiateClass(m_MonoClass);
+	}
+
+	MonoMethod* ScriptClass::GetMethod(const std::string& name, int paramCount)
+	{
+		return mono_class_get_method_from_name(m_MonoClass, name.c_str(), paramCount);
+	}
+
+
+	MonoObject* ScriptClass::InvokeMethod(MonoMethod* method, MonoObject* instance, void** params)
+	{
+		return mono_runtime_invoke(method, instance, params, nullptr);
+	}
+
+	ScriptInstance::ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass)
+	{
+		m_Instance = ScriptingEngine::InstantiateClass(*ScriptClass);
+
+		m_OnCreatMethod = ScriptClass->GetMethod("OnCreat", 0);
+		m_OnUpdateMethod = ScriptClass->GetMethod("OnUpdate", 1);
+	}
+
+	void ScriptInstance::InvokeOnCreatMethod()
+	{
+		m_ScriptClass->InvokeMethod(m_OnCreatMethod, m_Instance, nullptr);
+	}
+
+	void ScriptInstance::InvokeOnUpdateMethod(float TimeStep)
+	{
+		void* param = &TimeStep;
+		m_ScriptClass->InvokeMethod(m_OnUpdateMethod, m_Instance, &param);
 	}
 }

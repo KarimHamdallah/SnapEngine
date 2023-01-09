@@ -59,6 +59,7 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Distribution|x64' ">
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Player.cs" />
     <Compile Include="Source\Main.cs" />
   </ItemGroup>
   <ItemGroup>

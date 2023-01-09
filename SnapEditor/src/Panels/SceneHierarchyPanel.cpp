@@ -5,6 +5,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include <Snap/Scripting/ScriptingEngine.h>
+
 namespace SnapEngine
 {
 	extern const std::filesystem::path g_AssetPath;
@@ -270,6 +272,12 @@ namespace SnapEngine
 					m_SelectedEntity.AddComponent<CircleCollider2DComponent>();
 				else
 					SNAP_WARN("Entity With Tag {0}, Already Has CircleCollider2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+			
+			if (ImGui::MenuItem("Script Component"))
+				if (!m_SelectedEntity.HasComponent<ScriptComponent>())
+					m_SelectedEntity.AddComponent<ScriptComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has Script Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
 
 			ImGui::EndPopup();
 		}
@@ -438,6 +446,32 @@ namespace SnapEngine
 				ImGui::DragFloat("Density", &component.m_Density, 0.01f);
 				ImGui::DragFloat("Friction", &component.m_Friction, 0.01f);
 				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
+			});
+		
+		DrawComponent<ScriptComponent>("Script", entity, [&](ScriptComponent& component)
+			{
+
+				bool ScriptClassExist = false;
+
+				auto& EnittyClasses = Scripting::ScriptingEngine::GetEntityClassesMap();
+
+				if (Scripting::ScriptingEngine::IsEntityClassExist(component.ClassName))
+					ScriptClassExist = true;
+
+
+				char buffer[64];
+				strcpy(buffer, component.ClassName.c_str());
+				if (!ScriptClassExist)
+					ImGui::PushStyleColor(ImGuiCol_Text, { 0.9f, 0.2f, 0.3f, 1.0f });
+				else
+					ImGui::PushStyleColor(ImGuiCol_Text, { 0.2f, 0.9f, 0.3f, 1.0f });
+				
+				if (ImGui::InputText("ClassName", buffer, sizeof(buffer)))
+				{
+					component.ClassName = std::string(buffer);
+				}
+
+				ImGui::PopStyleColor();
 			});
 	}
 }

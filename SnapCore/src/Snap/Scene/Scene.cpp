@@ -12,6 +12,8 @@
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_circle_shape.h>
 
+#include <Snap/Scripting/ScriptingEngine.h>
+
 namespace SnapEngine
 {
     static b2BodyType RgidBody2DTypeToBox2DType(RigidBody2DComponent::RigidBodyType Type)
@@ -103,6 +105,7 @@ namespace SnapEngine
         CopyComponent<RigidBody2DComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<BoxCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<CircleCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
+        CopyComponent<ScriptComponent>(srcRegistry, destRegistry, UUIDMap);
 
         return NewScene;
     }
@@ -119,6 +122,7 @@ namespace SnapEngine
         CopyComponentIfExist<RigidBody2DComponent>(entity, NewEntity);
         CopyComponentIfExist<BoxCollider2DComponent>(entity, NewEntity);
         CopyComponentIfExist<CircleCollider2DComponent>(entity, NewEntity);
+        CopyComponentIfExist<ScriptComponent>(entity, NewEntity);
     }
 
     void Scene::DestroyEntity(Entity entity)
@@ -170,6 +174,13 @@ namespace SnapEngine
                     }
 
                     cppSc.m_Instance->Update(Time);
+                });
+        }
+
+        { // Update Scripts
+            registry.view<ScriptComponent>().each([=](auto entity, auto& cppSc)
+                {
+                    Scripting::ScriptingEngine::OnUpdateEntity(Entity{ entity, this }, Time);
                 });
         }
 
@@ -372,6 +383,17 @@ namespace SnapEngine
     void Scene::OnRunTimeStart()
     {
         Physics2DStart();
+
+        {// Scripting
+            Scripting::ScriptingEngine::OnRunTimeStart(this);
+            auto& group = registry.view<ScriptComponent>();
+
+            for (auto entity : group)
+            {
+                Entity e{ entity, this };
+                Scripting::ScriptingEngine::OnCreatEntity(e);
+            }
+        }
     }
 
     void Scene::OnRunTimeStop()
@@ -541,6 +563,10 @@ namespace SnapEngine
     }
     template<>
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
     {
     }
 }

@@ -25,11 +25,11 @@ namespace SnapEngine
         public extern static float Vector3_Dot(ref Vector3 v1, ref Vector3 v2);
     }
 
-    public class Main
+    public class Entity
     {
 
         public float FloatVar { get; set; }
-        public Main()
+        public Entity()
         {
             Console.WriteLine("Main Class Constructor");
             InternalCalls.CppFunc();
