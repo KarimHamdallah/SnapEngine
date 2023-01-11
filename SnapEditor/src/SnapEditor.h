@@ -78,11 +78,9 @@ namespace SnapEngine
 			///////////// Scene Setup /////////////
 			Entity Sprite = m_Scene->CreatEntity("Sprite");
 			Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(0.8f, 0.3f, 0.4f, 1.0f));
-			Sprite.AddComponent<CppScriptComponent>().Bind<SpriteScalerScript>();
 
 			Entity Camera = m_Scene->CreatEntity("Camera", glm::vec3(0.0f, 0.0f, 10.0f));
 			Camera.AddComponent<CameraComponent>().m_IsMain = true;
-			Camera.AddComponent<CppScriptComponent>().Bind<SpriteScalerScript>();
 		}
 
 		~EditorLayer() {}

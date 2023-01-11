@@ -35,7 +35,7 @@ namespace Scripting
 	class ScriptInstance
 	{
 	public:
-		ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass);
+		ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass, SnapEngine::UUID EntityID);
 
 		void InvokeOnCreatMethod();
 		void InvokeOnUpdateMethod(float TimeStep);
@@ -65,7 +65,13 @@ namespace Scripting
 
 		static void OnRunTimeStart(SnapEngine::Scene* Scene);
 		static void OnRunTimeStop();
+
+		static SnapEngine::Scene* GetSceneContext();
+
+		static MonoImage* GetCoreAssemblyImage();
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
+
+		friend class ScriptGlue;
 	};
 }

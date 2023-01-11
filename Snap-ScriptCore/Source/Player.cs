@@ -6,14 +6,36 @@ namespace SandBox
 {
     internal class Player : Entity
     {
+        TransformComponent m_Transform;
+        RigidBody2DComponent m_RigidBody;
+        float Speed = 10.0f;
         public void OnCreat()
         {
             Console.WriteLine("EntityClass....OnCreat");
+            m_Transform = CreatAndGetComponent<TransformComponent>();
+            m_RigidBody = CreatAndGetComponent<RigidBody2DComponent>();
         }
 
         public void OnUpdate(float TimeStep)
         {
-            Console.WriteLine("EntityClass....OnUpdate");
+            if (InternalCalls.IsKeyPressed(Key.Space))
+            {
+                Console.WriteLine("EntityClass....OnUpdate... SpaceKeyPressed!");
+                m_RigidBody.ApplyLinearImpulseToCenter(new vec2(0.0f, 3.0f), true);
+            }
+
+            /*
+            vec3 Pos = m_Transform.Position;
+            if (InternalCalls.IsKeyPressed(Key.W))
+                Pos.y += Speed * TimeStep;
+            if (InternalCalls.IsKeyPressed(Key.S))
+                Pos.y -= Speed * TimeStep;
+            if (InternalCalls.IsKeyPressed(Key.A))
+                Pos.x -= Speed * TimeStep;
+            if (InternalCalls.IsKeyPressed(Key.D))
+                Pos.x += Speed * TimeStep;
+            m_Transform.Position = Pos;
+            */
         }
     }
 }

@@ -108,6 +108,9 @@ namespace Scripting
 		std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> m_EntityClasses;
 		std::unordered_map<SnapEngine::UUID, SnapEngine::SnapPtr<ScriptInstance>> m_EntityScriptInstances;
 		SnapEngine::Scene* SceneContext = nullptr;
+
+		MonoClass* EntityClass;
+		MonoMethod* EntityConstructor;
 	};
 
 
@@ -147,12 +150,15 @@ namespace Scripting
 
 	void ScriptingEngine::LoadCSharpAssemblyClasses(MonoAssembly* Assembly, MonoImage* Image)
 	{
+		s_Data->m_EntityClasses.clear();
+
 		MonoImage* image = mono_assembly_get_image(Assembly);
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
 		
-		MonoClass* EntityClass = mono_class_from_name(Image, "SnapEngine", "Entity");
+		s_Data->EntityClass = mono_class_from_name(Image, "SnapEngine", "Entity");
+		s_Data->EntityConstructor = mono_class_get_method_from_name(s_Data->EntityClass, ".ctor", 1);
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
@@ -170,7 +176,7 @@ namespace Scripting
 
 			MonoClass* mono_class = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace, name);
 			
-			bool IsEntitySubClass = mono_class_is_subclass_of(mono_class, EntityClass, false);
+			bool IsEntitySubClass = mono_class_is_subclass_of(mono_class, s_Data->EntityClass, false);
 			if (IsEntitySubClass)
 				s_Data->m_EntityClasses[fullname] = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name);
 			
@@ -198,7 +204,7 @@ namespace Scripting
 			// Get Script Class From Component ClassName
 			SnapEngine::SnapPtr<ScriptClass> script_class = s_Data->m_EntityClasses[sc.ClassName];
 			// Creat Script Instance From ScriptClass
-			SnapEngine::SnapPtr<ScriptInstance> instance = SnapEngine::CreatSnapPtr<ScriptInstance>(script_class);
+			SnapEngine::SnapPtr<ScriptInstance> instance = SnapEngine::CreatSnapPtr<ScriptInstance>(script_class, uuid);
 			// Add Instance to Map with uuid keyvalue
 			s_Data->m_EntityScriptInstances[uuid] = instance;
 			// run C# OnCreat Method From Instance With This UUID
@@ -225,7 +231,18 @@ namespace Scripting
 
 	void ScriptingEngine::OnRunTimeStop()
 	{
+		s_Data->m_EntityScriptInstances.clear();
 		s_Data->SceneContext = nullptr;
+	}
+
+	SnapEngine::Scene* ScriptingEngine::GetSceneContext()
+	{
+		return s_Data->SceneContext;
+	}
+
+	MonoImage* ScriptingEngine::GetCoreAssemblyImage()
+	{
+		return s_Data->CoreAssemblyImage;
 	}
 
 	void ScriptingEngine::Init()
@@ -236,6 +253,7 @@ namespace Scripting
 		LoadAssembly("Resources/Scripts/Snap-ScriptCore.dll"); // Load dll file
 		LoadCSharpAssemblyClasses(s_Data->CoreAssembly, s_Data->CoreAssemblyImage); // Load Classes
 
+		ScriptGlue::RegisterComponents();
 		ScriptGlue::RegisterGlue(); // Setup C# Internal Calls
 	}
 
@@ -283,22 +301,31 @@ namespace Scripting
 		return mono_runtime_invoke(method, instance, params, nullptr);
 	}
 
-	ScriptInstance::ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass)
+	ScriptInstance::ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass, SnapEngine::UUID EntityID)
 	{
 		m_Instance = ScriptingEngine::InstantiateClass(*ScriptClass);
 
 		m_OnCreatMethod = ScriptClass->GetMethod("OnCreat", 0);
 		m_OnUpdateMethod = ScriptClass->GetMethod("OnUpdate", 1);
+
+		{// Run Entity Constructor
+			void* param = &EntityID;
+			ScriptClass->InvokeMethod(s_Data->EntityConstructor, m_Instance, &param);
+		}
 	}
 
 	void ScriptInstance::InvokeOnCreatMethod()
 	{
-		m_ScriptClass->InvokeMethod(m_OnCreatMethod, m_Instance, nullptr);
+		if(m_OnCreatMethod)
+			m_ScriptClass->InvokeMethod(m_OnCreatMethod, m_Instance, nullptr);
 	}
 
 	void ScriptInstance::InvokeOnUpdateMethod(float TimeStep)
 	{
-		void* param = &TimeStep;
-		m_ScriptClass->InvokeMethod(m_OnUpdateMethod, m_Instance, &param);
+		if (m_OnUpdateMethod)
+		{
+			void* param = &TimeStep;
+			m_ScriptClass->InvokeMethod(m_OnUpdateMethod, m_Instance, &param);
+		}
 	}
 }

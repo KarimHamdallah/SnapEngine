@@ -67,6 +67,10 @@ namespace SnapEngine
 
 
 
+		Entity GetEntityWithUUID(UUID uuid);
+
+
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
