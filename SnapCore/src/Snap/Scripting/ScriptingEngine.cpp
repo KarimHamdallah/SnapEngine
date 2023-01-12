@@ -11,6 +11,8 @@
 
 #include <Snap/Scene/Comps/Components.h>
 
+#include <mono/metadata/tabledefs.h>
+
 namespace Scripting
 {
 	namespace Utils
@@ -116,8 +118,29 @@ namespace Scripting
 
 	static ScriptEngineData* s_Data = nullptr;
 
-
-
+	static ScriptFieldDataType MonoClassTypeNameToScriptFieldDataType(std::string TypeName)
+	{
+		if (TypeName == "Int32")
+			return ScriptFieldDataType::Int;
+		else if (TypeName == "Single")
+			return ScriptFieldDataType::Float;
+		else if (TypeName == "Double")
+			return ScriptFieldDataType::Double;
+		else if (TypeName == "Boolean")
+			return ScriptFieldDataType::Bool;
+		else if (TypeName == "UInt64")
+			return ScriptFieldDataType::UInt64;
+		else if (TypeName == "vec2")
+			return ScriptFieldDataType::Vec2;
+		else if (TypeName == "vec3")
+			return ScriptFieldDataType::Vec3;
+		else if (TypeName == "vec4")
+			return ScriptFieldDataType::Vec4;
+		else if (TypeName == "Entity")
+			return ScriptFieldDataType::Entity;
+		else
+			return ScriptFieldDataType::Invalid;
+	}
 
 	
 	static void InitMono()
@@ -178,9 +201,47 @@ namespace Scripting
 			
 			bool IsEntitySubClass = mono_class_is_subclass_of(mono_class, s_Data->EntityClass, false);
 			if (IsEntitySubClass)
-				s_Data->m_EntityClasses[fullname] = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name);
-			
-			SNAP_DEBUG("NmaeSpce>> {}, ClassName>> {}", nameSpace, name);
+			{
+				SNAP_DEBUG("NmaeSpce>> {}, ClassName>> {}", nameSpace, name);
+				
+				// Add Script Class
+				auto& Script_Class = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name);
+				s_Data->m_EntityClasses[fullname] = Script_Class;
+
+				// Get Fileds
+				int FieldsCount = mono_class_num_fields(mono_class);
+				void* iterator = nullptr;
+				
+				for (size_t i = 0; i < FieldsCount; i++)
+				{
+					MonoClassField* Field = mono_class_get_fields(mono_class, &iterator);
+					if(!Field) continue;
+					
+					// Example if Field >> public float speed = 10.0f;
+					uint32_t flags = mono_field_get_flags(Field); // puplic, static
+					MonoType* FieldType = mono_field_get_type(Field); // int, float (MonoType*)
+					const char* FieldTypeName = mono_type_get_name(FieldType); // int, float (const char*
+					const char* FieldName = mono_field_get_name(Field); // speed
+
+					// C# TypeName
+					std::string TypeName = FieldTypeName;
+					int index = TypeName.find_last_of(".");
+					int last = TypeName.size();
+					TypeName = TypeName.substr(index + 1, last - index);
+
+
+					// Save ScriptClassFields Names And DataTypes If Public
+					if (flags & FIELD_ATTRIBUTE_PUBLIC)
+					{
+						ScriptFieldDataType DataType = MonoClassTypeNameToScriptFieldDataType(TypeName);
+						Script_Class->m_ScriptFields[FieldName] = { FieldName, DataType, Field };
+						
+						SNAP_WARN("public {0} {1}", TypeName, FieldName);
+					}
+					else
+						SNAP_WARN("{0} {1}", TypeName, FieldName);
+				}
+			}
 		}
 	}
 
@@ -275,6 +336,11 @@ namespace Scripting
 		return instance;
 	}
 
+	SnapEngine::SnapPtr<ScriptInstance> ScriptingEngine::GetScriptInstance(SnapEngine::UUID uuid)
+	{
+		return s_Data->m_EntityScriptInstances[uuid]; 
+	}
+
 
 
 
@@ -302,6 +368,7 @@ namespace Scripting
 	}
 
 	ScriptInstance::ScriptInstance(const SnapEngine::SnapPtr<ScriptClass>& ScriptClass, SnapEngine::UUID EntityID)
+		: m_ScriptClass(ScriptClass)
 	{
 		m_Instance = ScriptingEngine::InstantiateClass(*ScriptClass);
 
@@ -327,5 +394,27 @@ namespace Scripting
 			void* param = &TimeStep;
 			m_ScriptClass->InvokeMethod(m_OnUpdateMethod, m_Instance, &param);
 		}
+	}
+
+	bool ScriptInstance::GetFieldValueInternal(const std::string& FieldName, void* Buffer)
+	{
+		auto& FieldsMap = this->m_ScriptClass->GetFieldsMap();
+		auto& it = FieldsMap.find(FieldName);
+		if (it == FieldsMap.end())
+			return false;
+
+		mono_field_get_value(this->m_Instance, it->second.m_MonoField, Buffer);
+
+		return true;
+	}
+	bool ScriptInstance::SetFieldValueInternal(const std::string& FieldName, const void* Buffer)
+	{
+		auto& FieldsMap = this->m_ScriptClass->GetFieldsMap();
+		auto& it = FieldsMap.find(FieldName);
+		if (it == FieldsMap.end())
+			return false;
+
+		mono_field_set_value(this->m_Instance, it->second.m_MonoField, (void*)Buffer);
+		return true;
 	}
 }

@@ -9,6 +9,8 @@ namespace SnapEngine
         // Input
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool IsKeyPressed(Key key);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool IsKeyReleased(Key key);
 
         // Components
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

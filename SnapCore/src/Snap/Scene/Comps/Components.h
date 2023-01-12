@@ -176,4 +176,15 @@ namespace SnapEngine
 
 		std::string ClassName;
 	};
+
+	template<typename... Component>
+	struct ComponentGroup
+	{
+	};
+
+	using AllComponents =
+		ComponentGroup< TransformComponent, SpriteRendererComponent,
+		CircleRendererComponent, CameraComponent, ScriptComponent,
+		CppScriptComponent, RigidBody2DComponent, BoxCollider2DComponent,
+		CircleCollider2DComponent, ScriptComponent>;
 }

@@ -8,7 +8,9 @@ namespace SandBox
     {
         TransformComponent m_Transform;
         RigidBody2DComponent m_RigidBody;
-        float Speed = 10.0f;
+        bool once = true;
+
+        public float Speed = 10.0f;
         public void OnCreat()
         {
             Console.WriteLine("EntityClass....OnCreat");
@@ -18,13 +20,18 @@ namespace SandBox
 
         public void OnUpdate(float TimeStep)
         {
-            if (InternalCalls.IsKeyPressed(Key.Space))
+            if (InternalCalls.IsKeyPressed(Key.Space) && once)
             {
                 Console.WriteLine("EntityClass....OnUpdate... SpaceKeyPressed!");
-                m_RigidBody.ApplyLinearImpulseToCenter(new vec2(0.0f, 3.0f), true);
+                if(m_RigidBody != null)
+                    m_RigidBody.ApplyLinearImpulseToCenter(new vec2(0.0f, 3.0f), true);
+                once = false;
             }
 
-            /*
+            if (InternalCalls.IsKeyReleased(Key.Space))
+                once = true;
+
+            
             vec3 Pos = m_Transform.Position;
             if (InternalCalls.IsKeyPressed(Key.W))
                 Pos.y += Speed * TimeStep;
@@ -35,7 +42,6 @@ namespace SandBox
             if (InternalCalls.IsKeyPressed(Key.D))
                 Pos.x += Speed * TimeStep;
             m_Transform.Position = Pos;
-            */
         }
     }
 }

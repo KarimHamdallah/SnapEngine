@@ -57,23 +57,41 @@ namespace SnapEngine
         return *entity;
     }
 
-    template<typename T>
-    void CopyComponent(entt::registry& src, entt::registry& dest, const std::unordered_map<UUID, entt::entity>& Map)
+    template<typename... T>
+    static void CopyComponents(entt::registry& src, entt::registry& dest, const std::unordered_map<UUID, entt::entity>& Map)
     {
-        auto& group = src.view<T>();
-        for (auto src_entity : group)
-        {
-            auto dest_entity = Map.at(src.get<IDComponent>(src_entity).ID); // Get Dist Entity With Same UUID
-            auto& Component = src.get<T>(src_entity);
-            dest.emplace_or_replace<T>(dest_entity, Component);
-        }
+        ([&]()
+            {
+                auto& group = src.view<T>();
+                for (auto src_entity : group)
+                {
+                    auto dest_entity = Map.at(src.get<IDComponent>(src_entity).ID); // Get Dist Entity With Same UUID
+                    auto& Component = src.get<T>(src_entity);
+                    dest.emplace_or_replace<T>(dest_entity, Component);
+                }
+            }(), ...);
     }
 
-    template<typename T>
-    void CopyComponentIfExist(Entity& src, Entity& dest)
+    template<typename... Component>
+    static void CopyComponents(ComponentGroup<Component...>, entt::registry& src, entt::registry& dest, const std::unordered_map<UUID, entt::entity>& Map)
     {
-        if (src.HasComponent<T>())
-            dest.AddOrReplaceComponent<T>(src.GetComponent<T>());
+        CopyComponents<Component...>(src, dest, Map);
+    }
+
+    template<typename... T>
+    static void CopyComponentsIfExist(Entity& src, Entity& dest)
+    {
+        ([&]()
+            {
+                if (src.HasComponent<T>())
+                    dest.AddOrReplaceComponent<T>(src.GetComponent<T>());
+            }(), ...);
+    }
+
+    template<typename... Component>
+    static void CopyComponentsIfExist(ComponentGroup<Component...>, Entity& src, Entity& dest)
+    {
+        CopyComponentsIfExist<Component...>(src, dest);
     }
 
     SnapPtr<Scene> Scene::Copy(const SnapPtr<Scene>& other)
@@ -97,6 +115,7 @@ namespace SnapEngine
             UUIDMap[UUID] = NewScene->CreatEntityWithUUID(UUID, Tag); // Add Entity Into NewScene
         }
 
+        /*
         CopyComponent<TransformComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<SpriteRendererComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<CircleRendererComponent>(srcRegistry, destRegistry, UUIDMap);
@@ -106,6 +125,9 @@ namespace SnapEngine
         CopyComponent<BoxCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<CircleCollider2DComponent>(srcRegistry, destRegistry, UUIDMap);
         CopyComponent<ScriptComponent>(srcRegistry, destRegistry, UUIDMap);
+        */
+
+        CopyComponents(AllComponents{},srcRegistry, destRegistry, UUIDMap);
 
         return NewScene;
     }
@@ -114,6 +136,7 @@ namespace SnapEngine
     {
         Entity NewEntity = CreatEntity(entity.GetComponent<TagComponent>().m_Tag);
 
+        /*
         CopyComponentIfExist<TransformComponent>(entity, NewEntity);
         CopyComponentIfExist<SpriteRendererComponent>(entity, NewEntity);
         CopyComponentIfExist<CircleRendererComponent>(entity, NewEntity);
@@ -123,6 +146,9 @@ namespace SnapEngine
         CopyComponentIfExist<BoxCollider2DComponent>(entity, NewEntity);
         CopyComponentIfExist<CircleCollider2DComponent>(entity, NewEntity);
         CopyComponentIfExist<ScriptComponent>(entity, NewEntity);
+        */
+
+        CopyComponentsIfExist(AllComponents{}, entity, NewEntity);
     }
 
     void Scene::DestroyEntity(Entity entity)

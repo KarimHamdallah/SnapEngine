@@ -21,29 +21,39 @@ namespace Scripting
 		return SnapEngine::Input::IsKeyPressed(key);
 	}
 
-	template<typename T>
+	static bool IsKeyReleased(SnapEngine::Key key)
+	{
+		return SnapEngine::Input::IsKeyReleased(key);
+	}
+
+	template<typename... T>
 	static void SaveComponentMonoTypeWithItsHasComponentRelatedFunction()
 	{
-		std::string TypenName = typeid(T).name();
-		size_t pos = TypenName.find_last_of(":");
-		std::string ComponentTypenName = TypenName.substr(pos + 1);
-		std::string ManagedName = fmt::format("SnapEngine.{}", ComponentTypenName.c_str());
-		
-		// Get SnapEngine.ComponentTypenName Mono Type
-		MonoType* ManagedType = mono_reflection_type_from_name(ManagedName.data(), ScriptingEngine::GetCoreAssemblyImage());
+		([&]()
+			{
+				std::string TypenName = typeid(T).name();
+				size_t pos = TypenName.find_last_of(":");
+				std::string ComponentTypenName = TypenName.substr(pos + 1);
+				std::string ManagedName = fmt::format("SnapEngine.{}", ComponentTypenName.c_str());
 
-		// Save HasComponent Functions With MonoType* Key
-		s_EntityHasComponentFunc[ManagedType] = [](SnapEngine::Entity entity) { return entity.HasComponent<T>(); };
+				// Get SnapEngine.ComponentTypenName Mono Type
+				MonoType* ManagedType = mono_reflection_type_from_name(ManagedName.data(), ScriptingEngine::GetCoreAssemblyImage());
+
+				// Save HasComponent Functions With MonoType* Key
+				s_EntityHasComponentFunc[ManagedType] = [](SnapEngine::Entity entity) { return entity.HasComponent<T>(); };
+			}(), ...);
+	}
+
+	template<typename... Component>
+	static void SaveComponentMonoTypeWithItsHasComponentRelatedFunction(SnapEngine::ComponentGroup<Component...>)
+	{
+		SaveComponentMonoTypeWithItsHasComponentRelatedFunction<Component...>();
 	}
 
 	void ScriptGlue::RegisterComponents()
 	{
-		SaveComponentMonoTypeWithItsHasComponentRelatedFunction<SnapEngine::TransformComponent>();
-		SaveComponentMonoTypeWithItsHasComponentRelatedFunction<SnapEngine::RigidBody2DComponent>();
+		SaveComponentMonoTypeWithItsHasComponentRelatedFunction(SnapEngine::AllComponents{});
 	}
-
-
-
 
 
 
@@ -89,6 +99,7 @@ namespace Scripting
 		
 		// Input Internal Calls
 		SNAP_ADD_INTERNAL_CALL(IsKeyPressed);
+		SNAP_ADD_INTERNAL_CALL(IsKeyReleased);
 
 		// Entity Internal Calls
 		SNAP_ADD_INTERNAL_CALL(Entity_HasComponent);

@@ -59,13 +59,13 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Distribution|x64' ">
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\InternalCalls.cs" />
-    <Compile Include="Source\Keys.cs" />
+    <Compile Include="Source\Snap\InternalCalls.cs" />
+    <Compile Include="Source\Snap\Keys.cs" />
     <Compile Include="Source\Player.cs" />
-    <Compile Include="Source\Entity.cs" />
-    <Compile Include="Source\Scene\Components.cs" />
-    <Compile Include="Source\vec2.cs" />
-    <Compile Include="Source\vec3.cs" />
+    <Compile Include="Source\Snap\Scene\Entity.cs" />
+    <Compile Include="Source\Snap\Scene\Components.cs" />
+    <Compile Include="Source\Snap\Math\vec2.cs" />
+    <Compile Include="Source\Snap\Math\vec3.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
