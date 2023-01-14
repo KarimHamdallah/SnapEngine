@@ -10,7 +10,8 @@ namespace SandBox
         RigidBody2DComponent m_RigidBody;
         bool once = true;
 
-        public float Speed = 10.0f;
+        public float Speed;
+
         public void OnCreat()
         {
             Console.WriteLine("EntityClass....OnCreat");

@@ -448,7 +448,7 @@ namespace SnapEngine
 				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
 			});
 		
-		DrawComponent<ScriptComponent>("Script", entity, [entity](ScriptComponent& component) mutable
+		DrawComponent<ScriptComponent>("Script", entity, [entity, this](ScriptComponent& component) mutable
 			{
 
 				bool ScriptClassExist = false;
@@ -475,67 +475,110 @@ namespace SnapEngine
 
 				// Draw Script Fields
 				// Check Again May InputText Field Changed
-				if (Scripting::ScriptingEngine::IsEntityClassExist(component.ClassName))
+				bool SceneRunning = m_Scene->IsRunning();
+				if (SceneRunning)
 				{
-					auto& ScriptInstance = Scripting::ScriptingEngine::GetScriptInstance(entity.GetComponent<IDComponent>().ID);
-					if (!ScriptInstance)
-						return;
-
-					auto& FieldsMap = ScriptInstance->GetScriptClass()->GetFieldsMap();
-					for (auto& it = FieldsMap.rbegin(); it != FieldsMap.rend(); it++)
+					if (Scripting::ScriptingEngine::IsEntityClassExist(component.ClassName))
 					{
-						auto& Field = *it;
-						switch (Field.second.m_Type)
+						auto& ScriptInstance = Scripting::ScriptingEngine::GetScriptInstance(entity.GetComponent<IDComponent>().ID);
+						if (!ScriptInstance)
+							return;
+
+						auto& FieldsMap = ScriptInstance->GetScriptClass()->GetFieldsMap();
+						for (auto& it = FieldsMap.rbegin(); it != FieldsMap.rend(); it++)
 						{
-						case Scripting::ScriptFieldDataType::Int:
-						{
-							int value = ScriptInstance->GetFieldValue<int>(Field.first);
-							if (ImGui::DragInt(Field.first.c_str(), &value))
+							auto& Field = *it;
+							switch (Field.second.m_Type)
 							{
-								ScriptInstance->SetFieldValue<int>(Field.first, value);
-							}
-						}
-						break;
-						case Scripting::ScriptFieldDataType::Float:
-						{
-							float value = ScriptInstance->GetFieldValue<float>(Field.first);
-							if (ImGui::DragFloat(Field.first.c_str(), &value))
+							case Scripting::ScriptFieldDataType::Int:
 							{
-								ScriptInstance->SetFieldValue<float>(Field.first, value);
+								int value = ScriptInstance->GetFieldValue<int>(Field.first);
+								if (ImGui::DragInt(Field.first.c_str(), &value))
+								{
+									ScriptInstance->SetFieldValue<int>(Field.first, value);
+								}
 							}
-						}
-						break;
-						case Scripting::ScriptFieldDataType::Bool:
-						{
-							bool value = ScriptInstance->GetFieldValue<bool>(Field.first);
-							if (ImGui::Checkbox(Field.first.c_str(), &value))
-							{
-								ScriptInstance->SetFieldValue<bool>(Field.first, value);
-							}
-						}
-						break;
-						case Scripting::ScriptFieldDataType::Vec2:
-						{
-							glm::vec2 value = ScriptInstance->GetFieldValue<glm::vec2>(Field.first);
-							glm::vec2 x = { 5.0f, 1.0f };
-							if (ImGui::DragFloat2(Field.first.c_str(), glm::value_ptr(value)))
-							{
-								ScriptInstance->SetFieldValue<glm::vec2>(Field.first, value);
-							}
-						}
-						break;
-						case Scripting::ScriptFieldDataType::Vec3:
-						{
-							glm::vec3 x = { 7.0f, 2.0f, 13.0f };
-							ImGui::DragFloat3(Field.first.c_str(), glm::value_ptr(x));
-						}
-						break;
-						default:
 							break;
+							case Scripting::ScriptFieldDataType::Float:
+							{
+								float value = ScriptInstance->GetFieldValue<float>(Field.first);
+								if (ImGui::DragFloat(Field.first.c_str(), &value))
+								{
+									ScriptInstance->SetFieldValue<float>(Field.first, value);
+								}
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Bool:
+							{
+								bool value = ScriptInstance->GetFieldValue<bool>(Field.first);
+								if (ImGui::Checkbox(Field.first.c_str(), &value))
+								{
+									ScriptInstance->SetFieldValue<bool>(Field.first, value);
+								}
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Vec2:
+							{
+								glm::vec2 value = ScriptInstance->GetFieldValue<glm::vec2>(Field.first);
+								glm::vec2 x = { 5.0f, 1.0f };
+								if (ImGui::DragFloat2(Field.first.c_str(), glm::value_ptr(value)))
+								{
+									ScriptInstance->SetFieldValue<glm::vec2>(Field.first, value);
+								}
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Vec3:
+							{
+								glm::vec3 x = { 7.0f, 2.0f, 13.0f };
+								ImGui::DragFloat3(Field.first.c_str(), glm::value_ptr(x));
+							}
+							break;
+							default:
+								break;
+							}
 						}
 					}
 				}
+				else
+				{
+					if (Scripting::ScriptingEngine::IsEntityClassExist(component.ClassName))
+					{
+						auto& ScriptFieldMap = Scripting::ScriptingEngine::GetScriptFieldMap(entity);
+						auto& ScriptClass = Scripting::ScriptingEngine::GetScriptClass(component.ClassName);
+						auto& FieldsMap = ScriptClass->GetFieldsMap();
 
+
+						for (auto& [name, Field] : FieldsMap)
+						{
+							if (ScriptFieldMap.find(name) != ScriptFieldMap.end())
+							{
+								auto& FieldInstacne = ScriptFieldMap.at(name);
+								if (Field.m_Type == Scripting::ScriptFieldDataType::Float)
+								{
+									float data = FieldInstacne.GetData<float>();
+									if (ImGui::DragFloat(name.c_str(), &data))
+									{
+										FieldInstacne.SetData(&data);
+									}
+								}
+							}
+							else
+							{
+								if (Field.m_Type == Scripting::ScriptFieldDataType::Float)
+								{
+									float data = 0;
+									if (ImGui::DragFloat(name.c_str(), &data))
+									{
+										Scripting::ScriptFieldInstance ScriptFieldInstance;
+										ScriptFieldInstance.SetData(&data);
+										ScriptFieldInstance.m_Field = Field;
+										ScriptFieldMap[name] = ScriptFieldInstance;
+									}
+								}
+							}
+						}
+					}
+				}
 			});
 	}
 }

@@ -408,6 +408,8 @@ namespace SnapEngine
 
     void Scene::OnRunTimeStart()
     {
+        m_IsRunning = true;
+
         Physics2DStart();
 
         {// Scripting
@@ -424,6 +426,8 @@ namespace SnapEngine
 
     void Scene::OnRunTimeStop()
     {
+        m_IsRunning = false;
+
         Physics2DStop();
     }
 

@@ -109,6 +109,9 @@ namespace Scripting
 
 		std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> m_EntityClasses;
 		std::unordered_map<SnapEngine::UUID, SnapEngine::SnapPtr<ScriptInstance>> m_EntityScriptInstances;
+
+		std::unordered_map<SnapEngine::UUID, ScriptFieldMap> m_EntityScriptFiledsInstances;
+
 		SnapEngine::Scene* SceneContext = nullptr;
 
 		MonoClass* EntityClass;
@@ -268,6 +271,16 @@ namespace Scripting
 			SnapEngine::SnapPtr<ScriptInstance> instance = SnapEngine::CreatSnapPtr<ScriptInstance>(script_class, uuid);
 			// Add Instance to Map with uuid keyvalue
 			s_Data->m_EntityScriptInstances[uuid] = instance;
+			// Set Fields From Editor (FieldsInsatnces->m_Data) To This Instance
+			if (s_Data->m_EntityScriptFiledsInstances.find(uuid) != s_Data->m_EntityScriptFiledsInstances.end())
+			{
+				auto& ScriptFiledsMap = ScriptingEngine::GetScriptFieldMap(e);
+
+				for (auto& [name, FiledInstance] : ScriptFiledsMap)
+				{
+					instance->SetFieldValue(name, FiledInstance.m_Data);
+				}
+			}
 			// run C# OnCreat Method From Instance With This UUID
 			instance->InvokeOnCreatMethod();
 		}
@@ -336,9 +349,28 @@ namespace Scripting
 		return instance;
 	}
 
+	SnapEngine::SnapPtr<ScriptClass> ScriptingEngine::GetScriptClass(const std::string& name)
+	{
+		if (s_Data->m_EntityClasses.find(name) == s_Data->m_EntityClasses.end())
+			return nullptr;
+
+		return s_Data->m_EntityClasses.at(name);
+	}
+
 	SnapEngine::SnapPtr<ScriptInstance> ScriptingEngine::GetScriptInstance(SnapEngine::UUID uuid)
 	{
 		return s_Data->m_EntityScriptInstances[uuid]; 
+	}
+
+	ScriptFieldMap& ScriptingEngine::GetScriptFieldMap(SnapEngine::Entity entity)
+	{
+		SNAP_ASSERT_MSG(entity, "entity is null!");
+
+		SnapEngine::UUID entityID = entity.GetComponent<SnapEngine::IDComponent>().ID;
+
+		//if(s_Data->m_EntityScriptFiledsInstances.find(entityID) != s_Data->m_EntityScriptFiledsInstances.end())
+		// Add Key And Return Value Map
+		return s_Data->m_EntityScriptFiledsInstances[entityID];
 	}
 
 

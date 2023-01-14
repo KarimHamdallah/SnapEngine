@@ -69,7 +69,7 @@ namespace SnapEngine
 
 		Entity GetEntityWithUUID(UUID uuid);
 
-
+		bool IsRunning() { return m_IsRunning; }
 
 	private:
 		template<typename T>
@@ -82,6 +82,8 @@ namespace SnapEngine
 
 		void Physics2DStart();
 		void Physics2DStop();
+
+		bool m_IsRunning = false;
 
 		// Editor Attribs
 		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;

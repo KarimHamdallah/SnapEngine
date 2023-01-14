@@ -28,6 +28,28 @@ namespace Scripting
 		MonoClassField* m_MonoField;
 	};
 
+	struct ScriptFieldInstance
+	{
+		ScriptFieldInstance()
+		{
+			memset(m_Data, 0, sizeof(m_Data));
+		}
+
+		ScriptField m_Field;
+		uint8_t m_Data[8];
+
+		template<typename T>
+		inline T GetData()
+		{
+			return *(T*)m_Data;
+		}
+
+		inline void SetData(void* data)
+		{
+			memcpy(m_Data, data, sizeof(data));
+		}
+	};
+
 	class ScriptClass
 	{
 	public:
@@ -53,6 +75,8 @@ namespace Scripting
 
 		friend class ScriptingEngine;
 	};
+
+	using ScriptFieldMap = std::unordered_map<std::string, ScriptFieldInstance>;
 
 	class ScriptInstance
 	{
@@ -119,7 +143,10 @@ namespace Scripting
 
 		static MonoImage* GetCoreAssemblyImage();
 
+		static SnapEngine::SnapPtr<ScriptClass> GetScriptClass(const std::string& name);
 		static SnapEngine::SnapPtr<ScriptInstance> GetScriptInstance(SnapEngine::UUID uuid);
+		
+		static ScriptFieldMap& GetScriptFieldMap(SnapEngine::Entity entity);
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 
