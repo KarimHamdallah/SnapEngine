@@ -3,7 +3,45 @@
 
 #include <yaml-cpp/yaml.h>
 #include <Snap/Scene/Comps/Components.h>
+#include <Snap/Scripting/ScriptingEngine.h>
 
+static std::string ScriptFieldDataTypeToString(Scripting::ScriptFieldDataType Type)
+{
+	switch (Type)
+	{
+	    case Scripting::ScriptFieldDataType::Invalid: return "None";
+	    case Scripting::ScriptFieldDataType::Float:  return "Float"; 
+	    case Scripting::ScriptFieldDataType::Int:    return "Int";   
+	    case Scripting::ScriptFieldDataType::Double: return "Double";
+	    case Scripting::ScriptFieldDataType::UInt64: return "UInt64";
+	    case Scripting::ScriptFieldDataType::Bool:   return "Bool";  
+	    case Scripting::ScriptFieldDataType::Vec2:   return "Vec2";  
+	    case Scripting::ScriptFieldDataType::Vec3:   return "Vec3";  
+	    case Scripting::ScriptFieldDataType::Vec4:   return "Vec4";  
+	    case Scripting::ScriptFieldDataType::Entity: return "Entity";
+
+		SNAP_ASSERT_MSG(false, "Unkown Type!");
+		return "None";
+	}
+}
+
+static Scripting::ScriptFieldDataType ScriptFieldDataTypeFromString(std::string Type)
+{
+	if(Type == "None")   return Scripting::ScriptFieldDataType::Invalid;
+	if(Type == "Float")  return Scripting::ScriptFieldDataType::Float;  
+	if(Type == "Int")    return Scripting::ScriptFieldDataType::Int;    
+	if(Type == "Double") return Scripting::ScriptFieldDataType::Double; 
+	if(Type == "UInt64") return Scripting::ScriptFieldDataType::UInt64; 
+	if(Type == "Bool")   return Scripting::ScriptFieldDataType::Bool;   
+	if(Type == "Vec2")   return Scripting::ScriptFieldDataType::Vec2;   
+	if(Type == "Vec3")   return Scripting::ScriptFieldDataType::Vec3;   
+	if(Type == "Vec4")   return Scripting::ScriptFieldDataType::Vec4;   
+	if(Type == "Entity") return Scripting::ScriptFieldDataType::Entity; 
+
+
+	SNAP_ASSERT_MSG(false, "Unkown Type!");
+	return Scripting::ScriptFieldDataType::Invalid;
+}
 
 static std::string Rigidbody2DTypeToString(SnapEngine::RigidBody2DComponent::RigidBodyType Type)
 {
@@ -258,6 +296,96 @@ namespace SnapEngine
 
 			out << YAML::EndMap; // CircleCollider2DComponent
 		}
+
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap; // CircleCollider2DComponent
+			auto& sc = entity.GetComponent<ScriptComponent>();
+
+			if (!sc.ClassName.empty())
+				out << YAML::Key << "ClassName" << YAML::Value << sc.ClassName;
+
+			// Field Map
+			out << YAML::Key << "FieldMap" << YAML::Value;
+			out << YAML::BeginSeq;
+
+			auto& FieldMap = Scripting::ScriptingEngine::GetScriptFieldMap(entity);
+
+			for (auto& [name, FieldInstances] : FieldMap)
+			{
+				out << YAML::BeginMap;
+				out << YAML::Key << "Name" << YAML::Value << name;
+				out << YAML::Key << "Type" << YAML::Value << ScriptFieldDataTypeToString(FieldInstances.m_Field.m_Type);
+				
+				switch (FieldInstances.m_Field.m_Type)
+				{
+				  case Scripting::ScriptFieldDataType::Invalid:
+				  {
+					  SNAP_ASSERT(false, "Unkown Type!");
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Float:
+				  {
+					  float data = FieldInstances.GetData<float>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Int:
+				  {
+					  int data = FieldInstances.GetData<int>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Double:
+				  {
+					  double data = FieldInstances.GetData<double>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::UInt64:
+				  {
+					  uint64_t data = FieldInstances.GetData<uint64_t>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Bool:
+				  {
+					  bool data = FieldInstances.GetData<bool>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Vec2:
+				  {
+					  glm::vec2 data = FieldInstances.GetData<glm::vec2>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Vec3:
+				  {
+					  glm::vec3 data = FieldInstances.GetData<glm::vec3>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Vec4:
+				  {
+					  glm::vec4 data = FieldInstances.GetData<glm::vec4>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				  case Scripting::ScriptFieldDataType::Entity:
+				  {
+					  UUID data = FieldInstances.GetData<UUID>();
+					  out << YAML::Key << "Data" << YAML::Value << data;
+				  }
+				  break;
+				}
+				out << YAML::EndMap;
+			}
+			out << YAML::EndSeq;
+
+			out << YAML::EndMap; // ScriptComponent
+		}
 		
 		out << YAML::EndMap; // EntityID
 	}
@@ -445,15 +573,15 @@ namespace SnapEngine
 
 				if (entity["CircleCollider2DComponent"])
 				{
-					auto& RigidBody2DComponentNode = entity["CircleCollider2DComponent"];
+					auto& CircleCollider2DComponentNode = entity["CircleCollider2DComponent"];
 
-					auto Raduis = RigidBody2DComponentNode["Raduis"].as<float>();
-					auto Offset = RigidBody2DComponentNode["Offset"].as<glm::vec2>();
+					auto Raduis = CircleCollider2DComponentNode["Raduis"].as<float>();
+					auto Offset = CircleCollider2DComponentNode["Offset"].as<glm::vec2>();
 
-					auto Density = RigidBody2DComponentNode["Density"].as<float>();
-					auto Friction = RigidBody2DComponentNode["Friction"].as<float>();
-					auto Restitution = RigidBody2DComponentNode["Restitution"].as<float>();
-					auto RestitutionThreshold = RigidBody2DComponentNode["RestitutionThreshold"].as<float>();
+					auto Density = CircleCollider2DComponentNode["Density"].as<float>();
+					auto Friction = CircleCollider2DComponentNode["Friction"].as<float>();
+					auto Restitution = CircleCollider2DComponentNode["Restitution"].as<float>();
+					auto RestitutionThreshold = CircleCollider2DComponentNode["RestitutionThreshold"].as<float>();
 
 					auto& Comp = e.AddComponent<CircleCollider2DComponent>();
 					Comp.m_Raduis = Raduis;
@@ -462,6 +590,98 @@ namespace SnapEngine
 					Comp.m_Friction = Friction;
 					Comp.m_Restitution = Restitution;
 					Comp.m_RestitutionThreshold = RestitutionThreshold;
+				}
+
+				if (entity["ScriptComponent"])
+				{
+					auto& ScriptComponentNode = entity["ScriptComponent"];
+
+					std::string ClassName = "";
+					if (ScriptComponentNode["ClassName"])
+						ClassName = ScriptComponentNode["ClassName"].as<std::string>();
+
+					auto& ScriptFields = ScriptComponentNode["FieldMap"];
+
+					if (ScriptFields)
+					{
+						auto& FieldMap = Scripting::ScriptingEngine::GetScriptFieldMap(e);
+
+						for (auto& ScriptField : ScriptFields)
+						{
+							std::string Name = ScriptField["Name"].as<std::string>();
+							std::string TypeString = ScriptField["Type"].as<std::string>();
+							Scripting::ScriptFieldDataType Type = ScriptFieldDataTypeFromString(TypeString);
+
+							switch (Type)
+							{
+							case Scripting::ScriptFieldDataType::Invalid:
+							{
+								SNAP_ASSERT(false, "Unkown Type!");
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Float:
+							{
+								float data = ScriptField["Data"].as<float>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Int:
+							{
+								int data = ScriptField["Data"].as<int>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Double:
+							{
+								double data = ScriptField["Data"].as<double>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::UInt64:
+							{
+								uint64_t data = ScriptField["Data"].as<uint64_t>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Bool:
+							{
+								bool data = ScriptField["Data"].as<bool>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Vec2:
+							{
+								glm::vec2 data = ScriptField["Data"].as<glm::vec2>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Vec3:
+							{
+								glm::vec3 data = ScriptField["Data"].as<glm::vec3>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Vec4:
+							{
+								glm::vec4 data = ScriptField["Data"].as<glm::vec4>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							case Scripting::ScriptFieldDataType::Entity:
+							{
+								UUID data = ScriptField["Data"].as<uint64_t>();
+								FieldMap[Name].SetData(&data);
+							}
+							break;
+							}
+
+							FieldMap[Name].m_Field.m_Name = Name;
+							FieldMap[Name].m_Field.m_Type = Type;
+						}
+					}
+
+					auto& Comp = e.AddComponent<ScriptComponent>();
+					Comp.ClassName = ClassName;
 				}
 			}
 		}
