@@ -7,14 +7,20 @@ namespace SnapEngine
     public class Entity
     {
         protected Entity() { m_ID = 0; }
-        internal Entity(ulong UUID) { m_ID = UUID; Console.WriteLine("Entity Constructor Called!"); }
+        internal Entity(ulong UUID) { m_ID = UUID; /*Console.WriteLine("Entity Constructor Called!");*/ }
 
         public readonly ulong m_ID;
 
 
+        public Entity FindEntityByName(string Name)
+        {
+            ulong ID = InternalCalls.Entity_FindEntityByName(Name);
+            if (ID == 0)
+                return null;
+            return new Entity(ID);
+        }
 
 
-        
         public vec3 Position
         {
             get
@@ -37,11 +43,19 @@ namespace SnapEngine
         }
         public T CreatAndGetComponent<T>() where T : Component, new()
         {
-            if(!HasComponent<T>())
+            if (!HasComponent<T>())
                 return null;
-            
+
             T Comp = new T() { m_Entity = this };
             return Comp;
+        }
+
+        public T As<T>() where T : Entity, new()
+        {
+            object instance = InternalCalls.GetScriptInsatnce(m_ID);
+            if (instance != null)
+                return instance as T;
+            return null;
         }
     }
 }

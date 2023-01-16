@@ -485,9 +485,8 @@ namespace SnapEngine
 							return;
 
 						auto& FieldsMap = ScriptInstance->GetScriptClass()->GetFieldsMap();
-						for (auto& it = FieldsMap.rbegin(); it != FieldsMap.rend(); it++)
+						for (auto& Field : FieldsMap)
 						{
-							auto& Field = *it;
 							switch (Field.second.m_Type)
 							{
 							case Scripting::ScriptFieldDataType::Int:
@@ -546,7 +545,6 @@ namespace SnapEngine
 						auto& ScriptFieldMap = Scripting::ScriptingEngine::GetScriptFieldMap(entity);
 						auto& ScriptClass = Scripting::ScriptingEngine::GetScriptClass(component.ClassName);
 						auto& FieldsMap = ScriptClass->GetFieldsMap();
-
 
 						for (auto& [name, Field] : FieldsMap)
 						{

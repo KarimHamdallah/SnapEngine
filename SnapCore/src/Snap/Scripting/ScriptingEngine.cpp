@@ -373,6 +373,13 @@ namespace Scripting
 		return s_Data->m_EntityScriptFiledsInstances[entityID];
 	}
 
+	MonoObject* ScriptingEngine::GetManagedObject(SnapEngine::UUID uuid)
+	{
+		if (s_Data->m_EntityScriptInstances.find(uuid) != s_Data->m_EntityScriptInstances.end())
+			return s_Data->m_EntityScriptInstances.at(uuid)->m_Instance;
+		return nullptr;
+	}
+
 
 
 

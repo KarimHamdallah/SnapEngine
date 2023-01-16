@@ -442,6 +442,18 @@ namespace SnapEngine
         Physics2DStop();
     }
 
+    Entity Scene::FindEntityByName(std::string_view Name)
+    {
+        auto& group = registry.view<TagComponent>();
+        for (auto entity : group)
+        {
+            auto& Tag = group.get<TagComponent>(entity).m_Tag;
+            if (Name == Tag)
+                return { entity, this };
+        }
+        return Entity();
+    }
+
     Entity Scene::GetEntityWithUUID(UUID uuid)
     {
         auto& group = registry.view<IDComponent>();

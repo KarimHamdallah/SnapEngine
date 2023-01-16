@@ -6,34 +6,35 @@ namespace SandBox
 {
     internal class Player : Entity
     {
-        TransformComponent m_Transform;
-        RigidBody2DComponent m_RigidBody;
-        bool once = true;
-
-        public float Speed;
+        public float Speed = 10.0f;
+        public float Time = 0.0f;
 
         public void OnCreat()
         {
             Console.WriteLine("EntityClass....OnCreat");
-            m_Transform = CreatAndGetComponent<TransformComponent>();
-            m_RigidBody = CreatAndGetComponent<RigidBody2DComponent>();
         }
 
         public void OnUpdate(float TimeStep)
         {
-            if (InternalCalls.IsKeyPressed(Key.Space) && once)
+            Time += TimeStep;
+
+            Entity Cam = FindEntityByName("Camera");
+            if (Cam != null)
             {
-                Console.WriteLine("EntityClass....OnUpdate... SpaceKeyPressed!");
-                if(m_RigidBody != null)
-                    m_RigidBody.ApplyLinearImpulseToCenter(new vec2(0.0f, 3.0f), true);
-                once = false;
+                Console.WriteLine("Camera Entity is not null");
+                // Get Camera Controller Script On Cam Entity
+                CameraController Controller = Cam.As<CameraController>();
+                if (Controller != null)
+                {
+                    if (InternalCalls.IsKeyPressed(Key.E))
+                        Controller.DistanceFromPlayer += Speed * TimeStep;
+                    if (InternalCalls.IsKeyPressed(Key.Q))
+                        Controller.DistanceFromPlayer -= Speed * TimeStep;
+                }
             }
 
-            if (InternalCalls.IsKeyReleased(Key.Space))
-                once = true;
-
             
-            vec3 Pos = m_Transform.Position;
+            vec3 Pos = this.Position;
             if (InternalCalls.IsKeyPressed(Key.W))
                 Pos.y += Speed * TimeStep;
             if (InternalCalls.IsKeyPressed(Key.S))
@@ -42,7 +43,7 @@ namespace SandBox
                 Pos.x -= Speed * TimeStep;
             if (InternalCalls.IsKeyPressed(Key.D))
                 Pos.x += Speed * TimeStep;
-            m_Transform.Position = Pos;
+            this.Position = Pos;
         }
     }
 }

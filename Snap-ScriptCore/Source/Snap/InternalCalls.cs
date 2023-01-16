@@ -33,5 +33,11 @@ namespace SnapEngine
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static void Entity_GetComponent(ulong EntityID, Type ComponentType);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static ulong Entity_FindEntityByName(string EntityName);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static object GetScriptInsatnce(ulong EntityID);
     }
 }

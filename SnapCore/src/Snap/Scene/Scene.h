@@ -65,7 +65,7 @@ namespace SnapEngine
 		void OnSimulationStart(); // Called When Simulate button clicked
 		void OnSimulationStop(); // Called When Stop Simulation button clicked
 
-
+		Entity FindEntityByName(std::string_view Name);
 
 		Entity GetEntityWithUUID(UUID uuid);
 

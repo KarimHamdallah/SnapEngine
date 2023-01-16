@@ -93,6 +93,27 @@ namespace Scripting
 		Body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
 	}
 
+	static uint64_t Entity_FindEntityByName(MonoString* EntityName)
+	{
+		char* cStr = mono_string_to_utf8(EntityName);
+		std::string Name(cStr);
+
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SNAP_ASSERT(scene);
+		SnapEngine::Entity e = scene->FindEntityByName(Name);
+		if (!e)
+			return 0;
+		
+		mono_free(cStr);
+
+		return e.GetComponent<SnapEngine::IDComponent>().ID;
+	}
+
+	static MonoObject* GetScriptInsatnce(SnapEngine::UUID EntityID)
+	{
+		return ScriptingEngine::GetManagedObject(EntityID);
+	}
+
 	void ScriptGlue::RegisterGlue()
 	{
 		// Internal Calls
@@ -103,6 +124,8 @@ namespace Scripting
 
 		// Entity Internal Calls
 		SNAP_ADD_INTERNAL_CALL(Entity_HasComponent);
+		SNAP_ADD_INTERNAL_CALL(Entity_FindEntityByName);
+		SNAP_ADD_INTERNAL_CALL(GetScriptInsatnce);
 
 		SNAP_ADD_INTERNAL_CALL(Transform_GetPositionVec3);
 		SNAP_ADD_INTERNAL_CALL(Transform_SetPositionVec3);

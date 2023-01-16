@@ -147,6 +147,8 @@ namespace Scripting
 		static SnapEngine::SnapPtr<ScriptInstance> GetScriptInstance(SnapEngine::UUID uuid);
 		
 		static ScriptFieldMap& GetScriptFieldMap(SnapEngine::Entity entity);
+
+		static MonoObject* GetManagedObject(SnapEngine::UUID uuid);
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 

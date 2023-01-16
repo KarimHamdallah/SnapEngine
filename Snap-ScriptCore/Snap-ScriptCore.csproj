@@ -59,6 +59,7 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Distribution|x64' ">
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Camera.cs" />
     <Compile Include="Source\Snap\InternalCalls.cs" />
     <Compile Include="Source\Snap\Keys.cs" />
     <Compile Include="Source\Player.cs" />
