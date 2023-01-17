@@ -47,6 +47,8 @@
 #include <Snap/Scene/Comps/Components.h>
 #include <Snap/Scene/Scripts/CppScript.h>
 
+#include <Snap/Scripting/ScriptingEngine.h>
+
 //---------------------------
 
 //------ EntryPoint ---------

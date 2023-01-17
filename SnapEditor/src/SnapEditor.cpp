@@ -269,6 +269,15 @@ namespace SnapEngine
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("ScriptingEngine"))
+			{
+				if (ImGui::MenuItem("Reload C# Assemblies"))
+				{
+					Scripting::ScriptingEngine::ReloadAssemby();
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 	}

@@ -210,6 +210,9 @@
     <ClInclude Include="src\Snap\Scene\Scripts\CppScript.h">
       <Filter>src\Snap\Scene\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Scripting\ScriptGlue.h">
+      <Filter>src\Snap\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Scripting\ScriptingEngine.h">
       <Filter>src\Snap\Scripting</Filter>
     </ClInclude>
@@ -1083,7 +1086,6 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Scripting\ScriptGlue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1176,6 +1178,9 @@
     <ClCompile Include="src\Snap\Scene\Scripts\CppScript.cpp">
       <Filter>src\Snap\Scene\Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\Scripting\ScriptGlue.cpp">
+      <Filter>src\Snap\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Snap\Scripting\ScriptingEngine.cpp">
       <Filter>src\Snap\Scripting</Filter>
     </ClCompile>
@@ -1215,6 +1220,5 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\Scripting\ScriptGlue.cpp" />
   </ItemGroup>
 </Project>

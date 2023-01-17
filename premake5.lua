@@ -277,3 +277,58 @@ project "Snap-ScriptCore"                                                       
 	filter "configurations:Distribution"
 		optimize "full"
 		symbols "off"
+
+
+
+
+		------------------- GameProjects --------------------
+
+workspace "SandBoxGame"
+      startproject "SandBoxGame"
+	  architecture "x64"
+
+	  configurations
+	  {
+	     "Debug",
+		 "Release",
+		 "Distribution"
+	  }
+
+	  flags
+	  {
+		  "MultiProcessorCompile"
+	  }
+
+project_output = "%{cfg.buildcgf}-%{cfg.system}-%{cfg.architecture}"
+
+project "SandBoxGame"                                                               -- SandBoxGame
+    location "SandBoxGame"
+	kind "SharedLib"
+	language "C#"
+	dotnetframework "4.7.2"
+
+	targetdir ("%{wks.location}/SnapEditor/Resources/Scripts")
+	objdir ("Build/intermediate/SnapEditor/Resources/Scripts/intermediate")
+
+	files
+	{
+	    "%{prj.name}/Source/**.cs",
+        "%{prj.name}/Properties/**.cs"
+	}
+
+	links
+	{
+		"Snap-ScriptCore"
+	}
+
+	filter "configurations:Debug"
+		optimize "off"
+		symbols "Default"
+
+	filter "configurations:Release"
+		optimize "on"
+		symbols "Default"
+
+	filter "configurations:Distribution"
+		optimize "full"
+		symbols "off"

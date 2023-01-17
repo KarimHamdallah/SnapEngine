@@ -107,12 +107,19 @@ namespace Scripting
 		MonoAssembly* CoreAssembly = nullptr;
 		MonoImage* CoreAssemblyImage = nullptr;
 
+		// Application
+		MonoAssembly* AppAssembly = nullptr;
+		MonoImage* AppAssemblyImage = nullptr;
+
 		std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> m_EntityClasses;
 		std::unordered_map<SnapEngine::UUID, SnapEngine::SnapPtr<ScriptInstance>> m_EntityScriptInstances;
 
 		std::unordered_map<SnapEngine::UUID, ScriptFieldMap> m_EntityScriptFiledsInstances;
 
 		SnapEngine::Scene* SceneContext = nullptr;
+
+		std::string m_AssemblyFilePath;
+		std::string m_AppAssemblyFilePath;
 
 		MonoClass* EntityClass;
 		MonoMethod* EntityConstructor;
@@ -154,6 +161,7 @@ namespace Scripting
 		SNAP_ASSERT_MSG(rootdomain, "Mono Jit Initialization Failed!");
 		s_Data->RootDomain = rootdomain;
 
+		// Load App Assembly
 		s_Data->AppDomain = mono_domain_create_appdomain("SnapEngineScriptRunTime", nullptr);
 		mono_domain_set(s_Data->AppDomain, true);
 	}
@@ -161,9 +169,24 @@ namespace Scripting
 	static void ShutdownMonon()
 	{
 		// TODO:: ComeBack To This
-		
+
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_unload(s_Data->AppDomain);
+		s_Data->AppDomain = nullptr;
+
+		mono_jit_cleanup(s_Data->RootDomain);
+		s_Data->RootDomain = nullptr;
+		/*
 		s_Data->AppDomain = nullptr;
 		s_Data->RootDomain = nullptr;
+		*/
+	}
+
+	void ScriptingEngine::LoadAppAssembly(const std::filesystem::path& DllFilePath)
+	{
+		s_Data->AppAssembly = Utils::LoadCSharpAssembly(DllFilePath.string().c_str());
+		s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
 	}
 
 	void ScriptingEngine::LoadAssembly(const std::filesystem::path& DllFilePath)
@@ -174,16 +197,15 @@ namespace Scripting
 		//Utils::PrintAssemblyTypes(s_Data->CoreAssembly, s_Data->CoreAssemblyImage);
 	}
 
-	void ScriptingEngine::LoadCSharpAssemblyClasses(MonoAssembly* Assembly, MonoImage* Image)
+	void ScriptingEngine::LoadCSharpAssemblyClasses()
 	{
 		s_Data->m_EntityClasses.clear();
 
-		MonoImage* image = mono_assembly_get_image(Assembly);
-		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(s_Data->AppAssemblyImage, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
 		
-		s_Data->EntityClass = mono_class_from_name(Image, "SnapEngine", "Entity");
+		s_Data->EntityClass = mono_class_from_name(s_Data->CoreAssemblyImage, "SnapEngine", "Entity");
 		s_Data->EntityConstructor = mono_class_get_method_from_name(s_Data->EntityClass, ".ctor", 1);
 
 		for (int32_t i = 0; i < numTypes; i++)
@@ -191,8 +213,8 @@ namespace Scripting
 			uint32_t cols[MONO_TYPEDEF_SIZE];
 			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			const char* nameSpace = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);
 
 			std::string fullname;
 			if (strlen(nameSpace) != 0)
@@ -200,7 +222,7 @@ namespace Scripting
 			else
 				fullname = name;
 
-			MonoClass* mono_class = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace, name);
+			MonoClass* mono_class = mono_class_from_name(s_Data->AppAssemblyImage, nameSpace, name);
 			
 			bool IsEntitySubClass = mono_class_is_subclass_of(mono_class, s_Data->EntityClass, false);
 			if (IsEntitySubClass)
@@ -208,7 +230,7 @@ namespace Scripting
 				SNAP_DEBUG("NmaeSpce>> {}, ClassName>> {}", nameSpace, name);
 				
 				// Add Script Class
-				auto& Script_Class = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name);
+				auto& Script_Class = SnapEngine::CreatSnapPtr<ScriptClass>(nameSpace, name, false);
 				s_Data->m_EntityClasses[fullname] = Script_Class;
 
 				// Get Fileds
@@ -322,13 +344,21 @@ namespace Scripting
 	void ScriptingEngine::Init()
 	{
 		s_Data = new ScriptEngineData();
+		s_Data->m_AssemblyFilePath = "Resources/Scripts/Snap-ScriptCore.dll";
+		s_Data->m_AppAssemblyFilePath = "Resources/Scripts/SandBoxGame.dll";
+		
 
 		InitMono(); // Setup MonoDomain(Root & App), MonoAssembly(CoreAssembly)
-		LoadAssembly("Resources/Scripts/Snap-ScriptCore.dll"); // Load dll file
-		LoadCSharpAssemblyClasses(s_Data->CoreAssembly, s_Data->CoreAssemblyImage); // Load Classes
-
-		ScriptGlue::RegisterComponents();
+		
 		ScriptGlue::RegisterGlue(); // Setup C# Internal Calls
+		
+		LoadAssembly(s_Data->m_AssemblyFilePath.c_str()); // Load dll file
+		LoadAppAssembly(s_Data->m_AppAssemblyFilePath.c_str());
+		LoadCSharpAssemblyClasses(); // Load Classes From App Assembly Image
+		
+		ScriptGlue::RegisterComponents();
+
+		//s_Data->EntityClass = ScriptClass("SnapEngine", "Entity", true);
 	}
 
 	void ScriptingEngine::ShutDown()
@@ -380,14 +410,36 @@ namespace Scripting
 		return nullptr;
 	}
 
+	void ScriptingEngine::ReloadAssemby()
+	{
+		s_Data->m_EntityClasses.clear();
+		s_Data->m_EntityScriptFiledsInstances.clear();
+		s_Data->m_EntityScriptInstances.clear();
+
+		mono_domain_set(mono_get_root_domain(), false);
+		mono_domain_unload(s_Data->AppDomain);
+		
+		// ReCreat AppDomain
+		s_Data->AppDomain = mono_domain_create_appdomain("SnapEngineScriptRunTime", nullptr);
+		mono_domain_set(s_Data->AppDomain, true);
+
+		// Reload Assembly Dll File And Retrieve Its Classes and public fields
+		// ReCreat CoreAssembly & CoreAssemblyImage
+		LoadAssembly(s_Data->m_AssemblyFilePath);
+		LoadAppAssembly(s_Data->m_AppAssemblyFilePath);
+		LoadCSharpAssemblyClasses(); // Load Classes From App AssemblyImage
+
+		ScriptGlue::RegisterComponents(); // Reregister Components cause CoreAssemblyImage Changed
+	}
 
 
 
 
-	ScriptClass::ScriptClass(const std::string& nameSpace, const std::string& name)
+
+	ScriptClass::ScriptClass(const std::string& nameSpace, const std::string& name, bool IsCore)
 		: m_NameSpace(nameSpace), mName(name)
 	{
-		m_MonoClass = mono_class_from_name(s_Data->CoreAssemblyImage, nameSpace.c_str(), name.c_str());
+		m_MonoClass = mono_class_from_name(IsCore ? s_Data->CoreAssemblyImage : s_Data->AppAssemblyImage, nameSpace.c_str(), name.c_str());
 	}
 
 	MonoObject* ScriptClass::Instantiate()

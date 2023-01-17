@@ -6,34 +6,27 @@ namespace SandBox
 {
     internal class Player : Entity
     {
+        bool once = true;
+
         public float Speed = 10.0f;
-        public float Time = 0.0f;
 
         public void OnCreat()
         {
-            Console.WriteLine("EntityClass....OnCreat");
+            Console.WriteLine("Player...EntityClass....OnCreat");
         }
 
         public void OnUpdate(float TimeStep)
         {
-            Time += TimeStep;
-
-            Entity Cam = FindEntityByName("Camera");
-            if (Cam != null)
+            if (InternalCalls.IsKeyPressed(Key.Space) && once)
             {
-                Console.WriteLine("Camera Entity is not null");
-                // Get Camera Controller Script On Cam Entity
-                CameraController Controller = Cam.As<CameraController>();
-                if (Controller != null)
-                {
-                    if (InternalCalls.IsKeyPressed(Key.E))
-                        Controller.DistanceFromPlayer += Speed * TimeStep;
-                    if (InternalCalls.IsKeyPressed(Key.Q))
-                        Controller.DistanceFromPlayer -= Speed * TimeStep;
-                }
+                Console.WriteLine("Player...EntityClass....OnUpdate... SpaceKeyPressed!");
+                once = false;
             }
 
-            
+            if (InternalCalls.IsKeyReleased(Key.Space))
+                once = true;
+
+
             vec3 Pos = this.Position;
             if (InternalCalls.IsKeyPressed(Key.W))
                 Pos.y += Speed * TimeStep;

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{E2D9C91E-4E65-37E3-5776-BAD7C38093E3}</ProjectGuid>
+    <ProjectGuid>{CE9DBDEB-3A53-36E1-C347-30B82FFC2CE5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Snap-ScriptCore</RootNamespace>
-    <AssemblyName>Snap-ScriptCore</AssemblyName>
+    <RootNamespace>SandBoxGame</RootNamespace>
+    <AssemblyName>SandBoxGame</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -21,7 +21,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,23 +47,23 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <Reference Include="Snap-ScriptCore" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <Reference Include="Snap-ScriptCore" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Distribution|x64' ">
+    <Reference Include="Snap-ScriptCore" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Snap\InternalCalls.cs" />
-    <Compile Include="Source\Snap\Keys.cs" />
-    <Compile Include="Source\Snap\Math\vec2.cs" />
-    <Compile Include="Source\Snap\Math\vec3.cs" />
-    <Compile Include="Source\Snap\Scene\Components.cs" />
-    <Compile Include="Source\Snap\Scene\Entity.cs" />
+    <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

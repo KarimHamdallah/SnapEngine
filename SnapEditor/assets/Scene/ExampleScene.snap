@@ -1,0 +1,52 @@
+Scene: Example Scene
+Entities List:
+  - EntityID: 5282350244377464085
+    TagComponent:
+      Tag: BackGround
+    TransformComponent:
+      Position: [0, 0, -23.7623005]
+      Rotation: [0, -0, 0]
+      Scale: [49.1219826, 36.7823982, 36.7823982]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: assets\image.png
+      TilingFactor: 1
+  - EntityID: 7449196348493017875
+    TagComponent:
+      Tag: Sprite
+    TransformComponent:
+      Position: [0, 0, -14.0486307]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.400000006, 1]
+      TilingFactor: 1
+    ScriptComponent:
+      ClassName: SandBox.Player
+      FieldMap:
+        - Name: Speed
+          Type: Float
+          Data: 19
+  - EntityID: 14473359086782717171
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 0, 10]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      ProjectionType: 0
+      OrthoGraphicSize: 10
+      OrthoGraphicNear: -100
+      OrthoGraphicFar: 100
+      PerspectiveFov: 0.785398185
+      PerspectiveNear: 0.00999999978
+      PerspectiveFar: 1000
+      IsMain: true
+      FixedAspectRatio: false
+    ScriptComponent:
+      ClassName: SandBox.CameraController
+      FieldMap:
+        - Name: DistanceFromPlayer
+          Type: Float
+          Data: 10

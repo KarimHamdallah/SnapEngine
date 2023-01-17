@@ -55,7 +55,7 @@ namespace Scripting
 	public:
 		ScriptClass() = default;
 
-		ScriptClass(const std::string& nameSpace, const std::string& name);
+		ScriptClass(const std::string& nameSpace, const std::string& name, bool IsCore = true);
 
 		MonoObject* Instantiate();
 
@@ -127,8 +127,9 @@ namespace Scripting
 		static void Init();
 		static void ShutDown();
 
+		static void LoadAppAssembly(const std::filesystem::path& DllFilePath);
 		static void LoadAssembly(const std::filesystem::path& DllFilePath);
-		static void LoadCSharpAssemblyClasses(MonoAssembly* Assembly, MonoImage* Image);
+		static void LoadCSharpAssemblyClasses();
 
 		static std::unordered_map<std::string, SnapEngine::SnapPtr<ScriptClass>> GetEntityClassesMap();
 		static bool IsEntityClassExist(std::string ClassName);
@@ -149,6 +150,8 @@ namespace Scripting
 		static ScriptFieldMap& GetScriptFieldMap(SnapEngine::Entity entity);
 
 		static MonoObject* GetManagedObject(SnapEngine::UUID uuid);
+
+		static void ReloadAssemby();
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 
