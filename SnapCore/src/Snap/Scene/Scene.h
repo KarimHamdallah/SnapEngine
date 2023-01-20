@@ -69,7 +69,11 @@ namespace SnapEngine
 
 		Entity GetEntityWithUUID(UUID uuid);
 
-		bool IsRunning() { return m_IsRunning; }
+		inline bool IsRunning() { return m_IsRunning; }
+		inline bool IsPaused() { return m_IsPaused; }
+
+		inline void SetPaused(bool paused) { m_IsPaused = paused; }
+		inline void StepFrames(int frames = 1) { m_StepsNumber = frames; }
 
 	private:
 		template<typename T>
@@ -84,6 +88,8 @@ namespace SnapEngine
 		void Physics2DStop();
 
 		bool m_IsRunning = false;
+		bool m_IsPaused = false;
+		int m_StepsNumber = 1;
 
 		// Editor Attribs
 		uint32_t m_ViewPortWidth = 0, m_ViewPortHeight = 0;

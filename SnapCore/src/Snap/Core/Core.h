@@ -22,4 +22,10 @@ namespace SnapEngine
     {
         return (SnapPtr<T>)std::make_shared<T>(std::forward<Args>(args)...);
     }
+
+    template<typename T, typename... Args>
+    SnapUniquePtr<T> CreatSnapUiquePtr(Args&&... args)
+    {
+        return (SnapUniquePtr<T>)std::make_unique<T>(std::forward<Args>(args)...);
+    }
 }

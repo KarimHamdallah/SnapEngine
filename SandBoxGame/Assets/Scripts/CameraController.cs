@@ -23,7 +23,17 @@ namespace SandBox
             if (InternalCalls.IsKeyPressed(Key.Q))
                 DistanceFromPlayer -= Speed * TimeStep;
 
-            vec3 Pos = this.Position;
+            vec3 Pos;
+            Entity PlayerEntity = FindEntityByName("PlayerButton");
+            if (PlayerEntity != null)
+            {
+                Pos = new vec3(PlayerEntity.Position.x, PlayerEntity.Position.y, DistanceFromPlayer);
+            }
+            else
+            {
+                Pos = new vec3(this.Position.x, this.Position.y, DistanceFromPlayer);
+            }
+            /*
             if (InternalCalls.IsKeyPressed(Key.W))
                 Pos.y += Speed * TimeStep;
             if (InternalCalls.IsKeyPressed(Key.S))
@@ -32,8 +42,9 @@ namespace SandBox
                 Pos.x -= Speed * TimeStep;
             if (InternalCalls.IsKeyPressed(Key.D))
                 Pos.x += Speed * TimeStep;
-
-            Pos.z = DistanceFromPlayer;
+            */
+            
+            //DistanceFromPlayer += Speed * TimeStep;
             this.Position = Pos;
         }
     }

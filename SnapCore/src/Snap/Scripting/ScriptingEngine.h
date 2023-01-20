@@ -152,6 +152,8 @@ namespace Scripting
 		static MonoObject* GetManagedObject(SnapEngine::UUID uuid);
 
 		static void ReloadAssemby();
+
+		static bool IsReloadAppAssemblyPending();
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
 

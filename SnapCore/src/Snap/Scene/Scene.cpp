@@ -188,46 +188,49 @@ namespace SnapEngine
 
     void Scene::UpdateRunTime(const TimeStep& Time)
     {
-        { // Update Scripts
-            registry.view<CppScriptComponent>().each([=](auto entity, auto& cppSc)
-                {
-                    if (!cppSc.m_Instance)
+        if (!m_IsPaused || m_StepsNumber-- > 0)
+        {
+            { // Update Scripts
+                registry.view<CppScriptComponent>().each([=](auto entity, auto& cppSc)
                     {
-                        cppSc.m_Instance = cppSc.InstantiateScriptFuncPtr();
-                        cppSc.m_Instance->m_Entity = Entity{ entity, this };
+                        if (!cppSc.m_Instance)
+                        {
+                            cppSc.m_Instance = cppSc.InstantiateScriptFuncPtr();
+                            cppSc.m_Instance->m_Entity = Entity{ entity, this };
 
-                        cppSc.m_Instance->Start();
-                    }
+                            cppSc.m_Instance->Start();
+                        }
 
-                    cppSc.m_Instance->Update(Time);
-                });
-        }
+                        cppSc.m_Instance->Update(Time);
+                    });
+            }
 
-        { // Update Scripts
-            registry.view<ScriptComponent>().each([=](auto entity, auto& cppSc)
+            { // Update Scripts
+                registry.view<ScriptComponent>().each([=](auto entity, auto& cppSc)
+                    {
+                        Scripting::ScriptingEngine::OnUpdateEntity(Entity{ entity, this }, Time);
+                    });
+            }
+
+            { // Physics
+                const uint32_t VelocityIterations = 6;
+                const uint32_t PositionIterations = 2;
+
+                m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
+
+                // Get transform From Box2D
+                auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
+                for (auto entity : group)
                 {
-                    Scripting::ScriptingEngine::OnUpdateEntity(Entity{ entity, this }, Time);
-                });
-        }
+                    Entity e = { entity, this };
+                    auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
 
-        { // Physics
-            const uint32_t VelocityIterations = 6;
-            const uint32_t PositionIterations = 2;
-
-            m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
-
-            // Get transform From Box2D
-            auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
-            for (auto entity : group)
-            {
-                Entity e = { entity, this };
-                auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
-
-                b2Body* body = (b2Body*)rb2d.RunTimeBody;
-                const auto& Position = body->GetPosition();
-                transform.m_Position.x = Position.x;
-                transform.m_Position.y = Position.y;
-                transform.m_Rotation.z = glm::degrees(body->GetAngle());
+                    b2Body* body = (b2Body*)rb2d.RunTimeBody;
+                    const auto& Position = body->GetPosition();
+                    transform.m_Position.x = Position.x;
+                    transform.m_Position.y = Position.y;
+                    transform.m_Rotation.z = glm::degrees(body->GetAngle());
+                }
             }
         }
     }
@@ -284,27 +287,29 @@ namespace SnapEngine
 
     void Scene::UpdateAndRenderSimulation(const TimeStep& Time, const EditorCamera& Camera)
     {
-        { // Physics Update
-            const uint32_t VelocityIterations = 6;
-            const uint32_t PositionIterations = 2;
+        if (!m_IsPaused || m_StepsNumber-- > 0)
+        {
+            { // Physics Update
+                const uint32_t VelocityIterations = 6;
+                const uint32_t PositionIterations = 2;
 
-            m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
+                m_PhysicsWorld->Step(Time, VelocityIterations, PositionIterations);
 
-            // Get transform From Box2D
-            auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
-            for (auto entity : group)
-            {
-                Entity e = { entity, this };
-                auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
+                // Get transform From Box2D
+                auto& group = registry.view<TransformComponent, RigidBody2DComponent>();
+                for (auto entity : group)
+                {
+                    Entity e = { entity, this };
+                    auto& [transform, rb2d] = group.get<TransformComponent, RigidBody2DComponent>(entity);
 
-                b2Body* body = (b2Body*)rb2d.RunTimeBody;
-                const auto& Position = body->GetPosition();
-                transform.m_Position.x = Position.x;
-                transform.m_Position.y = Position.y;
-                transform.m_Rotation.z = glm::degrees(body->GetAngle());
+                    b2Body* body = (b2Body*)rb2d.RunTimeBody;
+                    const auto& Position = body->GetPosition();
+                    transform.m_Position.x = Position.x;
+                    transform.m_Position.y = Position.y;
+                    transform.m_Rotation.z = glm::degrees(body->GetAngle());
+                }
             }
         }
-
         /*--------------------------------------------------------------------*/
 
 
@@ -429,6 +434,7 @@ namespace SnapEngine
         m_IsRunning = false;
 
         Physics2DStop();
+        Scripting::ScriptingEngine::OnRunTimeStop();
     }
 
 

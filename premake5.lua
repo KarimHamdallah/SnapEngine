@@ -22,6 +22,7 @@ Dependencies["YAML"] = "SnapCore/vendor/YAML/include"
 Dependencies["IMGUIZMO"] = "SnapCore/vendor/imguizmo"
 Dependencies["Box2D"] = "SnapCore/vendor/Box2D/include"
 Dependencies["mono"] = "SnapCore/vendor/mono/include"
+Dependencies["FileWatch"] = "SnapCore/vendor/FileWatch"
 
 LibraryDirectories = {}
 LibraryDirectories["mono"] = "%{wks.location}/SnapCore/vendor/mono/lib/Debug"
@@ -70,7 +71,8 @@ project "SnapCore"                                                       -- Snap
 		"%{Dependencies.YAML}",
 		"%{Dependencies.IMGUIZMO}",
 		"%{Dependencies.Box2D}",
-		"%{Dependencies.mono}"
+		"%{Dependencies.mono}",
+		"%{Dependencies.FileWatch}"
 	}
 
 	links
@@ -312,8 +314,7 @@ project "SandBoxGame"                                                           
 
 	files
 	{
-	    "%{prj.name}/Source/**.cs",
-        "%{prj.name}/Properties/**.cs"
+	    "%{prj.name}/Assets/Scripts/**.cs"
 	}
 
 	links

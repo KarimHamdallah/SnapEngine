@@ -18,8 +18,10 @@ namespace SnapEngine
 			: Layer("Example")
 		{
 			m_PlayIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PlayButton.png"));
-			m_StopIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PauseButton.png"));
+			m_StopIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/StopButton.png"));
 			m_SimulateIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/SimaulateButton.png"));
+			m_PauseIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/PauseButton.png"));
+			m_StepIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/StepButton.png"));
 
 
 			FrameBufferSpecifications FrameBufferSpecs;
@@ -300,7 +302,7 @@ namespace SnapEngine
 		};
 
 		SceneState m_CurrentSceneState = SceneState::EDIT;
-		SnapPtr<Texture2D> m_PlayIcon, m_StopIcon, m_SimulateIcon;
+		SnapPtr<Texture2D> m_PlayIcon, m_StopIcon, m_SimulateIcon, m_PauseIcon, m_StepIcon;
 
 private:
 		void StartDockSpace();

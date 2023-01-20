@@ -327,13 +327,38 @@ namespace SnapEngine
 		}
 
 		ImGui::SameLine();
-		
+
 		if (ImGui::ImageButton((ImTextureID)SimulateIcon->getID(), ImVec2{ size, size })) // Simulate
 		{
 			if (m_CurrentSceneState == SceneState::EDIT)
 				PlaySimulateScene();
 			else if (m_CurrentSceneState == SceneState::Simulate)
 				StopSimulationScene();
+		}
+
+		// Pause And Step
+		if (m_CurrentSceneState != SceneState::EDIT)
+		{
+			ImGui::SameLine();
+			ImVec4 PressedColor(0.3f, 0.3f, 0.3f, 1.0f);
+			ImVec4 ReleasedColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+			bool paused = m_Scene->IsPaused();
+
+			ImGui::PushStyleColor(ImGuiCol_Button, paused ? PressedColor : ReleasedColor);
+			if (ImGui::ImageButton((ImTextureID)m_PauseIcon->getID(), ImVec2{ size, size })) // Pause
+			{
+				m_Scene->SetPaused(!paused);
+			}
+			ImGui::PopStyleColor();
+
+			ImGui::SameLine();
+
+			if (ImGui::ImageButton((ImTextureID)m_StepIcon->getID(), ImVec2{ size, size })) // Step
+			{
+				if(m_Scene->IsPaused())
+					m_Scene->StepFrames(60);
+			}
 		}
 
 		ImGui::PopStyleVar();

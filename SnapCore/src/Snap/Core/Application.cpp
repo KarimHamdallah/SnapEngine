@@ -47,6 +47,10 @@ namespace SnapEngine
 			TimeStep m_TimeStep = time - m_LastTime;
 			m_LastTime = time;
 
+			// TODO:: Maybe Using MultiThreading Later
+			if (Scripting::ScriptingEngine::IsReloadAppAssemblyPending())
+				Scripting::ScriptingEngine::ReloadAssemby();
+
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayersStack)

@@ -6,6 +6,8 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
+#include <FileWatch.h>
+
 #include "ScriptGlue.h"
 #include <Snap/Core/UUID.h>
 
@@ -123,6 +125,10 @@ namespace Scripting
 
 		MonoClass* EntityClass;
 		MonoMethod* EntityConstructor;
+
+		SnapEngine::SnapUniquePtr<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
+		bool AssemblyReloadPending = false;
+		bool IsAppAssemblyReloadingPending = false;
 	};
 
 
@@ -327,8 +333,8 @@ namespace Scripting
 
 	void ScriptingEngine::OnRunTimeStop()
 	{
-		s_Data->m_EntityScriptInstances.clear();
-		s_Data->SceneContext = nullptr;
+		//s_Data->m_EntityScriptInstances.clear();
+		//s_Data->SceneContext = nullptr;
 	}
 
 	SnapEngine::Scene* ScriptingEngine::GetSceneContext()
@@ -339,6 +345,15 @@ namespace Scripting
 	MonoImage* ScriptingEngine::GetCoreAssemblyImage()
 	{
 		return s_Data->CoreAssemblyImage;
+	}
+
+	static void OnAppAssemblyFileSystemEvent(const std::string& path, const filewatch::Event change_type)
+	{
+		if (!s_Data->AssemblyReloadPending && change_type == filewatch::Event::modified)
+		{
+			s_Data->AssemblyReloadPending = true;
+			s_Data->IsAppAssemblyReloadingPending = true;
+		}
 	}
 
 	void ScriptingEngine::Init()
@@ -359,6 +374,11 @@ namespace Scripting
 		ScriptGlue::RegisterComponents();
 
 		//s_Data->EntityClass = ScriptClass("SnapEngine", "Entity", true);
+
+		s_Data->AppAssemblyFileWatcher = SnapEngine::CreatSnapUiquePtr<filewatch::FileWatch<std::string>>
+		(
+			"Resources/Scripts", OnAppAssemblyFileSystemEvent
+		);
 	}
 
 	void ScriptingEngine::ShutDown()
@@ -430,6 +450,14 @@ namespace Scripting
 		LoadCSharpAssemblyClasses(); // Load Classes From App AssemblyImage
 
 		ScriptGlue::RegisterComponents(); // Reregister Components cause CoreAssemblyImage Changed
+
+		s_Data->AssemblyReloadPending = false;
+		s_Data->IsAppAssemblyReloadingPending = false;
+	}
+
+	bool ScriptingEngine::IsReloadAppAssemblyPending()
+	{
+		return s_Data->IsAppAssemblyReloadingPending;
 	}
 
 
