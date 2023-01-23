@@ -15,19 +15,21 @@
 
 #include <mono/metadata/tabledefs.h>
 
+#include <Snap/Core/Buffer.h>
+
 namespace Scripting
 {
 	namespace Utils
 	{
 		// TODO:: Change this to file system
-		static char* ReadBytes(const std::string& filepath, uint32_t* outSize)
+		static SnapEngine::Buffer ReadBytes(const std::string& filepath)
 		{
 			std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
 
 			if (!stream)
 			{
 				// Failed to open the file
-				return nullptr;
+				return SnapEngine::Buffer();
 			}
 
 			std::streampos end = stream.tellg();
@@ -37,25 +39,24 @@ namespace Scripting
 			if (size == 0)
 			{
 				// File is empty
-				return nullptr;
+				return SnapEngine::Buffer();
 			}
 
-			char* buffer = new char[size];
-			stream.read((char*)buffer, size);
+			SnapEngine::Buffer buffer(size);
+			stream.read(buffer.As<char*>(), size);
 			stream.close();
 
-			*outSize = size;
+
 			return buffer;
 		}
 
 		static MonoAssembly* LoadCSharpAssembly(const std::string& assemblyPath)
 		{
-			uint32_t fileSize = 0;
-			char* fileData = ReadBytes(assemblyPath, &fileSize);
+			SnapEngine::Buffer assemblybuffer = ReadBytes(assemblyPath);
 
 			// NOTE: We can't use this image for anything other than loading the assembly because this image doesn't have a reference to the assembly
 			MonoImageOpenStatus status;
-			MonoImage* image = mono_image_open_from_data_full(fileData, fileSize, 1, &status, 0);
+			MonoImage* image = mono_image_open_from_data_full(assemblybuffer.As<char*>(), assemblybuffer.m_Size, 1, &status, 0);
 
 			if (status != MONO_IMAGE_OK)
 			{
@@ -67,8 +68,8 @@ namespace Scripting
 			MonoAssembly* assembly = mono_assembly_load_from_full(image, assemblyPath.c_str(), &status, 0);
 			mono_image_close(image);
 
-			// Don't forget to free the file data
-			delete[] fileData;
+			// Don't forget to free the assembly buffer
+			assemblybuffer.Release();
 
 			return assembly;
 		}

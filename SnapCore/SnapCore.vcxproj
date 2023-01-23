@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Snap\Core\Application.h" />
+    <ClInclude Include="src\Snap\Core\Buffer.h" />
     <ClInclude Include="src\Snap\Core\Core.h" />
     <ClInclude Include="src\Snap\Core\EntryPoint.h" />
     <ClInclude Include="src\Snap\Core\Input.h" />
