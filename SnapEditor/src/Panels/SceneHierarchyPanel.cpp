@@ -7,10 +7,10 @@
 
 #include <Snap/Scripting/ScriptingEngine.h>
 
+#include <Snap/Project/ProjectSystem.h>
+
 namespace SnapEngine
 {
-	extern const std::filesystem::path g_AssetPath;
-
 	static void DrawVec3Control(const std::string& lable, glm::vec3& value, float resetvalue = 0.0f,float Speed = 0.01f, float colwidth = 80.0f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -373,7 +373,7 @@ namespace SnapEngine
 					if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 					{
 						const wchar_t* path = (const wchar_t*)payload->Data;
-						auto filepath = std::filesystem::path(g_AssetPath) / path;
+						auto filepath = ProjectSystem::GetAssetDirectory() / path;
 
 						if (filepath.extension().string() == ".png" || filepath.extension().string() == ".jpg")
 						{

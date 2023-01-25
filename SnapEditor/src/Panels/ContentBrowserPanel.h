@@ -18,6 +18,7 @@ namespace SnapEngine
 		bool IsWindowHovered() { return IsHovered; }
 		bool IsWindowFocused() { return IsFocused; }
 	private:
+		std::filesystem::path m_AssetDirectory;
 		std::filesystem::path m_CurrentDirectory;
 		SnapPtr<Texture2D> m_DirectoryIcon;
 		SnapPtr<Texture2D> m_FileIcon;

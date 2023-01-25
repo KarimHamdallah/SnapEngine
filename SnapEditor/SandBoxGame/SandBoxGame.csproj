@@ -18,8 +18,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
+    <OutputPath>..\Resources\Scripts\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>
     </DefineConstants>
@@ -31,8 +31,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
+    <OutputPath>..\Resources\Scripts\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>
     </DefineConstants>
@@ -44,8 +44,8 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
-    <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
+    <OutputPath>..\Resources\Scripts\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>
     </DefineConstants>

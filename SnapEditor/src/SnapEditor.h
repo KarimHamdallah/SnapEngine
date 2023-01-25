@@ -9,8 +9,6 @@
 
 namespace SnapEngine
 {
-	extern const std::filesystem::path g_AssetPath;
-
 	class EditorLayer : public SnapEngine::Layer
 	{
 	public:
@@ -41,48 +39,8 @@ namespace SnapEngine
 			m_Scene = CreatSnapPtr<Scene>();
 			m_SceneHierarchyPanel.SetScene(m_Scene);
 
-
-			////////////////////// Scripts //////////////////
-
-			class SpriteScalerScript : public CppScript
-			{
-			public:
-				virtual void Update(TimeStep Time) override
-				{
-					float Speed = 10.0f;
-					if (HasComponent<CameraComponent>())
-					{
-						CameraComponent& cam = GetComponent<CameraComponent>();
-						float CamSize = cam.m_Camera.GetOrthoGraphicSize();
-
-						if (Input::IsKeyPressed(Key::Right))
-							cam.m_Camera.SetOrthoGraphicSize(CamSize - Time * Speed);
-						if (Input::IsKeyPressed(Key::Left))
-							cam.m_Camera.SetOrthoGraphicSize(CamSize + Time * Speed);
-					}
-					else
-					{
-						TransformComponent& transform = GetComponent<TransformComponent>();
-						if (Input::IsKeyPressed(Key::Right))
-							transform.m_Scale.x += Time * Speed;
-						if (Input::IsKeyPressed(Key::Left))
-							transform.m_Scale.x -= Time * Speed;
-						if (Input::IsKeyPressed(Key::Up))
-							transform.m_Scale.y += Time * Speed;
-						if (Input::IsKeyPressed(Key::Down))
-							transform.m_Scale.y -= Time * Speed;
-					}
-				}
-			};
-
-
-
-			///////////// Scene Setup /////////////
-			Entity Sprite = m_Scene->CreatEntity("Sprite");
-			Sprite.AddComponent<SpriteRendererComponent>(glm::vec4(0.8f, 0.3f, 0.4f, 1.0f));
-
-			Entity Camera = m_Scene->CreatEntity("Camera", glm::vec3(0.0f, 0.0f, 10.0f));
-			Camera.AddComponent<CameraComponent>().m_IsMain = true;
+			////////////// Project ////////////
+			OpenProject("SandBoxGame/SandBoxGame.SnapProj");
 		}
 
 		~EditorLayer() {}
@@ -170,7 +128,7 @@ namespace SnapEngine
 			StartDockSpace();
 
 			m_SceneHierarchyPanel.ImGuiRender();
-			m_ContentBrowserPanel.ImGuiRender();
+			m_ContentBrowserPanel->ImGuiRender();
 			UIToolbar();
 
 
@@ -204,7 +162,7 @@ namespace SnapEngine
 				if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 				{
 					const wchar_t* path = (const wchar_t*)payload->Data;
-					auto filepath = std::filesystem::path(g_AssetPath) / path;
+					auto filepath = ProjectSystem::GetAssetDirectory() / path;
 					
 					if(filepath.extension().string() == ".snap")
 						OpenScene(filepath);
@@ -262,7 +220,7 @@ namespace SnapEngine
 			ImGui::PopStyleVar();
 
 
-			if (m_ContentBrowserPanel.IsWindowFocused() && m_ContentBrowserPanel.IsWindowHovered())
+			if (m_ContentBrowserPanel->IsWindowFocused() && m_ContentBrowserPanel->IsWindowHovered())
 				Application::Get().GetImGuiLayer()->BlockEvents(false);
 
 			EndDockSpace();
@@ -283,7 +241,7 @@ namespace SnapEngine
 
 		//////////////// Editor ///////////////
 		SceneHierarchyPanel m_SceneHierarchyPanel;
-		ContentBrowserPanel m_ContentBrowserPanel;
+		SnapPtr<ContentBrowserPanel> m_ContentBrowserPanel;
 		int m_GizmoType = 0;
 		float m_Snapping = 0.1f;
 		EditorCamera m_EditorCamera;
@@ -321,6 +279,10 @@ private:
 		void SaveScene();
 		void SaveScene(const std::filesystem::path& path);
 		void NewScene();
+
+
+		void NewProject();
+		void OpenProject(const std::filesystem::path& ProjectPath);
 
 		void OnDuplicateEntity();
 

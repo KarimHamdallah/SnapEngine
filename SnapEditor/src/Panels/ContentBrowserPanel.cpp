@@ -6,15 +6,18 @@
 
 #include <imgui.h>
 
+#include <Snap/Project/ProjectSystem.h>
+
 namespace SnapEngine
 {
-	extern const std::filesystem::path g_AssetPath = "assets";
 	static float padding = 16.0f;
 	static float thumbnailsize = 90.0f;
 	
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(g_AssetPath)
 	{
+		m_CurrentDirectory = ProjectSystem::GetAssetDirectory();
+		m_AssetDirectory = m_CurrentDirectory;
+
 		m_DirectoryIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/folder.png"));
 		m_FileIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/file.png"));
 		m_FontIcon = SnapPtr<Texture2D>(Texture2D::Creat("assets/Editor/fontfile.png"));
@@ -25,7 +28,7 @@ namespace SnapEngine
 	{
 		ImGui::Begin("ContentBrowser");
 
-		if (m_CurrentDirectory != g_AssetPath)
+		if (m_CurrentDirectory != m_AssetDirectory)
 		{
 			if (ImGui::Button("<"))
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
@@ -44,8 +47,8 @@ namespace SnapEngine
 		for (auto& p : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 
-			std::filesystem::path path = p.path(); // Path = assets/Editor
-			auto& RelativePath = std::filesystem::relative(path, g_AssetPath); // RelativePath = Editor
+			std::filesystem::path path = p.path(); // Path = Assets/Editor
+			auto& RelativePath = std::filesystem::relative(path, m_AssetDirectory); // RelativePath = Editor
 
 			ImGui::PushID(RelativePath.filename().string().c_str());
 			SnapPtr<Texture2D> Icon;

@@ -45,6 +45,21 @@ namespace SnapEngine
 		m_SceneHierarchyPanel.SetScene(m_Scene);
 	}
 
+	void EditorLayer::NewProject()
+	{
+		ProjectSystem::New();
+	}
+
+	void EditorLayer::OpenProject(const std::filesystem::path& ProjectPath)
+	{
+		if (ProjectSystem::Load(ProjectPath))
+		{
+			std::filesystem::path StartScenePath = ProjectSystem::GetAssetDirectory() / ProjectSystem::GetConfig().m_StartScene;
+			OpenScene(StartScenePath);
+			m_ContentBrowserPanel = CreatSnapPtr<ContentBrowserPanel>();
+		}
+	}
+
 	void EditorLayer::SaveScene(const std::filesystem::path& path)
 	{
 		if (!path.empty())
@@ -175,8 +190,8 @@ namespace SnapEngine
 			break;
 		}
 
-		if (m_ContentBrowserPanel.IsWindowFocused() && m_ContentBrowserPanel.IsWindowHovered())
-			m_ContentBrowserPanel.ProcessEvents(e);
+		if (m_ContentBrowserPanel->IsWindowFocused() && m_ContentBrowserPanel->IsWindowHovered())
+			m_ContentBrowserPanel->ProcessEvents(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.DispatchEvent<KeyPressedEvent>(SNAP_BIND_FUNCTION(EditorLayer::OnKeyPressed));

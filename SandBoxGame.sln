@@ -1,9 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32922.545
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandBoxGame", "SandBoxGame\SandBoxGame.csproj", "{CE9DBDEB-3A53-36E1-C347-30B82FFC2CE5}"
+# Visual Studio Version 16
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandBoxGame", "SnapEditor\SandBoxGame\SandBoxGame.csproj", "{CE9DBDEB-3A53-36E1-C347-30B82FFC2CE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +19,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A3945DA2-8C2D-4C55-8343-168BFA2C14B6}
 	EndGlobalSection
 EndGlobal

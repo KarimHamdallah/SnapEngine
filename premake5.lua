@@ -304,7 +304,7 @@ workspace "SandBoxGame"
 project_output = "%{cfg.buildcgf}-%{cfg.system}-%{cfg.architecture}"
 
 project "SandBoxGame"                                                               -- SandBoxGame
-    location "SandBoxGame"
+    location "SnapEditor/SandBoxGame"
 	kind "SharedLib"
 	language "C#"
 	dotnetframework "4.7.2"

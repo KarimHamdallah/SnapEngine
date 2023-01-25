@@ -1,0 +1,5 @@
+Project:
+  Name: SandBoxProject
+  StartScenePath: "Scenes/Scene.snap"
+  AssetFolerPath: "Assets"
+  ScriptModulePath: "Resources/Scripts/SandBoxGame.dll"

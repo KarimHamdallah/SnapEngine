@@ -19,6 +19,9 @@
     <Filter Include="src\Snap\ImGui">
       <UniqueIdentifier>{F8CA0E6F-E498-0275-CD2C-739BB999DED9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snap\Project">
+      <UniqueIdentifier>{94A53C97-809E-5BE9-A9D0-406E95283BF5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Snap\Renderer">
       <UniqueIdentifier>{B46EDE6B-2085-DC01-69FC-6723D551AD89}</UniqueIdentifier>
     </Filter>
@@ -73,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Snap\Core\Application.h">
+      <Filter>src\Snap\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Core\Buffer.h">
       <Filter>src\Snap\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Core\Core.h">
@@ -140,6 +146,15 @@
     </ClInclude>
     <ClInclude Include="src\Snap\ImGui\ImGuiLayer.h">
       <Filter>src\Snap\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Project\Project.h">
+      <Filter>src\Snap\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Project\ProjectSerializer.h">
+      <Filter>src\Snap\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Project\ProjectSystem.h">
+      <Filter>src\Snap\Project</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Renderer\Buffer.h">
       <Filter>src\Snap\Renderer</Filter>
@@ -1086,7 +1101,6 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Core\Buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1121,6 +1135,12 @@
     </ClCompile>
     <ClCompile Include="src\Snap\ImGui\ImGuiLayer.cpp">
       <Filter>src\Snap\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Project\ProjectSerializer.cpp">
+      <Filter>src\Snap\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Project\ProjectSystem.cpp">
+      <Filter>src\Snap\Project</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp">
       <Filter>src\Snap\Renderer</Filter>

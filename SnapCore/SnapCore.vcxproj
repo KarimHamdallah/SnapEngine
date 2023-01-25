@@ -160,6 +160,9 @@
     <ClInclude Include="src\Snap\Events\MouseEvent.h" />
     <ClInclude Include="src\Snap\Events\WindowEvent.h" />
     <ClInclude Include="src\Snap\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Snap\Project\Project.h" />
+    <ClInclude Include="src\Snap\Project\ProjectSerializer.h" />
+    <ClInclude Include="src\Snap\Project\ProjectSystem.h" />
     <ClInclude Include="src\Snap\Renderer\Buffer.h" />
     <ClInclude Include="src\Snap\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Snap\Renderer\GraphicsContext.h" />
@@ -488,6 +491,8 @@
     <ClCompile Include="src\Snap\ECS\EntityManager.cpp" />
     <ClCompile Include="src\Snap\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Snap\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Snap\Project\ProjectSerializer.cpp" />
+    <ClCompile Include="src\Snap\Project\ProjectSystem.cpp" />
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicCameraController.cpp" />
