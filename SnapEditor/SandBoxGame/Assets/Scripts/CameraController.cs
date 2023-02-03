@@ -9,31 +9,43 @@ namespace SandBox
 {
     internal class CameraController : Entity
     {
-        public float DistanceFromPlayer = 10.0f;
-        public float Speed = 10.0f;
+        public float DistanceFromPlayer = 30.0f;
+
+        private Entity Player;
+        private RigidBody2DComponent Player_Rb2d;
+        private float Time;
         void OnCreat()
         {
             Console.WriteLine("CameraController OnCreat");
+            Player = FindEntityByName("Player");
+            if (Player != null)
+                Player_Rb2d = Player.CreatAndGetComponent<RigidBody2DComponent>();
+            if (Player_Rb2d != null)
+                Player_Rb2d.Type = RigidBody2DComponent.RigidBody2DType.STATIC;
         }
 
         void OnUpdate(float TimeStep)
         {
-            if (InternalCalls.IsKeyPressed(Key.E))
-                DistanceFromPlayer += Speed * TimeStep;
-            if (InternalCalls.IsKeyPressed(Key.Q))
-                DistanceFromPlayer -= Speed * TimeStep;
 
-            vec3 Pos;
-            Entity PlayerEntity = FindEntityByName("Sprite");
-            if (PlayerEntity != null)
+            if (Player != null && Player_Rb2d != null)
             {
-                Pos = new vec3(PlayerEntity.Position.x, PlayerEntity.Position.y, DistanceFromPlayer);
+                Time += TimeStep;
+
+                if (Time > 5.0f)
+                    Player_Rb2d.Type = RigidBody2DComponent.RigidBody2DType.DYNAMIC;
+
+               float distanceFromPlayer = 0.0f; // ex: 0.0f
+               vec2 LinearVelocity = Player_Rb2d.LinearVelocity;
+               float Target = DistanceFromPlayer + LinearVelocity.Length(); // ex: 30.0f
+               distanceFromPlayer = SnapMath.Lerpf(distanceFromPlayer, Target, 0.5f); // ex: 0.0f ~ 30
+               
+                
+               vec3 CameraPosition = this.Position;
+               CameraPosition.x = Player.Position.x;
+               CameraPosition.y = Player.Position.y;
+               CameraPosition.z = distanceFromPlayer;
+               this.Position = CameraPosition;
             }
-            else
-            {
-                Pos = new vec3(this.Position.x, this.Position.y, DistanceFromPlayer);
-            }
-            this.Position = Pos;
         }
     }
 }

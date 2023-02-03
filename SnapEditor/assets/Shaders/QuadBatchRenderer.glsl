@@ -43,6 +43,10 @@ uniform sampler2D u_Textures[32];
 void main()
 {
    int index = int(v_TexID);
-   FragColor = texture(u_Textures[index], v_TexCoords * v_TilingFactor) * v_Color;
+
+   vec4 color = texture(u_Textures[index], v_TexCoords * v_TilingFactor) * v_Color;
+   if(color.a < 0.1)
+       discard;
+   FragColor = color;
    MousePickingID = v_EntityID;
 }

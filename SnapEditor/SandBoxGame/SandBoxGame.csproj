@@ -21,8 +21,7 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,8 +33,7 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,8 +45,7 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -62,8 +59,6 @@
     <Reference Include="Snap-ScriptCore" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\CameraController.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

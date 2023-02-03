@@ -25,8 +25,17 @@ namespace SnapEngine
 
         // Physics
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public extern static void RigidBody_ApplyLinearImpulseToCenter(ulong EntityID, ref vec2 impulse, bool wake);
+        public extern static void RigidBody2D_GetBodyType(ulong EntityID, out RigidBody2DComponent.RigidBody2DType OutBodyType);
 
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void RigidBody2D_SetBodyType(ulong EntityID, ref RigidBody2DComponent.RigidBody2DType OutBodyType);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void RigidBody2D_ApplyLinearImpulseToCenter(ulong EntityID, ref vec2 impulse, bool wake);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void RigidBody2D_GetLinearVelocity(ulong EntityID, out vec2 OutLinearVelocity);
+        
         // Entity
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_HasComponent(ulong EntityID, Type ComponentType);

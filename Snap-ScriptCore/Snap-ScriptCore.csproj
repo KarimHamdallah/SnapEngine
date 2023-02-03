@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Source\Snap\InternalCalls.cs" />
     <Compile Include="Source\Snap\Keys.cs" />
+    <Compile Include="Source\Snap\Math\Math.cs" />
     <Compile Include="Source\Snap\Math\vec2.cs" />
     <Compile Include="Source\Snap\Math\vec3.cs" />
     <Compile Include="Source\Snap\Scene\Components.cs" />

@@ -29,6 +29,7 @@
 #include <Snap/Renderer/Renderer2D.h>
 #include <Snap/Renderer/RendererCommand.h>
 #include <Snap/Renderer/RendererAPI.h>
+#include <Snap/Renderer/Font.h>
 
 #include <Snap/Renderer/Buffer.h>
 #include <Snap/Renderer/VertexArray.h>
@@ -50,6 +51,7 @@
 #include <Snap/Scripting/ScriptingEngine.h>
 
 #include <Snap/Project/ProjectSystem.h>
+
 
 //---------------------------
 

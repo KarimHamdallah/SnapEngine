@@ -159,6 +159,9 @@
     <ClInclude Include="src\Snap\Renderer\Buffer.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\Font.h">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Renderer\FrameBuffer.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
@@ -1143,6 +1146,9 @@
       <Filter>src\Snap\Project</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Snap\Renderer\Font.cpp">
       <Filter>src\Snap\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp">

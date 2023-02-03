@@ -4,20 +4,19 @@ Entities List:
     TagComponent:
       Tag: BackGround
     TransformComponent:
-      Position: [0, 0, -23.7623005]
+      Position: [-1.27179658, 0, -23.7623005]
       Rotation: [0, -0, 0]
       Scale: [49.1219826, 36.7823982, 36.7823982]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
-      TexturePath: assets\image.png
+      Color: [0.185185194, 0.185185194, 0.185185194, 1]
       TilingFactor: 1
   - EntityID: 7449196348493017875
     TagComponent:
-      Tag: Sprite
+      Tag: bottom
     TransformComponent:
-      Position: [0, 0, -14.0486307]
-      Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
+      Position: [-0.769105792, -9.33078289, 0]
+      Rotation: [0, -0, 89.9999771]
+      Scale: [0.999999821, 25.7371655, 1]
     SpriteRendererComponent:
       Color: [0.800000012, 0.300000012, 0.400000006, 1]
       TilingFactor: 1
@@ -31,8 +30,8 @@ Entities List:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [0, 0, 10]
-      Rotation: [0, 0, 0]
+      Position: [0, 0, 31.2769012]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       ProjectionType: 0
@@ -44,9 +43,41 @@ Entities List:
       PerspectiveFar: 1000
       IsMain: true
       FixedAspectRatio: false
+  - EntityID: 16010932917869646803
+    TagComponent:
+      Tag: left
+    TransformComponent:
+      Position: [-13.1602182, 0.0392068624, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 18.4337196, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.400000006, 1]
+      TilingFactor: 1
     ScriptComponent:
-      ClassName: SandBox.CameraController
+      ClassName: SandBox.Player
       FieldMap:
-        - Name: DistanceFromPlayer
-          Type: Float
-          Data: 10
+        []
+  - EntityID: 10818989115005716699
+    TagComponent:
+      Tag: right
+    TransformComponent:
+      Position: [11.5952082, 1.1920929e-07, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 18.4337196, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.400000006, 1]
+      TilingFactor: 1
+  - EntityID: 4805638680279273193
+    TagComponent:
+      Tag: top
+    TransformComponent:
+      Position: [-0.769099712, 9.07576752, 0]
+      Rotation: [0, -0, 89.9999771]
+      Scale: [0.999999821, 25.7371655, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.400000006, 1]
+      TilingFactor: 1
+    ScriptComponent:
+      ClassName: SandBox.Player
+      FieldMap:
+        []

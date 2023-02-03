@@ -12,6 +12,23 @@
 
 #define SNAP_ADD_INTERNAL_CALL(FuncName) mono_add_internal_call("SnapEngine.InternalCalls::" #FuncName, FuncName)
 
+
+namespace Utils
+{
+	static b2BodyType Rigidbody2DTypeToBox2DType(SnapEngine::RigidBody2DComponent::RigidBodyType Type)
+	{
+		switch (Type)
+		{
+		case SnapEngine::RigidBody2DComponent::RigidBodyType::STATIC: return b2_staticBody;
+		case SnapEngine::RigidBody2DComponent::RigidBodyType::DYNAMIC: return b2_dynamicBody;
+		case SnapEngine::RigidBody2DComponent::RigidBodyType::KINEMATIC: return b2_kinematicBody;
+
+			SNAP_ASSERT_MSG(false, "Unkown Type!");
+			return b2_staticBody;
+		}
+	}
+}
+
 namespace Scripting
 {
 	std::unordered_map< MonoType*, std::function<bool(SnapEngine::Entity)>> s_EntityHasComponentFunc;
@@ -85,7 +102,7 @@ namespace Scripting
 		return glm::sin(value);
 	}
 
-	static void RigidBody_ApplyLinearImpulseToCenter(SnapEngine::UUID EntityID, glm::vec2* impulse, bool wake)
+	static void RigidBody2D_ApplyLinearImpulseToCenter(SnapEngine::UUID EntityID, glm::vec2* impulse, bool wake)
 	{
 		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
 		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
@@ -114,6 +131,32 @@ namespace Scripting
 		return ScriptingEngine::GetManagedObject(EntityID);
 	}
 
+	static void RigidBody2D_GetLinearVelocity(SnapEngine::UUID EntityID, glm::vec2* OutLinearVelocity)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		b2Body* Body = (b2Body*)e.GetComponent<SnapEngine::RigidBody2DComponent>().RunTimeBody;
+		b2Vec2 Linearvelocity = Body->GetLinearVelocity();
+		*OutLinearVelocity = { Linearvelocity.x, Linearvelocity.y };
+	}
+
+	static void RigidBody2D_GetBodyType(SnapEngine::UUID EntityID, SnapEngine::RigidBody2DComponent::RigidBodyType* OutBodyType)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SnapEngine::RigidBody2DComponent::RigidBodyType Bodytype = e.GetComponent<SnapEngine::RigidBody2DComponent>().m_Type;
+		*OutBodyType = Bodytype;
+	}
+
+	static void RigidBody2D_SetBodyType(SnapEngine::UUID EntityID, SnapEngine::RigidBody2DComponent::RigidBodyType* OutBodyType)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		e.GetComponent<SnapEngine::RigidBody2DComponent>().m_Type = *OutBodyType;
+		b2Body* Body = (b2Body*)e.GetComponent<SnapEngine::RigidBody2DComponent>().RunTimeBody;
+		Body->SetType(Utils::Rigidbody2DTypeToBox2DType(*OutBodyType));
+	}
+
 	void ScriptGlue::RegisterGlue()
 	{
 		// Internal Calls
@@ -130,7 +173,11 @@ namespace Scripting
 		SNAP_ADD_INTERNAL_CALL(Transform_GetPositionVec3);
 		SNAP_ADD_INTERNAL_CALL(Transform_SetPositionVec3);
 
-		SNAP_ADD_INTERNAL_CALL(RigidBody_ApplyLinearImpulseToCenter);
+		SNAP_ADD_INTERNAL_CALL(RigidBody2D_ApplyLinearImpulseToCenter);
+		SNAP_ADD_INTERNAL_CALL(RigidBody2D_GetLinearVelocity);
+
+		SNAP_ADD_INTERNAL_CALL(RigidBody2D_GetBodyType);
+		SNAP_ADD_INTERNAL_CALL(RigidBody2D_SetBodyType);
 
 		SNAP_ADD_INTERNAL_CALL(Snap_Sin);
 	}

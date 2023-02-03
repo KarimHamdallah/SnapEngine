@@ -4,7 +4,7 @@ namespace SnapEngine
 {
 	enum class FilterMode { None = 0, Linear, Nearest };
 	enum class WrapMode { None = 0, Repeat, ClampToEdge };
-	enum class ByteFormat { None = 0, RGBA, RGBA8, RGB, RGB8, R32UI, RED_INTEGER, DEPTH24_STENCIL8 /* Depth/Stencil formats */ };
+	enum class ByteFormat { None = 0, RGBA, RGBA8, RGB, RGB8, R32UI, RED, GREEN, BLUE, RED_INTEGER, DEPTH24_STENCIL8 /* Depth/Stencil formats */ };
 
 	class Textureprops
 	{
@@ -74,6 +74,7 @@ namespace SnapEngine
 	{
 	public:
 		static Texture2D* Creat(const std::string& filepath, const Textureprops& props = Textureprops(), bool flip = true);
+		static Texture2D* Creat(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props = Textureprops());
 		static Texture2D* Creat(uint32_t Width, uint32_t Height, const Textureprops& props = Textureprops(), bool flip = true); // Creat Texture Width Null Data
 	};
 }

@@ -14,5 +14,15 @@ namespace SnapEngine
             this.x = x;
             this.y = y;
         }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt((double)(x * x + y * y));
+        }
+
+        public float LengthSqrd()
+        {
+            return x * x + y * y;
+        }
     }
 }

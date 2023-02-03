@@ -47,16 +47,55 @@ namespace SnapEngine
 
 	void EditorLayer::NewProject()
 	{
-		ProjectSystem::New();
+		SNAP_ERROR("SnapEngine Dosen't Supprot Creating New Project Untill Now, You Can Do It manually And Load It!");
+		OpenProjectFromDialoge();
 	}
 
 	void EditorLayer::OpenProject(const std::filesystem::path& ProjectPath)
 	{
 		if (ProjectSystem::Load(ProjectPath))
 		{
+			m_CurrentDeserializedProjectPath = ProjectPath;
 			std::filesystem::path StartScenePath = ProjectSystem::GetAssetDirectory() / ProjectSystem::GetConfig().m_StartScene;
 			OpenScene(StartScenePath);
 			m_ContentBrowserPanel = CreatSnapPtr<ContentBrowserPanel>();
+		}
+	}
+
+	void EditorLayer::OpenProjectFromDialoge()
+	{
+		std::filesystem::path ProjectFilePath = FileDialoge::OpenFile("Snap Project (*.SnapProj)\0*.SnapProj\0");
+
+		if (!ProjectFilePath.empty() && ProjectFilePath.extension().string() == ".SnapProj")
+		{
+			m_CurrentDeserializedProjectPath = ProjectFilePath;
+			OpenProject(ProjectFilePath);
+			m_ContentBrowserPanel = CreatSnapPtr<ContentBrowserPanel>();
+		}
+	}
+
+	void EditorLayer::SaveProject(const std::filesystem::path& ProjectPath)
+	{
+		if (m_CurrentDeserializedScenePath.empty()) // New Scene
+			SaveScene(); // dialoge
+		
+		std::filesystem::path CurrentScene = m_CurrentDeserializedScenePath.parent_path().filename() / m_CurrentDeserializedScenePath.filename();
+
+		
+		auto config = ProjectSystem::GetActiveProject()->GetConfig();
+		config.m_StartScene = CurrentScene;
+		ProjectSystem::GetActiveProject()->SetConfig(config);
+		
+		ProjectSystem::SaveActiveProject(ProjectPath);
+	}
+
+	void EditorLayer::SaveProjectFromDialoge()
+	{
+		std::filesystem::path ProjectFilePath = FileDialoge::OpenFile("Snap Project (*.SnapProj)\0*.SnapProj\0");
+
+		if (!ProjectFilePath.empty() && ProjectFilePath.extension().string() == ".SnapProj")
+		{
+			ProjectSystem::SaveActiveProject(ProjectFilePath);
 		}
 	}
 
@@ -264,13 +303,25 @@ namespace SnapEngine
 			{
 				if (ImGui::MenuItem("Exit")) { Application::Get().Close(); }
 				
-				if (ImGui::MenuItem("New...", "Cntrl+N"))
+				if (ImGui::MenuItem("New Project..."))
+					NewProject(); // TODO:: Prompt User To choose Directory For New Project
+				if (ImGui::MenuItem("Open Project..."))
+					OpenProjectFromDialoge();
+				if (ImGui::MenuItem("Save Project..."))
+				{
+					if (m_CurrentDeserializedProjectPath.empty())
+						SaveProjectFromDialoge(); // Dialoge
+					else
+						SaveProject(m_CurrentDeserializedProjectPath);
+				}
+
+				if (ImGui::MenuItem("New Scene...", "Cntrl+N"))
 					NewScene();
 
-				if (ImGui::MenuItem("Open...", "Cntrl+O"))
+				if (ImGui::MenuItem("Open Scene...", "Cntrl+O"))
 					OpenScene();
 
-				if (ImGui::MenuItem("Save...", "Cntrl+S"))
+				if (ImGui::MenuItem("Save Scene...", "Cntrl+S"))
 				{
 					if (m_CurrentDeserializedScenePath.empty())
 						SaveScene(); // Dialoge

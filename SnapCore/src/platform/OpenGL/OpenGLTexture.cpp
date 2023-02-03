@@ -54,8 +54,14 @@ namespace SnapEngine
 			return GL_RGBA;
 		case ByteFormat::RGB:
 			return GL_RGB;
+		case ByteFormat::GREEN:
+			return GL_GREEN;
+		case ByteFormat::BLUE:
+			return GL_BLUE;
 		case ByteFormat::R32UI:
 			return GL_R32UI;
+		case ByteFormat::RED:
+			return GL_RED;
 		case ByteFormat::RED_INTEGER:
 			return GL_RED_INTEGER;
 		case ByteFormat::DEPTH24_STENCIL8:
@@ -200,6 +206,33 @@ namespace SnapEngine
 		uint32_t externalFormat = ToGL(m_Props.m_ExternalFormat);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, Width, Height, 0, externalFormat, GL_UNSIGNED_BYTE, 0);
+	}
+
+	OpenGLTexture::OpenGLTexture(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props)
+	{
+		m_Width = Width;
+		m_Height = Height;
+
+		m_Props.m_InternalFormat = ByteFormat::RED;
+		m_Props.m_ExternalFormat = ByteFormat::RED;
+
+		glGenTextures(1, &m_ID);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+
+		// Bind Texture Parameters
+		if (m_Props.m_WrapS != WrapMode::None) // WrapS
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ToGL(m_Props.m_WrapS));
+		if (m_Props.m_WrapT != WrapMode::None) // WrapT
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGL(m_Props.m_WrapT));
+		if (m_Props.m_MinFilter != FilterMode::None) // MinFilter
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ToGL(m_Props.m_MinFilter));
+		if (m_Props.m_MagFilter != FilterMode::None) // MagFiter
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ToGL(m_Props.m_MagFilter));
+
+		uint32_t internalFormat = ToGL(m_Props.m_InternalFormat);
+		uint32_t externalFormat = ToGL(m_Props.m_ExternalFormat);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, Width, Height, 0, externalFormat, GL_UNSIGNED_BYTE, Data);
 	}
 
 	void OpenGLTexture::SetData(void* data, uint32_t size)

@@ -23,6 +23,9 @@ Dependencies["IMGUIZMO"] = "SnapCore/vendor/imguizmo"
 Dependencies["Box2D"] = "SnapCore/vendor/Box2D/include"
 Dependencies["mono"] = "SnapCore/vendor/mono/include"
 Dependencies["FileWatch"] = "SnapCore/vendor/FileWatch"
+Dependencies["freetype"] = "SnapCore/vendor/msdf-atlas-gen/msdfgen/freetype/include"
+Dependencies["msdfgen"] = "SnapCore/vendor/msdf-atlas-gen/msdfgen"
+Dependencies["MsdfAtlasGen"] = "SnapCore/vendor/msdf-atlas-gen/msdf-atlas-gen"
 
 LibraryDirectories = {}
 LibraryDirectories["mono"] = "%{wks.location}/SnapCore/vendor/mono/lib/Debug"
@@ -35,8 +38,10 @@ include "SnapCore/vendor/GLAD"
 include "SnapCore/vendor/imgui"
 include "SnapCore/vendor/YAML"
 include "SnapCore/vendor/Box2D"
+include "SnapCore/vendor/msdf-atlas-gen"
+include "SnapCore/vendor/msdf-atlas-gen/msdfgen"
 
-project "SnapCore"                                                       -- SnapCore
+project "SnapCore"                                                        -- SnapCore
     location "SnapCore"
 	kind "StaticLib"
 	language "C++"
@@ -72,7 +77,10 @@ project "SnapCore"                                                       -- Snap
 		"%{Dependencies.IMGUIZMO}",
 		"%{Dependencies.Box2D}",
 		"%{Dependencies.mono}",
-		"%{Dependencies.FileWatch}"
+		"%{Dependencies.FileWatch}",
+		"%{Dependencies.freetype}",
+		"%{Dependencies.msdfgen}",
+		"%{Dependencies.MsdfAtlasGen}"
 	}
 
 	links
@@ -84,7 +92,9 @@ project "SnapCore"                                                       -- Snap
 		"Box2D",
 		"opengl32.lib",
 		--"%{Library.mono}"
-		"%{LibraryDirectories.mono}/%{cfg.buildcgf}/mono-2.0-sgen.lib"
+		"%{LibraryDirectories.mono}/%{cfg.buildcgf}/mono-2.0-sgen.lib",
+		"msdf-atlas-gen",
+		"freetype"
 	}
 
 	filter "files:vendor/imguizmo/**.cpp"

@@ -41,6 +41,13 @@ namespace SnapEngine
 
 			////////////// Project ////////////
 			OpenProject("SandBoxGame/SandBoxGame.SnapProj");
+
+			SnapEngine::Font font("assets/Editor/arial.ttf", 0, 72);
+
+			Entity Character = m_Scene->CreatEntity("text sample", glm::vec3(0.0f, 0.0f, 1));
+			SnapPtr<Texture2D> A_Tex = font.GetGlyph('A').Texture;
+
+			Character.AddComponent<SpriteRendererComponent>(A_Tex);
 		}
 
 		~EditorLayer() {}
@@ -281,8 +288,11 @@ private:
 		void NewScene();
 
 
-		void NewProject();
+		void NewProject(); // TODO:: Prompt User To choose Directory For New Project
 		void OpenProject(const std::filesystem::path& ProjectPath);
+		void OpenProjectFromDialoge();
+		void SaveProject(const std::filesystem::path& ProjectPath);
+		void SaveProjectFromDialoge();
 
 		void OnDuplicateEntity();
 
@@ -294,6 +304,7 @@ private:
 		bool OnMousePressed(MousePressedEvent& e);
 
 		std::filesystem::path m_CurrentDeserializedScenePath = "";
+		std::filesystem::path m_CurrentDeserializedProjectPath = "";
 	};
 
 
