@@ -695,4 +695,60 @@ namespace SnapEngine
 	{
 		DrawCircle(Transform, CircleRenderer.m_Color, CircleRenderer.m_Thickness, CircleRenderer.m_Fade, EntityID);
 	}
+
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+
+	void Renderer2D::DrawQuadTemp(SnapPtr<Texture2D> Tex, const glm::vec4& TexCoords, const glm::mat4& Transform, const glm::vec4& Color, float TilingFactor, int EntityID)
+	{
+		if (s_Data->Stats.m_QuadCount * 6 >= s_Data->MaxIndices)
+			FlushAndReset();
+
+		float tex_index = 0.0f; // White Texture
+
+		// Find Passed Texture in s_Data->TextureSlots Array
+		// if you find it give me it's index
+		for (int i = 1; i < s_Data->TextureSlotIndex; i++)
+		{
+			if (s_Data->TextureSlots[i]->IsEqual(*Tex.get()))
+			{
+				tex_index = (float)i;
+				break;
+			}
+		}
+
+		// if you didn't find it in s_Data->TextureSlots Array Add it at TextureSlotIndex
+		if (tex_index == 0.0f)
+		{
+			tex_index = (float)s_Data->TextureSlotIndex;
+			s_Data->TextureSlots[s_Data->TextureSlotIndex] = Tex;
+			s_Data->TextureSlotIndex++;
+		}
+
+
+
+		//                                    Top Right                         Bottom Right                Bottom Left             Top Left
+		const glm::vec2 _TexCoords[] = { { TexCoords.z, TexCoords.w }, { TexCoords.z, TexCoords.y }, { TexCoords.x, TexCoords.y }, { TexCoords.x, TexCoords.w } };
+
+		const int QuadVerticesCount = 4;
+
+		for (int i = 0; i < QuadVerticesCount; i++)
+		{
+			// Push Quad (4 Vertices) To QuadVertexBacthBuffer
+			s_Data->QuadVertexPtr->m_Position = Transform * s_Data->QuadVertices[i]; // Top Right
+			s_Data->QuadVertexPtr->m_Color = Color;
+			s_Data->QuadVertexPtr->m_TexCoords = _TexCoords[i];
+			s_Data->QuadVertexPtr->m_TexID = tex_index;
+			s_Data->QuadVertexPtr->m_TilingFactor = TilingFactor;
+			s_Data->QuadVertexPtr->m_EntityID = EntityID;
+			s_Data->QuadVertexPtr++;
+		}
+
+		s_Data->Stats.m_QuadCount++; // Add Quad
+	}
 }

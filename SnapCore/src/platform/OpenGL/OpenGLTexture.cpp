@@ -210,6 +210,7 @@ namespace SnapEngine
 
 	OpenGLTexture::OpenGLTexture(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props)
 	{
+		m_Props = props;
 		m_Width = Width;
 		m_Height = Height;
 
@@ -218,6 +219,7 @@ namespace SnapEngine
 
 		glGenTextures(1, &m_ID);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
 		// Bind Texture Parameters
 		if (m_Props.m_WrapS != WrapMode::None) // WrapS

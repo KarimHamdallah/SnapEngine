@@ -42,12 +42,11 @@ namespace SnapEngine
 			////////////// Project ////////////
 			OpenProject("SandBoxGame/SandBoxGame.SnapProj");
 
-			SnapEngine::Font font("assets/Editor/arial.ttf", 0, 72);
+			font = SnapEngine::CreatSnapPtr<Font>("assets/Editor/WinterSong.ttf", 0, 150);
 
-			Entity Character = m_Scene->CreatEntity("text sample", glm::vec3(0.0f, 0.0f, 1));
-			SnapPtr<Texture2D> A_Tex = font.GetGlyph('A').Texture;
+			Character = m_Scene->CreatEntity("text sample", glm::vec3(0.0f, 0.0f, 1), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 180.0f, 180.0f));
 
-			Character.AddComponent<SpriteRendererComponent>(A_Tex);
+			//Character.AddComponent<SpriteRendererComponent>(Atals_Tex);
 		}
 
 		~EditorLayer() {}
@@ -85,6 +84,13 @@ namespace SnapEngine
 					m_EditorCamera.UpdateCamera(Time);
 				
 				m_Scene->UpdateEditor(Time, m_EditorCamera);// EditorRenderFunction
+
+				////////////////
+				auto AtlasTexture = font->GetFontAtlas();
+				const auto& TexCoords = font->GetCharacterAtlasTexCoords('K');
+				auto text_tansform = Character.GetComponent<TransformComponent>();
+				Renderer2D::DrawQuadTemp(AtlasTexture, TexCoords, text_tansform.GetTransformMatrix());
+				/////////////////
 
 				// mouse picking
 				auto [mx, my] = ImGui::GetMousePos();
@@ -305,6 +311,11 @@ private:
 
 		std::filesystem::path m_CurrentDeserializedScenePath = "";
 		std::filesystem::path m_CurrentDeserializedProjectPath = "";
+
+
+		////////////////////
+		SnapPtr<SnapEngine::Font> font;
+		Entity Character;
 	};
 
 

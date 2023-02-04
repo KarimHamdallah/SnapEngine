@@ -54,6 +54,10 @@ namespace SnapEngine
 		inline static void SetLineWidth(float LineWidth) { s_Data->m_LineWidth = LineWidth; }
 		inline static float GetLineWidth() { return s_Data->m_LineWidth; }
 
+		// TODO:: Remove
+		static void DrawQuadTemp(SnapPtr<Texture2D> Tex, const glm::vec4& TexCoords,  const glm::mat4& Transform, const glm::vec4& Color = glm::vec4(1.0f), float TilingFactor = 1.0f, int EntityID = -1);
+
+
 		static void Flush();
 	private:
 		

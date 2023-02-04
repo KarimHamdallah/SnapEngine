@@ -175,6 +175,7 @@
     <ClInclude Include="src\Snap\Renderer\RendererCommand.h" />
     <ClInclude Include="src\Snap\Renderer\Shader.h" />
     <ClInclude Include="src\Snap\Renderer\SubTexture2D.h" />
+    <ClInclude Include="src\Snap\Renderer\TextRenderer.h" />
     <ClInclude Include="src\Snap\Renderer\Texture.h" />
     <ClInclude Include="src\Snap\Renderer\VertexArray.h" />
     <ClInclude Include="src\Snap\Scene\Camera.h" />
@@ -505,6 +506,7 @@
     <ClCompile Include="src\Snap\Renderer\RendererCommand.cpp" />
     <ClCompile Include="src\Snap\Renderer\Shader.cpp" />
     <ClCompile Include="src\Snap\Renderer\SubTexture2D.cpp" />
+    <ClCompile Include="src\Snap\Renderer\TextRenderer.cpp" />
     <ClCompile Include="src\Snap\Renderer\Texture.cpp" />
     <ClCompile Include="src\Snap\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Snap\Scene\Comps\Components.cpp">

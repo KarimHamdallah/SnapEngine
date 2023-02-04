@@ -74,7 +74,7 @@ namespace SnapEngine
 	{
 	public:
 		static Texture2D* Creat(const std::string& filepath, const Textureprops& props = Textureprops(), bool flip = true);
-		static Texture2D* Creat(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props = Textureprops());
+		static Texture2D* Creat(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props = Textureprops()); // For Font Rendering
 		static Texture2D* Creat(uint32_t Width, uint32_t Height, const Textureprops& props = Textureprops(), bool flip = true); // Creat Texture Width Null Data
 	};
 }
