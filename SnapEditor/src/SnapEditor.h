@@ -42,7 +42,7 @@ namespace SnapEngine
 			////////////// Project ////////////
 			OpenProject("SandBoxGame/SandBoxGame.SnapProj");
 
-			font = SnapEngine::CreatSnapPtr<Font>("assets/Editor/WinterSong.ttf", 0, 150);
+			font = SnapEngine::CreatSnapPtr<Font>("assets/Editor/arial.ttf", 0, 50);
 
 			Character = m_Scene->CreatEntity("text sample", glm::vec3(0.0f, 0.0f, 1), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 180.0f, 180.0f));
 
@@ -85,13 +85,6 @@ namespace SnapEngine
 				
 				m_Scene->UpdateEditor(Time, m_EditorCamera);// EditorRenderFunction
 
-				////////////////
-				auto AtlasTexture = font->GetFontAtlas();
-				const auto& TexCoords = font->GetCharacterAtlasTexCoords('K');
-				auto text_tansform = Character.GetComponent<TransformComponent>();
-				Renderer2D::DrawQuadTemp(AtlasTexture, TexCoords, text_tansform.GetTransformMatrix());
-				/////////////////
-
 				// mouse picking
 				auto [mx, my] = ImGui::GetMousePos();
 				mx -= m_ViewPortBounds[0].x;
@@ -131,6 +124,18 @@ namespace SnapEngine
 
 			if(m_VisualiseColliders)
 				RenderOverLayer();
+
+
+
+			//////////////// TextRendering //////////
+			TextBatchRenderer::ResetStats();
+			TextBatchRenderer::Begin(
+				{ glm::ortho(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y),
+				  glm::mat4(1.0f)
+				}, font);
+			TextBatchRenderer::RenderText("Welcome To SnapEngine Baby :)", { 100.0f, 100.0f }, 1.0f, glm::vec4(0.7f, 0.5f, 0.9f, 1.0f));
+			TextBatchRenderer::End();
+			/////////////////
 
 			m_FrameBuffer->UnBind(); // Stop Recording
 

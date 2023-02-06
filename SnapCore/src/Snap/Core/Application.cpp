@@ -4,6 +4,7 @@
 
 #include <Snap/Renderer/Renderer.h>
 #include <Snap/Renderer/Renderer2D.h>
+#include <Snap/Renderer/TextRenderer.h>
 #include <Snap/Scripting/ScriptingEngine.h>
 
 namespace SnapEngine
@@ -31,12 +32,14 @@ namespace SnapEngine
 		// Initialize Renderer
 		Renderer::Init();
 		Renderer2D::Init();
+		TextBatchRenderer::Init();
 	}
 
 	Application::~Application()
 	{
 		Scripting::ScriptingEngine::ShutDown();
 		Renderer2D::ShutDown();
+		TextBatchRenderer::ShutDown();
 	}
 
 	void Application::Run()
