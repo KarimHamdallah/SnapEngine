@@ -25,6 +25,24 @@ namespace SnapEngine
 		ByteFormat m_ExternalFormat;
 	};
 
+	enum class ImageFormat
+	{
+		None = 0,
+		R8,
+		RGB8,
+		RGBA8,
+		RGBA32F
+	};
+
+	struct TextureSpecification
+	{
+		uint32_t Width = 1;
+		uint32_t Height = 1;
+		ImageFormat ImageFormat = ImageFormat::RGBA8;
+		bool GenerateMips = true;
+		bool DisableByteAligment = false; // For Font Rendering
+	};
+
 
 	class Texture
 	{
@@ -74,7 +92,6 @@ namespace SnapEngine
 	{
 	public:
 		static Texture2D* Creat(const std::string& filepath, const Textureprops& props = Textureprops(), bool flip = true);
-		static Texture2D* Creat(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props = Textureprops()); // For Font Rendering
-		static Texture2D* Creat(uint32_t Width, uint32_t Height, const Textureprops& props = Textureprops(), bool flip = true); // Creat Texture Width Null Data
+		static Texture2D* Creat(const TextureSpecification& Specs, const Textureprops& props = Textureprops(), void* Data = nullptr);
 	};
 }

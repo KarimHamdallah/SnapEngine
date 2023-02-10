@@ -7,8 +7,7 @@ namespace SnapEngine
 	{
 	public:
 		OpenGLTexture(const std::string& filepath, const Textureprops& props = Textureprops(), bool flip = true);
-		OpenGLTexture(uint32_t Width, uint32_t Height, const Textureprops& props = Textureprops(), bool flip = true);
-		OpenGLTexture(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props = Textureprops()); // Balck White Texture For Font Rendering
+		OpenGLTexture(const TextureSpecification& Specs, const Textureprops& props, void* Data);
 		virtual ~OpenGLTexture();
 
 		virtual bool Is_null() const override;

@@ -18,24 +18,12 @@ namespace SnapEngine
 		return nullptr;
 	}
 
-	Texture2D* Texture2D::Creat(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props)
+	Texture2D* Texture2D::Creat(const TextureSpecification& Specs, const Textureprops& props, void* Data)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:         SNAP_ASSERT_MSG(false, "RendererAPI::None is Currently not supported!");
-		case RendererAPI::API::OpenGL:       return new OpenGLTexture(Width, Height, Data, props);
-		}
-
-		SNAP_ASSERT_MSG(false, "RendererAPI is UNKOWN!");
-		return nullptr;
-	}
-
-	Texture2D* Texture2D::Creat(uint32_t Width, uint32_t Height, const Textureprops& props, bool flip)
-	{
-		switch (RendererAPI::GetAPI())
-		{
-		case RendererAPI::API::None:         SNAP_ASSERT_MSG(false, "RendererAPI::None is Currently not supported!");
-		case RendererAPI::API::OpenGL:       return new OpenGLTexture(Width, Height, props, flip);
+		case RendererAPI::API::OpenGL:       return new OpenGLTexture(Specs, props, Data);
 		}
 
 		SNAP_ASSERT_MSG(false, "RendererAPI is UNKOWN!");

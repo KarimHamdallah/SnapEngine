@@ -17,7 +17,7 @@ namespace SnapEngine
 		s_Data->m_LineShader = Shader::Creat("assets/Shaders/LineShader.glsl");
 
 		// Init White Texture
-		s_Data->m_WhiteTexture = SnapPtr<Texture2D>(Texture2D::Creat(1, 1));
+		s_Data->m_WhiteTexture = SnapPtr<Texture2D>(Texture2D::Creat(TextureSpecification()));
 		uint32_t WhitePixel =  0xffffffff;
 		s_Data->m_WhiteTexture->SetData(&WhitePixel, sizeof(uint32_t));
 

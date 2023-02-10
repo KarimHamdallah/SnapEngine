@@ -126,6 +126,43 @@ namespace SnapEngine
 		return false;
 	}
 
+	///////////////////
+	static ByteFormat ImageFormatToInternalByteFormat(ImageFormat Format)
+	{
+		switch (Format)
+		{
+		case SnapEngine::ImageFormat::R8: return ByteFormat::RED; break;
+		case SnapEngine::ImageFormat::RGB8: return ByteFormat::RGB8; break;
+		case SnapEngine::ImageFormat::RGBA8: return ByteFormat::RGBA8; break;
+		default: 
+			SNAP_WARN("Unknown glByteFormat");
+		}
+
+		return ByteFormat::None;
+	}
+
+	static ByteFormat ImageFormatToExternalByteFormat(ImageFormat Format)
+	{
+		switch (Format)
+		{
+		case SnapEngine::ImageFormat::R8: return ByteFormat::RED; break;
+		case SnapEngine::ImageFormat::RGB8: return ByteFormat::RGB; break;
+		case SnapEngine::ImageFormat::RGBA8: return ByteFormat::RGBA; break;
+		default:
+			SNAP_WARN("Unknown glByteFormat");
+		}
+
+		return ByteFormat::None;
+	}
+
+
+
+
+
+
+
+
+
 	OpenGLTexture::OpenGLTexture(const std::string& filepath, const Textureprops& props, bool flip)
 	{
 
@@ -181,45 +218,20 @@ namespace SnapEngine
 		stbi_image_free(pixels);
 	}
 
-	OpenGLTexture::OpenGLTexture(uint32_t Width, uint32_t Height, const Textureprops& props, bool flip)
-	{
-		m_Width = Width;
-		m_Height = Height;
-		
-		m_Props.m_InternalFormat = ByteFormat::RGBA8;
-		m_Props.m_ExternalFormat = ByteFormat::RGBA;
-
-		glGenTextures(1, &m_ID);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
-
-		// Bind Texture Parameters
-		if (m_Props.m_WrapS != WrapMode::None) // WrapS
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, ToGL(m_Props.m_WrapS));
-		if (m_Props.m_WrapT != WrapMode::None) // WrapT
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, ToGL(m_Props.m_WrapT));
-		if (m_Props.m_MinFilter != FilterMode::None) // MinFilter
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ToGL(m_Props.m_MinFilter));
-		if (m_Props.m_MagFilter != FilterMode::None) // MagFiter
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ToGL(m_Props.m_MagFilter));
-
-		uint32_t internalFormat = ToGL(m_Props.m_InternalFormat);
-		uint32_t externalFormat = ToGL(m_Props.m_ExternalFormat);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, Width, Height, 0, externalFormat, GL_UNSIGNED_BYTE, 0);
-	}
-
-	OpenGLTexture::OpenGLTexture(uint32_t Width, uint32_t Height, void* Data, const Textureprops& props)
+	OpenGLTexture::OpenGLTexture(const TextureSpecification& Specs, const Textureprops& props, void* Data)
 	{
 		m_Props = props;
-		m_Width = Width;
-		m_Height = Height;
+		m_Width = Specs.Width;
+		m_Height = Specs.Height;
 
-		m_Props.m_InternalFormat = ByteFormat::RED;
-		m_Props.m_ExternalFormat = ByteFormat::RED;
+		m_Props.m_InternalFormat = ImageFormatToInternalByteFormat(Specs.ImageFormat);
+		m_Props.m_ExternalFormat = ImageFormatToExternalByteFormat(Specs.ImageFormat);
 
 		glGenTextures(1, &m_ID);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+		
+		if(Specs.DisableByteAligment)
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		// Bind Texture Parameters
 		if (m_Props.m_WrapS != WrapMode::None) // WrapS
@@ -234,7 +246,7 @@ namespace SnapEngine
 		uint32_t internalFormat = ToGL(m_Props.m_InternalFormat);
 		uint32_t externalFormat = ToGL(m_Props.m_ExternalFormat);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, Width, Height, 0, externalFormat, GL_UNSIGNED_BYTE, Data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, externalFormat, GL_UNSIGNED_BYTE, Data);
 	}
 
 	void OpenGLTexture::SetData(void* data, uint32_t size)
