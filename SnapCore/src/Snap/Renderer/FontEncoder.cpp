@@ -143,6 +143,36 @@ namespace SnapEngine
             atlasPacker.getDimensions(width, height);
             emSize = atlasPacker.getScale();
 
+            // if MSDF || MTSDF
+#define DEFAULT_ANGLE_THRESHOLD 3.0
+#define LCG_MULTIPLIER 6364136223846793005ull
+#define LCG_INCREMENT 1442695040888963407ull
+#define THREAD_COUNT 8
+
+            // Edge coloring
+            uint64_t coloringSeed = 0;
+            bool expensiveColoring = false;
+                if (expensiveColoring)
+                {
+                    msdf_atlas::Workload([&glyphs = m_Data->Glyphs, &coloringSeed](int i, int threadNo) -> bool
+                        {
+                        unsigned long long glyphSeed = (LCG_MULTIPLIER * (coloringSeed ^ i) + LCG_INCREMENT) * !!coloringSeed;
+                        glyphs[i].edgeColoring(msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed);
+                        return true;
+                        }, m_Data->Glyphs.size()).finish(THREAD_COUNT);
+                }
+                else
+                {
+                    unsigned long long glyphSeed = coloringSeed;
+                    for (msdf_atlas::GlyphGeometry& glyph : m_Data->Glyphs)
+                    {
+                        glyphSeed *= LCG_MULTIPLIER;
+                        glyph.edgeColoring(msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed);
+                    }
+                }
+
+
+
             CreateAndCacheAtlas<uint8_t, float, 3, msdf_atlas::msdfGenerator>((OutputPath.string() + ".png"), "Test", (float)emSize, m_Data->Glyphs, m_Data->FontGeometry, width, height);
 
             msdfgen::destroyFont(font);
