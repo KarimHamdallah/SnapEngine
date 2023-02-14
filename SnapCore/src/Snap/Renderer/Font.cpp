@@ -1,6 +1,116 @@
 #include "SnapPCH.h"
 #include "Font.h"
 
+#include <stb_image.h>
+
+#include <Snap/Core/asserts.h>
+#include <yaml-cpp/yaml.h>
+
+
+namespace SnapEngine
+{
+
+    Font::Font(const std::filesystem::path& FontTextureAtlas, const std::filesystem::path& SnapFontFile)
+    {
+        int Width, Height;
+        const char* Pixels = (const char*)stbi_load(FontTextureAtlas.string().c_str(), &Width, &Height, nullptr, 3);
+
+        Textureprops TextTextureProps;
+        TextTextureProps.m_MinFilter = FilterMode::Linear;
+        TextTextureProps.m_MagFilter = FilterMode::Linear;
+        TextTextureProps.m_WrapS = WrapMode::ClampToEdge;
+        TextTextureProps.m_WrapT = WrapMode::ClampToEdge;
+
+        TextureSpecification specs;
+        specs.Width = Width;
+        specs.Height = Height;
+        specs.ImageFormat = ImageFormat::RGB8;
+        specs.GenerateMips = false;
+
+
+
+        m_AtlasTexture = SnapPtr<Texture2D>(Texture2D::Creat(specs, TextTextureProps, nullptr));
+        m_AtlasTexture->SetData((void*)Pixels, Width * Height * 3);
+
+        ////////// Get Font Metrics //////////
+        std::ifstream file(SnapFontFile.string().c_str());
+        std::stringstream strstream;
+        strstream << file.rdbuf();
+
+        YAML::Node data;
+        try
+        {
+            data = YAML::Load(strstream.str());
+        }
+        catch (const YAML::ParserException& e)
+        {
+            SNAP_ERROR("Yaml Failed to load {0}.SnapFont file, {1}", SnapFontFile.string().c_str(), e.what());
+            return;
+        }
+
+        auto& Data = data["FontGlyphMetrics"];
+        if (Data)
+        {
+            for (uint32_t Character = 33; Character < 127; Character++)
+            {
+                std::string CharacterString = std::string(1, (char)Character);
+                auto& CharNode = Data[CharacterString.c_str()];
+
+                float TexCoordMinX = CharNode["TexCoordMinX"].as<float>();
+                float TexCoordMinY = CharNode["TexCoordMinY"].as<float>();
+
+                float TexCoordMaxX = CharNode["TexCoordMaxX"].as<float>();
+                float TexCoordMaxY = CharNode["TexCoordMaxY"].as<float>();
+
+                float QuadMinX = CharNode["QuadMinX"].as<float>();
+                float QuadMinY = CharNode["QuadMinY"].as<float>();
+
+                float QuadMaxX = CharNode["QuadMaxX"].as<float>();
+                float QuadMaxY = CharNode["QuadMaxY"].as<float>();
+
+                float AssenderY = CharNode["AssenderY"].as<float>();
+                float DessenderY = CharNode["DessenderY"].as<float>();
+
+                float Advance = CharNode["Advance"].as<float>();
+
+                GlyphMetrics Metrics
+                {
+                    {TexCoordMinX, TexCoordMinY},
+                    {TexCoordMaxX, TexCoordMaxY},
+                    {QuadMinX, QuadMinY},
+                    {QuadMaxX, QuadMaxY},
+                    AssenderY,
+                    DessenderY,
+                    Advance
+                };
+
+                m_FontMetrics[(char)Character] = Metrics;
+            }
+        }
+    }
+
+    Font::~Font()
+    { 
+    }
+
+    SnapPtr<Texture2D> Font::GetFontAtlas() const
+    {
+        return m_AtlasTexture;
+    }
+
+    GlyphMetrics Font::GetGlyphMetrics(char Character) const
+    {
+        SNAP_ASSERT(m_FontMetrics.find(Character) != m_FontMetrics.end());
+        return m_FontMetrics.at(Character);
+    }
+}
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+/*
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_write.h>
 
@@ -8,20 +118,36 @@
 #include FT_FREETYPE_H
 #include <glad/glad.h>
 
-#undef INFINITE;
-#include "msdf-atlas-gen.h"
-#include "FontGeometry.h"
-#include "GlyphGeometry.h"
-namespace SnapEngine
-{
-    struct MSDFData
+
+ struct Glyph
     {
-        std::vector<msdf_atlas::GlyphGeometry> Glyphs;
-        msdf_atlas::FontGeometry FontGeometry;
+        uint8_t* TextureBitmapData;
+        glm::vec2 Size; // bitmap width, raws
+        glm::vec2 Bearing; // bitmap left, top
+        uint32_t Advance;
     };
 
+    class Font
+    {
+    public:
+        Font(const std::filesystem::path& FontPath, uint32_t GlyphWidth, uint32_t GlyphHeight);
+        ~Font();
 
-    Font::Font(const std::filesystem::path& FontPath, uint32_t GlyphWidth, uint32_t GlyphHeight)
+        const Glyph& GetGlyph(char character);
+        SnapPtr<Texture2D> GetFontAtlas() { return m_FontAtlas; }
+        const glm::vec4& GetCharacterAtlasTexCoords(char character) const;
+    private:
+        std::unordered_map<char, Glyph> m_CharacterMap;
+        std::unordered_map<char, glm::vec4> m_AtlasTexCoords; // vec4 TexCoords >> minx, miny, maxx, maxy
+        SnapPtr<Texture2D> m_FontAtlas = nullptr;
+        uint32_t m_AtlasWidth = 0;
+        uint32_t m_AtlasHeight = 0;
+    }
+
+
+
+
+Font::Font(const std::filesystem::path& FontPath, uint32_t GlyphWidth, uint32_t GlyphHeight)
         : m_Data(new MSDFData())
     {
         FT_Library ft;
@@ -57,8 +183,6 @@ namespace SnapEngine
 
                 m_AtlasWidth += face->glyph->bitmap.width;
                 m_AtlasHeight = std::max(m_AtlasHeight, face->glyph->bitmap.rows);
-
-                //stbi_write_png(("Glyphs/output" + std::to_string(i) + ".png").c_str(), glyph.Size.x, glyph.Size.y, 1, glyph.TextureBitmapData, glyph.Size.x * 1);
             }
 
 
@@ -81,7 +205,7 @@ namespace SnapEngine
                     {
                         int AtlasBufferPixel = AtlasBuffer_YPointer * m_AtlasWidth + AtlasBuffer_XPointer;
                         int GlyphBufferPixel = y * GlyphWidth + x;
-                        
+
                         AtlasBuffer[AtlasBufferPixel] = GlyphBuffer[GlyphBufferPixel];
                         AtlasBuffer_XPointer++;
                     }
@@ -90,19 +214,16 @@ namespace SnapEngine
                 }
 
                 // Note:: texture Flipped!
-                float minx = (float)xOffset / (float)m_AtlasWidth;
-                float miny = 0.0f;
-                float maxx = (float)(xOffset + GlyphWidth) / (float)m_AtlasWidth;
-                float maxy = (float)(GlyphHeight) / (float)m_AtlasHeight;
+                float minx = (float)(xOffset + 1) / (float)m_AtlasWidth;
+                float miny = 1.0f / (float)m_AtlasHeight;
+                float maxx = (float)(xOffset + GlyphWidth - 1) / (float)m_AtlasWidth;
+                float maxy = (float)(GlyphHeight - 1) / (float)m_AtlasHeight;
                 m_AtlasTexCoords[glyph.first] = { minx, miny, maxx, maxy };
 
                 xOffset += GlyphWidth;
                 AtlasBuffer_XPointer = xOffset;
                 AtlasBuffer_YPointer = 0;
             }
-
-            //stbi_write_png("outputatlas.png", m_AtlasWidth, m_AtlasHeight, 1, AtlasBuffer, m_AtlasWidth * 1);
-            
 
             Textureprops TextTextureProps;
             TextTextureProps.m_MinFilter = FilterMode::Linear;
@@ -118,22 +239,16 @@ namespace SnapEngine
             specs.GenerateMips = false;
 
             m_FontAtlas = SnapPtr<Texture2D>(Texture2D::Creat(specs, TextTextureProps, AtlasBuffer));
-            
-            
+
+
             delete[] AtlasBuffer;
 
 
             FT_Done_Face(face);
             FT_Done_FreeType(ft);
         }
-
-        // Creat Atlas
     }
 
-    Font::~Font()
-    {
-        delete m_Data;
-    }
 
     const Glyph& Font::GetGlyph(char character)
     {
@@ -150,123 +265,4 @@ namespace SnapEngine
         else
             SNAP_ASSERT_MSG(false, "charcater {0} not found in CharacterMap");
     }
-
-
-
-
-
-    ////////////////// MSDFGENLIB ///////////////////////////
-
-
-
-
-
-
-
-    template<typename T, typename S, int N, msdf_atlas::GeneratorFunction<S, N> GenFunc>
-    static SnapPtr<Texture2D> CreateAndCacheAtlas(const std::string& fontName, float fontSize, const std::vector<msdf_atlas::GlyphGeometry>& glyphs,
-        const msdf_atlas::FontGeometry& fontGeometry, uint32_t width, uint32_t height)
-    {
-        msdf_atlas::GeneratorAttributes attributes;
-        attributes.config.overlapSupport = true;
-        attributes.scanlinePass = true;
-
-        msdf_atlas::ImmediateAtlasGenerator<S, N, GenFunc, msdf_atlas::BitmapAtlasStorage<T, N>> generator(width, height);
-        generator.setAttributes(attributes);
-        generator.setThreadCount(8);
-        generator.generate(glyphs.data(), (int)glyphs.size());
-
-        msdfgen::BitmapConstRef<T, N> bitmap = (msdfgen::BitmapConstRef<T, N>)generator.atlasStorage();
-
-        Textureprops TextTextureProps;
-        TextTextureProps.m_MinFilter = FilterMode::Linear;
-        TextTextureProps.m_MagFilter = FilterMode::Linear;
-        TextTextureProps.m_WrapS = WrapMode::ClampToEdge;
-        TextTextureProps.m_WrapT = WrapMode::ClampToEdge;
-
-        TextureSpecification specs;
-        specs.Width = bitmap.width;
-        specs.Height = bitmap.height;
-        specs.ImageFormat = ImageFormat::RGB8;
-        specs.GenerateMips = false;
-
-
-        SnapPtr<Texture2D> texture = SnapPtr<Texture2D>(Texture2D::Creat(specs, TextTextureProps, nullptr));
-        texture->SetData((void*)bitmap.pixels, bitmap.width * bitmap.height * 3);
-        return texture;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    void Font::LoadFont(const std::filesystem::path& FontPath)
-    {
-        msdfgen::FreetypeHandle* ft = msdfgen::initializeFreetype();
-        SNAP_ASSERT(ft);
-
-        std::string fileString = FontPath.string();
-
-        // TODO(Yan): msdfgen::loadFontData loads from memory buffer which we'll need 
-        msdfgen::FontHandle* font = msdfgen::loadFont(ft, fileString.c_str());
-        if (!font)
-        {
-            SNAP_ERROR("Failed to load font: {}", fileString);
-            return;
-        }
-
-        struct CharsetRange
-        {
-            uint32_t Begin, End;
-        };
-
-        // From imgui_draw.cpp
-        static const CharsetRange charsetRanges[] =
-        {
-            { 0x0020, 0x00FF }
-        };
-
-        msdf_atlas::Charset charset;
-        for (CharsetRange range : charsetRanges)
-        {
-            for (uint32_t c = range.Begin; c <= range.End; c++)
-                charset.add(c);
-        }
-
-        double fontScale = 1.0;
-        m_Data->FontGeometry = msdf_atlas::FontGeometry(&m_Data->Glyphs);
-        int glyphsLoaded = m_Data->FontGeometry.loadCharset(font, fontScale, charset);
-        SNAP_INFO("Loaded {} glyphs from font (out of {})", glyphsLoaded, charset.size());
-
-
-        double emSize = 40.0;
-
-        msdf_atlas::TightAtlasPacker atlasPacker;
-        // atlasPacker.setDimensionsConstraint()
-        atlasPacker.setPixelRange(2.0);
-        atlasPacker.setMiterLimit(1.0);
-        atlasPacker.setPadding(0);
-        atlasPacker.setScale(emSize);
-        int remaining = atlasPacker.pack(m_Data->Glyphs.data(), (int)m_Data->Glyphs.size());
-        SNAP_ASSERT(remaining == 0);
-
-        int width, height;
-        atlasPacker.getDimensions(width, height);
-        emSize = atlasPacker.getScale();
-
-        m_AtlasTexture = CreateAndCacheAtlas<uint8_t, float, 3, msdf_atlas::msdfGenerator>("Test", (float)emSize, m_Data->Glyphs, m_Data->FontGeometry, width, height);
-
-        msdfgen::destroyFont(font);
-        msdfgen::deinitializeFreetype(ft);
-    }
-}
+*/

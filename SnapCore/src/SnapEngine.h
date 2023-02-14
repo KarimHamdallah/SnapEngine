@@ -30,6 +30,7 @@
 #include <Snap/Renderer/RendererCommand.h>
 #include <Snap/Renderer/RendererAPI.h>
 #include <Snap/Renderer/TextRenderer.h>
+#include <Snap/Renderer/FontEncoder.h>
 
 #include <Snap/Renderer/Buffer.h>
 #include <Snap/Renderer/VertexArray.h>

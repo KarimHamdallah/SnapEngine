@@ -120,6 +120,8 @@ namespace SnapEngine
 
 	void TextBatchRenderer::RenderText(const std::string& Text, const glm::vec2& Position, float scale, const glm::vec4& Color, int EntityID)
 	{
+		return;
+		/*
 		//glm::mat4 TransformMatrix = Transform;
 		float x = Position.x;
 		for (auto Character = Text.begin(); Character < Text.end(); Character++)
@@ -143,7 +145,7 @@ namespace SnapEngine
 			const glm::vec2 _TexCoords[] = { { TexCoords.z, TexCoords.w }, { TexCoords.z, TexCoords.y }, { TexCoords.x, TexCoords.y }, { TexCoords.x, TexCoords.w } };
 			for (size_t vertex = 0; vertex < 4; vertex++)
 			{
-				s_Data->m_GlyphVerticesFirst->Position = /*TransformMatrix * s_Data->GlyphVertices[vertex]*/Vertices[vertex];
+				s_Data->m_GlyphVerticesFirst->Position = Vertices[vertex];//TransformMatrix * s_Data->GlyphVertices[vertex]
 				s_Data->m_GlyphVerticesFirst->Color = Color;
 				s_Data->m_GlyphVerticesFirst->TexCoords = _TexCoords[vertex];
 				s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
@@ -152,6 +154,8 @@ namespace SnapEngine
 			}
 			s_Data->m_Stats.GlyphCount++;
 			x += (glyph.Advance >> 6) * scale;
+			
 		}
+		*/
 	}
 }

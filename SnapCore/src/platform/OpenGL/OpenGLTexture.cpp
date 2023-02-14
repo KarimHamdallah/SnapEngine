@@ -171,6 +171,8 @@ namespace SnapEngine
 		int channels, Width, Height;
 		unsigned char* pixels = stbi_load(filepath.c_str(), &Width, &Height, &channels, 0);
 
+		stbi_set_flip_vertically_on_load(!flip);
+
 		SNAP_ASSERT_MSG((pixels != nullptr), "STB failed to load image at path: " + filepath + "\n-> STB Failure Reason: " + std::string(stbi_failure_reason()));
 		
 		m_Filepath = filepath;

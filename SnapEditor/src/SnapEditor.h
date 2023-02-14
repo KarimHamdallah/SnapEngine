@@ -41,9 +41,7 @@ namespace SnapEngine
 
 			////////////// Project ////////////
 			OpenProject("SandBoxGame/SandBoxGame.SnapProj");
-
-			font = SnapEngine::CreatSnapPtr<Font>("assets/Editor/arial.ttf", 0, 50);
-			font->LoadFont("assets/Editor/arial.ttf");
+			font = CreatSnapPtr<Font>("assets/TextureAtlases/arial.png", "assets/TextureAtlases/arial.SnapFont");
 		}
 
 		~EditorLayer() {}
@@ -125,14 +123,6 @@ namespace SnapEngine
 
 
 			//////////////// TextRendering //////////
-			TextBatchRenderer::ResetStats();
-			TextBatchRenderer::Begin(
-				{ glm::ortho(0.0f, m_ViewPortSize.x, 0.0f, m_ViewPortSize.y),
-				  glm::mat4(1.0f)
-				}, font);
-			TextBatchRenderer::RenderText("Welcome To SnapEngine Baby :)", { 100.0f, 100.0f }, 1.0f, glm::vec4(0.3f, 0.8f, 0.2f, 1.0f));
-			TextBatchRenderer::End();
-			/////////////////
 
 			m_FrameBuffer->UnBind(); // Stop Recording
 
@@ -238,16 +228,13 @@ namespace SnapEngine
 			if (m_ContentBrowserPanel->IsWindowFocused() && m_ContentBrowserPanel->IsWindowHovered())
 				Application::Get().GetImGuiLayer()->BlockEvents(false);
 
-			ImGui::Begin("MyAlgorithm");
+			
+			ImGui::Begin("LIBAlgorithm");
 			SnapPtr<Texture2D> font_atlas = font->GetFontAtlas();
 			if(font_atlas)
-				ImGui::Image((ImTextureID)font_atlas->getID(), {(float)font_atlas->getWidth(), (float)font_atlas->getHeight() }/*, {0, 1}, {1, 0}*/);
+				ImGui::Image((ImTextureID)font_atlas->getID(), {(float)font_atlas->getWidth(), (float)font_atlas->getHeight() }, {0, 1}, {1, 0});
 			ImGui::End();
-			ImGui::Begin("LibAlgorithm");
-			if(font->m_AtlasTexture)
-				ImGui::Image((ImTextureID)font->m_AtlasTexture->getID(), {512, 512}, {0, 1}, {1, 0});
-			ImGui::End();
-			
+
 			EndDockSpace();
 		}
 
