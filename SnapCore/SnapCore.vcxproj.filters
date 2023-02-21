@@ -1104,8 +1104,8 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\MSDFData.h" />
     <ClInclude Include="src\Snap\Renderer\TextRenderer.h" />
-    <ClInclude Include="src\Snap\Renderer\FontEncoder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1250,6 +1250,5 @@
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
     <ClCompile Include="src\Snap\Renderer\TextRenderer.cpp" />
-    <ClCompile Include="src\Snap\Renderer\FontEncoder.cpp" />
   </ItemGroup>
 </Project>

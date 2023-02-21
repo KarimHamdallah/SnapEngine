@@ -4,6 +4,7 @@
 #include <Snap/Renderer/VertexArray.h>
 #include <Snap/Renderer/Shader.h>
 #include <Snap/Renderer/RendererCommand.h>
+#include "MSDFData.h"
 
 namespace SnapEngine
 {
@@ -101,7 +102,7 @@ namespace SnapEngine
 	{
 		auto& shader = s_Data->m_TextBatchShader;
 		shader->Bind();
-		s_Data->m_Font->GetFontAtlas()->Bind();
+		s_Data->m_Font->GetAtlasTexture()->Bind();
 
 		// Draw Call
 		RendererCommand::DrawIndexed(s_Data->m_VertexArray, s_Data->m_Stats.GlyphCount * INDICES_PER_GLYPH);
@@ -118,44 +119,93 @@ namespace SnapEngine
 		delete s_Data;
 	}
 
-	void TextBatchRenderer::RenderText(const std::string& Text, const glm::vec2& Position, float scale, const glm::vec4& Color, int EntityID)
+	void TextBatchRenderer::RenderText(const std::string& Text, const glm::mat4 Transform, const glm::vec4& Color, int EntityID)
 	{
-		return;
-		/*
-		//glm::mat4 TransformMatrix = Transform;
-		float x = Position.x;
-		for (auto Character = Text.begin(); Character < Text.end(); Character++)
+		const auto& fontGeometry = s_Data->m_Font->GetMSDFData()->FontGeometry;
+		const auto& metrics = fontGeometry.getMetrics();
+		SnapPtr<Texture2D> fontAtlas = s_Data->m_Font->GetAtlasTexture();
+
+		double x = 0.0;
+		double fsScale = 1.0 / (metrics.ascenderY - metrics.descenderY);
+		double y = 0.0;
+		float lineHeightOffset = 0.0f;
+
+		for (size_t i = 0; i < Text.size(); i++)
 		{
-			Glyph glyph = s_Data->m_Font->GetGlyph(*Character);
-			float xpos = x + glyph.Bearing.x * scale;
-			float ypos = Position.y - (glyph.Size.y - glyph.Bearing.y) * scale;
+			char character = Text[i];
+			if (character == '\r')
+				continue;
 
-			float w = glyph.Size.x * scale;
-			float h = glyph.Size.y * scale;
-
-			glm::vec3 Vertices[4] = {
-			{ xpos + w, ypos,     0.0f }, // Top Right
-			{ xpos + w, ypos + h, 0.0f }, // Bottom Right
-			{ xpos,     ypos + h, 0.0f }, // Bottom Left
-			{ xpos,     ypos,     0.0f }  // Top Left
-			};
-
-			glm::vec4 TexCoords = s_Data->m_Font->GetCharacterAtlasTexCoords(*Character);
-			//                                    Top Right                         Bottom Right                Bottom Left             Top Left
-			const glm::vec2 _TexCoords[] = { { TexCoords.z, TexCoords.w }, { TexCoords.z, TexCoords.y }, { TexCoords.x, TexCoords.y }, { TexCoords.x, TexCoords.w } };
-			for (size_t vertex = 0; vertex < 4; vertex++)
+			if (character == '\n')
 			{
-				s_Data->m_GlyphVerticesFirst->Position = Vertices[vertex];//TransformMatrix * s_Data->GlyphVertices[vertex]
-				s_Data->m_GlyphVerticesFirst->Color = Color;
-				s_Data->m_GlyphVerticesFirst->TexCoords = _TexCoords[vertex];
-				s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
-
-				s_Data->m_GlyphVerticesFirst++;
+				x = 0;
+				y -= fsScale * metrics.lineHeight + lineHeightOffset;
+				continue;
 			}
+			auto glyph = fontGeometry.getGlyph(character);
+			if (!glyph)
+				glyph = fontGeometry.getGlyph('?');
+			if (!glyph)
+				return;
+
+			if (character == '\t')
+				glyph = fontGeometry.getGlyph(' ');
+
+			double al, ab, ar, at;
+			glyph->getQuadAtlasBounds(al, ab, ar, at);
+			glm::vec2 texCoordMin((float)al, (float)ab);
+			glm::vec2 texCoordMax((float)ar, (float)at);
+
+			double pl, pb, pr, pt;
+			glyph->getQuadPlaneBounds(pl, pb, pr, pt);
+			glm::vec2 quadMin((float)pl, (float)pb);
+			glm::vec2 quadMax((float)pr, (float)pt);
+
+			quadMin *= fsScale, quadMax *= fsScale;
+			quadMin += glm::vec2(x, y);
+			quadMax += glm::vec2(x, y);
+
+			float texelWidth = 1.0f / fontAtlas->getWidth();
+			float texelHeight = 1.0f / fontAtlas->getHeight();
+			texCoordMin *= glm::vec2(texelWidth, texelHeight);
+			texCoordMax *= glm::vec2(texelWidth, texelHeight);
+
+			// render here
+			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMin, 0.0f, 1.0f);
+			s_Data->m_GlyphVerticesFirst->Color = Color;
+			s_Data->m_GlyphVerticesFirst->TexCoords = texCoordMin;
+			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst++;
+
+			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMin.x, quadMax.y, 0.0f, 1.0f);
+			s_Data->m_GlyphVerticesFirst->Color = Color;
+			s_Data->m_GlyphVerticesFirst->TexCoords = { texCoordMin.x, texCoordMax.y };
+			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst++;
+
+			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMax, 0.0f, 1.0f);
+			s_Data->m_GlyphVerticesFirst->Color = Color;
+			s_Data->m_GlyphVerticesFirst->TexCoords = texCoordMax;
+			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst++;
+
+			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMax.x, quadMin.y, 0.0f, 1.0f);
+			s_Data->m_GlyphVerticesFirst->Color = Color;
+			s_Data->m_GlyphVerticesFirst->TexCoords = { texCoordMax.x, texCoordMin.y };
+			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst++;
+
 			s_Data->m_Stats.GlyphCount++;
-			x += (glyph.Advance >> 6) * scale;
-			
+
+			if (i < Text.size() - 1)
+			{
+				double advance = glyph->getAdvance();
+				char nextCharacter = Text[i + 1];
+				fontGeometry.getAdvance(advance, character, nextCharacter);
+
+				float kerningOffset = 0.0f;
+				x += fsScale * advance + kerningOffset;
+			}
 		}
-		*/
 	}
 }

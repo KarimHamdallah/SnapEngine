@@ -165,9 +165,9 @@
     <ClInclude Include="src\Snap\Project\ProjectSystem.h" />
     <ClInclude Include="src\Snap\Renderer\Buffer.h" />
     <ClInclude Include="src\Snap\Renderer\Font.h" />
-    <ClInclude Include="src\Snap\Renderer\FontEncoder.h" />
     <ClInclude Include="src\Snap\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Snap\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Snap\Renderer\MSDFData.h" />
     <ClInclude Include="src\Snap\Renderer\OrthoGraphicCamera.h" />
     <ClInclude Include="src\Snap\Renderer\OrthoGraphicCameraController.h" />
     <ClInclude Include="src\Snap\Renderer\Renderer.h" />
@@ -498,7 +498,6 @@
     <ClCompile Include="src\Snap\Project\ProjectSystem.cpp" />
     <ClCompile Include="src\Snap\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Snap\Renderer\Font.cpp" />
-    <ClCompile Include="src\Snap\Renderer\FontEncoder.cpp" />
     <ClCompile Include="src\Snap\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicCameraController.cpp" />
     <ClCompile Include="src\Snap\Renderer\OrthoGraphicsCamera.cpp" />

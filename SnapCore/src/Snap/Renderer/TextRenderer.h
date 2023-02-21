@@ -39,7 +39,7 @@ namespace SnapEngine
 		static void ShutDown();
 
 
-		static void RenderText(const std::string& Text, const glm::vec2& Position, float scale, const glm::vec4& Color, int EntityID = -1);
+		static void RenderText(const std::string& Text, const glm::mat4 Transform, const glm::vec4& Color = glm::vec4(1.0f), int EntityID = -1);
 	private:
 		static void Flush();
 	};
