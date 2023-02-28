@@ -177,6 +177,17 @@ namespace SnapEngine
 		std::string ClassName;
 	};
 
+	struct TextRendererComponent
+	{
+		TextRendererComponent() = default;
+		TextRendererComponent(const TextRendererComponent&) = default;
+
+		std::string m_TextString;
+		glm::vec4 m_Color = glm::vec4(1.0f);
+		float KerningOffset = 0.0f;
+		float LineSpacing = 0.0f;
+	};
+
 	template<typename... Component>
 	struct ComponentGroup
 	{
@@ -186,5 +197,5 @@ namespace SnapEngine
 		ComponentGroup< TransformComponent, SpriteRendererComponent,
 		CircleRendererComponent, CameraComponent, ScriptComponent,
 		CppScriptComponent, RigidBody2DComponent, BoxCollider2DComponent,
-		CircleCollider2DComponent, ScriptComponent>;
+		CircleCollider2DComponent, ScriptComponent, TextRendererComponent>;
 }

@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 #include <Snap/Scripting/ScriptingEngine.h>
 
@@ -273,6 +274,12 @@ namespace SnapEngine
 				else
 					SNAP_WARN("Entity With Tag {0}, Already Has CircleCollider2D Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
 			
+			if (ImGui::MenuItem("TextRenderer Component"))
+				if (!m_SelectedEntity.HasComponent<TextRendererComponent>())
+					m_SelectedEntity.AddComponent<TextRendererComponent>();
+				else
+					SNAP_WARN("Entity With Tag {0}, Already Has TextRenderer Component!", m_SelectedEntity.GetComponent<TagComponent>().m_Tag);
+			
 			if (ImGui::MenuItem("Script Component"))
 				if (!m_SelectedEntity.HasComponent<ScriptComponent>())
 					m_SelectedEntity.AddComponent<ScriptComponent>();
@@ -446,6 +453,14 @@ namespace SnapEngine
 				ImGui::DragFloat("Density", &component.m_Density, 0.01f);
 				ImGui::DragFloat("Friction", &component.m_Friction, 0.01f);
 				ImGui::DragFloat("Restitution", &component.m_Restitution, 0.01f);
+			});
+
+		DrawComponent<TextRendererComponent>("TextRendererComponent", entity, [&](TextRendererComponent& component)
+			{
+				ImGui::InputTextMultiline("TextString", &component.m_TextString);
+				ImGui::ColorEdit4("Color", glm::value_ptr(component.m_Color));
+				ImGui::DragFloat("KerningOffset", &component.KerningOffset, 0.01f);
+				ImGui::DragFloat("LineSpacing", &component.LineSpacing, 0.01f);
 			});
 		
 		DrawComponent<ScriptComponent>("Script", entity, [entity, this](ScriptComponent& component) mutable

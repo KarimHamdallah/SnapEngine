@@ -163,3 +163,25 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
+  - EntityID: 3482727311953698507
+    TagComponent:
+      Tag: Text
+    TransformComponent:
+      Position: [-14.2377081, 8.85779667, 5]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    RigidBody2DComponent:
+      RigidBody2DType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [2.96000004, 0.360000014]
+      Offset: [2.94000006, 0.219999999]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+    TextRendererComponent:
+      TextString: Karim Hamdallah
+      TextColor: [1, 1, 1, 1]
+      KerningOffset: 0
+      LineSpacing: 0

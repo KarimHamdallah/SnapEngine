@@ -168,6 +168,9 @@
     <ClInclude Include="src\Snap\Renderer\GraphicsContext.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\MSDFData.h">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Snap\Renderer\OrthoGraphicCamera.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
@@ -190,6 +193,9 @@
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Renderer\SubTexture2D.h">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Snap\Renderer\TextRenderer.h">
       <Filter>src\Snap\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Snap\Renderer\Texture.h">
@@ -1104,8 +1110,6 @@
     <ClInclude Include="vendor\imguizmo\ImGuizmo.h">
       <Filter>vendor\imguizmo</Filter>
     </ClInclude>
-    <ClInclude Include="src\Snap\Renderer\MSDFData.h" />
-    <ClInclude Include="src\Snap\Renderer\TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Snap\Core\Application.cpp">
@@ -1180,6 +1184,9 @@
     <ClCompile Include="src\Snap\Renderer\SubTexture2D.cpp">
       <Filter>src\Snap\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Snap\Renderer\TextRenderer.cpp">
+      <Filter>src\Snap\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Snap\Renderer\Texture.cpp">
       <Filter>src\Snap\Renderer</Filter>
     </ClCompile>
@@ -1249,6 +1256,5 @@
     <ClCompile Include="vendor\imguizmo\ImGuizmo.cpp">
       <Filter>vendor\imguizmo</Filter>
     </ClCompile>
-    <ClCompile Include="src\Snap\Renderer\TextRenderer.cpp" />
   </ItemGroup>
 </Project>

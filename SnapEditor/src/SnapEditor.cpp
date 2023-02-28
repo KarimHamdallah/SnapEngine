@@ -538,8 +538,9 @@ namespace SnapEngine
 
 				// Exclude Roation form original transform
 				glm::mat4 Transform =
-					glm::translate(glm::mat4(1.0f), Position) *
+					glm::translate(glm::mat4(1.0f), transform.m_Position/*Position*/) *
 					glm::rotate(glm::mat4(1.0f), glm::radians(transform.m_Rotation.z), {0, 0, 1}) *
+					glm::translate(glm::mat4(1.0f), glm::vec3(collider.m_Offset.x, collider.m_Offset.y, 0.01f)) * // Offset Translation
 					glm::scale(glm::mat4(1.0f), Scale);
 
 				Renderer2D::SetLineWidth(3.0f);

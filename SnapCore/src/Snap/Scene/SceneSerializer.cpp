@@ -297,6 +297,21 @@ namespace SnapEngine
 			out << YAML::EndMap; // CircleCollider2DComponent
 		}
 
+		if (entity.HasComponent<TextRendererComponent>())
+		{
+			out << YAML::Key << "TextRendererComponent";
+			out << YAML::BeginMap; // TextRendererComponent
+			auto& TextRenderer = entity.GetComponent<TextRendererComponent>();
+
+			out << YAML::Key << "TextString" << YAML::Value << TextRenderer.m_TextString;
+			out << YAML::Key << "TextColor" << YAML::Value << TextRenderer.m_Color;
+			out << YAML::Key << "KerningOffset" << YAML::Value << TextRenderer.KerningOffset;
+			out << YAML::Key << "LineSpacing" << YAML::Value << TextRenderer.LineSpacing;
+
+
+			out << YAML::EndMap; // TextRendererComponent
+		}
+
 		if (entity.HasComponent<ScriptComponent>())
 		{
 			out << YAML::Key << "ScriptComponent";
@@ -590,6 +605,22 @@ namespace SnapEngine
 					Comp.m_Friction = Friction;
 					Comp.m_Restitution = Restitution;
 					Comp.m_RestitutionThreshold = RestitutionThreshold;
+				}
+
+				if (entity["TextRendererComponent"])
+				{
+					auto& TextRendererComponentNode = entity["TextRendererComponent"];
+					
+					auto TextString = TextRendererComponentNode["TextString"].as<std::string>();
+					auto TextColor = TextRendererComponentNode["TextColor"].as<glm::vec4>();
+					auto KerningOffset = TextRendererComponentNode["KerningOffset"].as<float>();
+					auto LineSpacing = TextRendererComponentNode["LineSpacing"].as<float>();
+
+					auto& Comp = e.AddComponent<TextRendererComponent>();
+					Comp.m_TextString = TextString;
+					Comp.m_Color = TextColor;
+					Comp.KerningOffset = KerningOffset;
+					Comp.LineSpacing = LineSpacing;
 				}
 
 				if (entity["ScriptComponent"])

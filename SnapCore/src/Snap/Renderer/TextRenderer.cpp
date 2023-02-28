@@ -119,7 +119,7 @@ namespace SnapEngine
 		delete s_Data;
 	}
 
-	void TextBatchRenderer::RenderText(const std::string& Text, const glm::mat4 Transform, const glm::vec4& Color, int EntityID)
+	void TextBatchRenderer::RenderText(const std::string& Text, const glm::mat4 Transform, const glm::vec4& Color, float KerningOffset, float LineSpacing, int EntityID)
 	{
 		const auto& fontGeometry = s_Data->m_Font->GetMSDFData()->FontGeometry;
 		const auto& metrics = fontGeometry.getMetrics();
@@ -139,9 +139,30 @@ namespace SnapEngine
 			if (character == '\n')
 			{
 				x = 0;
-				y -= fsScale * metrics.lineHeight + lineHeightOffset;
+				y -= fsScale * metrics.lineHeight + lineHeightOffset + LineSpacing;
 				continue;
 			}
+
+			if (character == ' ')
+			{
+				double advance = fontGeometry.getGlyph(' ')->getAdvance();
+				if (i < Text.size() - 1)
+				{
+					char nextCharacter = Text[i + 1];
+					fontGeometry.getAdvance(advance, character, nextCharacter);
+				}
+				
+				x += fsScale * advance + KerningOffset;
+				continue;
+			}
+
+			if (character == '\t')
+			{
+				double advance = fontGeometry.getGlyph(' ')->getAdvance();
+				x += 4.0f * (fsScale * advance + KerningOffset);
+				continue;
+			}
+
 			auto glyph = fontGeometry.getGlyph(character);
 			if (!glyph)
 				glyph = fontGeometry.getGlyph('?');
@@ -174,25 +195,25 @@ namespace SnapEngine
 			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMin, 0.0f, 1.0f);
 			s_Data->m_GlyphVerticesFirst->Color = Color;
 			s_Data->m_GlyphVerticesFirst->TexCoords = texCoordMin;
-			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
 			s_Data->m_GlyphVerticesFirst++;
 
 			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMin.x, quadMax.y, 0.0f, 1.0f);
 			s_Data->m_GlyphVerticesFirst->Color = Color;
 			s_Data->m_GlyphVerticesFirst->TexCoords = { texCoordMin.x, texCoordMax.y };
-			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
 			s_Data->m_GlyphVerticesFirst++;
 
 			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMax, 0.0f, 1.0f);
 			s_Data->m_GlyphVerticesFirst->Color = Color;
 			s_Data->m_GlyphVerticesFirst->TexCoords = texCoordMax;
-			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
 			s_Data->m_GlyphVerticesFirst++;
 
 			s_Data->m_GlyphVerticesFirst->Position = Transform * glm::vec4(quadMax.x, quadMin.y, 0.0f, 1.0f);
 			s_Data->m_GlyphVerticesFirst->Color = Color;
 			s_Data->m_GlyphVerticesFirst->TexCoords = { texCoordMax.x, texCoordMin.y };
-			s_Data->m_GlyphVerticesFirst->Entity_ID = 0; // TODO
+			s_Data->m_GlyphVerticesFirst->Entity_ID = EntityID;
 			s_Data->m_GlyphVerticesFirst++;
 
 			s_Data->m_Stats.GlyphCount++;
@@ -203,9 +224,13 @@ namespace SnapEngine
 				char nextCharacter = Text[i + 1];
 				fontGeometry.getAdvance(advance, character, nextCharacter);
 
-				float kerningOffset = 0.0f;
-				x += fsScale * advance + kerningOffset;
+				x += fsScale * advance + KerningOffset;
 			}
 		}
+	}
+
+	void TextBatchRenderer::RenderText(const glm::mat4 Transform, const TextRendererComponent& TextRenderer, int EntityID)
+	{
+		RenderText(TextRenderer.m_TextString, Transform, TextRenderer.m_Color, TextRenderer.KerningOffset, TextRenderer.LineSpacing, EntityID);
 	}
 }

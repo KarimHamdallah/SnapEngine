@@ -5,6 +5,7 @@
 #include <Snap/Scene/Comps/Components.h>
 #include <Snap/Renderer/RendererCommand.h>
 #include <Snap/Renderer/Renderer2D.h>
+#include <Snap/Renderer/TextRenderer.h>
 
 #include <box2d/b2_world.h>
 #include <box2d/b2_body.h>
@@ -160,6 +161,7 @@ namespace SnapEngine
     {
         // Send Projection And View Matrix To Renderer2D
         Renderer2D::Begin(Camera);
+        TextBatchRenderer::Begin({ Camera.GetProjectionMatrix(), Camera.GetViewMatrix() }, Font::GetDefault());
 
         {// Render Sprites
 
@@ -183,6 +185,18 @@ namespace SnapEngine
             }
         }
 
+        {// Render Text
+
+                auto& group = registry.view<TransformComponent, TextRendererComponent>();
+
+                for (auto entity : group)
+                {
+                    auto [transform, text_renderer] = group.get<TransformComponent, TextRendererComponent>(entity);
+                    TextBatchRenderer::RenderText(transform, text_renderer, (int)entity);
+                }
+            }
+
+        TextBatchRenderer::End();
         Renderer2D::End();
     }
 
@@ -260,6 +274,8 @@ namespace SnapEngine
         {
             // Send Projection And View Matrix To Renderer2D
             Renderer2D::Begin({ MainCamera->GetProjectionMatrix(), glm::inverse(MainCameraTransform) });
+            TextBatchRenderer::Begin({ MainCamera->GetProjectionMatrix(), glm::inverse(MainCameraTransform) }, Font::GetDefault());
+
 
             {// Render Sprites
 
@@ -282,6 +298,19 @@ namespace SnapEngine
                     Renderer2D::DrawCircle(transform, circle_renderer, (int)entity);
                 }
             }
+
+            {// Render Text
+
+                auto& group = registry.view<TransformComponent, TextRendererComponent>();
+
+                for (auto entity : group)
+                {
+                    auto [transform, text_renderer] = group.get<TransformComponent, TextRendererComponent>(entity);
+                    TextBatchRenderer::RenderText(transform, text_renderer, (int)entity);
+                }
+            }
+
+            TextBatchRenderer::End();
         }
     }
 
@@ -623,6 +652,10 @@ namespace SnapEngine
     }
     template<>
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<TextRendererComponent>(Entity entity, TextRendererComponent& component)
     {
     }
     template<>
