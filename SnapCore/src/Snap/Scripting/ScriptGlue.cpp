@@ -27,6 +27,14 @@ namespace Utils
 			return b2_staticBody;
 		}
 	}
+
+	std::string MonoStringToString(MonoString* string)
+	{
+		char* cStr = mono_string_to_utf8(string);
+		std::string str(cStr);
+		mono_free(cStr);
+		return str;
+	}
 }
 
 namespace Scripting
@@ -106,6 +114,8 @@ namespace Scripting
 	{
 		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
 		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::RigidBody2DComponent>());
 		b2Body* Body = (b2Body*)e.GetComponent<SnapEngine::RigidBody2DComponent>().RunTimeBody;
 		Body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
 	}
@@ -135,6 +145,8 @@ namespace Scripting
 	{
 		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
 		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::RigidBody2DComponent>());
 		b2Body* Body = (b2Body*)e.GetComponent<SnapEngine::RigidBody2DComponent>().RunTimeBody;
 		b2Vec2 Linearvelocity = Body->GetLinearVelocity();
 		*OutLinearVelocity = { Linearvelocity.x, Linearvelocity.y };
@@ -144,6 +156,8 @@ namespace Scripting
 	{
 		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
 		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::RigidBody2DComponent>());
 		SnapEngine::RigidBody2DComponent::RigidBodyType Bodytype = e.GetComponent<SnapEngine::RigidBody2DComponent>().m_Type;
 		*OutBodyType = Bodytype;
 	}
@@ -152,9 +166,92 @@ namespace Scripting
 	{
 		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
 		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::RigidBody2DComponent>());
 		e.GetComponent<SnapEngine::RigidBody2DComponent>().m_Type = *OutBodyType;
 		b2Body* Body = (b2Body*)e.GetComponent<SnapEngine::RigidBody2DComponent>().RunTimeBody;
 		Body->SetType(Utils::Rigidbody2DTypeToBox2DType(*OutBodyType));
+	}
+
+
+	static void TextComponent_SetText(SnapEngine::UUID EntityID, MonoString* textString)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		e.GetComponent<SnapEngine::TextRendererComponent>().m_TextString = Utils::MonoStringToString(textString);
+	}
+
+	static MonoString* TextComponent_GetText(SnapEngine::UUID EntityID)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+		
+		return mono_string_new(ScriptingEngine::GetAppDomain(), e.GetComponent<SnapEngine::TextRendererComponent>().m_TextString.c_str());
+	}
+
+	static void TextComponent_GetColor(SnapEngine::UUID EntityID, glm::vec4* Color)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		*Color = e.GetComponent<SnapEngine::TextRendererComponent>().m_Color;
+	}
+
+	static void TextComponent_SetColor(SnapEngine::UUID EntityID, glm::vec4* Color)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		e.GetComponent<SnapEngine::TextRendererComponent>().m_Color = *Color;
+	}
+
+	static void TextComponent_GetKerningOffset(SnapEngine::UUID EntityID, float* KerningOffset)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		*KerningOffset = e.GetComponent<SnapEngine::TextRendererComponent>().KerningOffset;
+	}
+
+	static void TextComponent_SetKerningOffset(SnapEngine::UUID EntityID, float* KerningOffset)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		e.GetComponent<SnapEngine::TextRendererComponent>().KerningOffset = *KerningOffset;
+	}
+
+	static void TextComponent_GetLineSpacing(SnapEngine::UUID EntityID, float* LineSpacing)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		*LineSpacing = e.GetComponent<SnapEngine::TextRendererComponent>().LineSpacing;
+	}
+
+	static void TextComponent_SetLineSpacing(SnapEngine::UUID EntityID, float* LineSpacing)
+	{
+		SnapEngine::Scene* scene = ScriptingEngine::GetSceneContext();
+		SnapEngine::Entity e = scene->GetEntityWithUUID(EntityID);
+		SNAP_ASSERT(e);
+		SNAP_ASSERT(e.HasComponent<SnapEngine::TextRendererComponent>());
+
+		e.GetComponent<SnapEngine::TextRendererComponent>().LineSpacing = *LineSpacing;
 	}
 
 	void ScriptGlue::RegisterGlue()
@@ -178,6 +275,19 @@ namespace Scripting
 
 		SNAP_ADD_INTERNAL_CALL(RigidBody2D_GetBodyType);
 		SNAP_ADD_INTERNAL_CALL(RigidBody2D_SetBodyType);
+
+		// Text Component
+		SNAP_ADD_INTERNAL_CALL(TextComponent_GetText);
+		SNAP_ADD_INTERNAL_CALL(TextComponent_SetText);
+
+		SNAP_ADD_INTERNAL_CALL(TextComponent_GetColor);
+		SNAP_ADD_INTERNAL_CALL(TextComponent_SetColor);
+
+		SNAP_ADD_INTERNAL_CALL(TextComponent_GetKerningOffset);
+		SNAP_ADD_INTERNAL_CALL(TextComponent_SetKerningOffset);
+
+		SNAP_ADD_INTERNAL_CALL(TextComponent_GetLineSpacing);
+		SNAP_ADD_INTERNAL_CALL(TextComponent_SetLineSpacing);
 
 		SNAP_ADD_INTERNAL_CALL(Snap_Sin);
 	}

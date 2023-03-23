@@ -35,7 +35,33 @@ namespace SnapEngine
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static void RigidBody2D_GetLinearVelocity(ulong EntityID, out vec2 OutLinearVelocity);
-        
+
+
+
+
+        // TextRendererComponent
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_SetText(ulong EntityID, string text);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static string TextComponent_GetText(ulong EntityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_GetColor(ulong EntityID, out vec4 Color);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_SetColor(ulong EntityID, ref vec4 Color);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_GetKerningOffset(ulong EntityID, out float KerningOffset);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_SetKerningOffset(ulong EntityID, ref float KerningOffset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_GetLineSpacing(ulong EntityID, out float LineSpacing);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void TextComponent_SetLineSpacing(ulong EntityID, ref float LineSpacing);
+
         // Entity
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Entity_HasComponent(ulong EntityID, Type ComponentType);

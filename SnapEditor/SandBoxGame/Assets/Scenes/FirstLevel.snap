@@ -1,35 +1,40 @@
 Scene: Example Scene
 Entities List:
-  - EntityID: 9641041142738431343
+  - EntityID: 3482727311953698507
     TagComponent:
-      Tag: Portal
+      Tag: Text
     TransformComponent:
-      Position: [11.1056738, 6.09973621, 5]
+      Position: [-14.2377081, 8.85779667, 5]
       Rotation: [0, -0, 0]
-      Scale: [2.23000002, 2.23000002, 2.23000002]
-    CircleRendererComponent:
-      Color: [0.112592548, 0.562962949, 0, 1]
-      Fade: 0.00499999989
-      Thickness: 0.136000007
-  - EntityID: 15967425690956812172
+      Scale: [1, 1, 1]
+    RigidBody2DComponent:
+      RigidBody2DType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [2.96000004, 0.360000014]
+      Offset: [2.94000006, 0.219999999]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+    TextRendererComponent:
+      TextString: Karim Hamdallah
+      TextColor: [1, 1, 1, 1]
+      KerningOffset: 0
+      LineSpacing: 0
+    ScriptComponent:
+      ClassName: SandBox.NameScript
+      FieldMap:
+        []
+  - EntityID: 4786479438578278988
     TagComponent:
-      Tag: BackGround
+      Tag: Floor
     TransformComponent:
-      Position: [7.15255737e-07, 8.70227814e-06, -6.25417042]
-      Rotation: [0, -0, 0]
-      Scale: [40, 30, 1]
+      Position: [-7.01658916, 1.64114761, 5]
+      Rotation: [0, -0, -28.1158123]
+      Scale: [14.8898726, 0.999999702, 1]
     SpriteRendererComponent:
-      Color: [0.259259284, 0.259259284, 0.259259284, 1]
-      TilingFactor: 1
-  - EntityID: 17674494289007977892
-    TagComponent:
-      Tag: Right
-    TransformComponent:
-      Position: [14.5998554, -0.00514483452, 5]
-      Rotation: [0, -0, 89.9999771]
-      Scale: [21, 1, 1]
-    SpriteRendererComponent:
-      Color: [0.118518531, 0.118518531, 0.118518531, 1]
+      Color: [1, 0.444444418, 0, 1]
       TilingFactor: 1
     RigidBody2DComponent:
       RigidBody2DType: Static
@@ -41,13 +46,55 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - EntityID: 10359601714447704607
+  - EntityID: 9524621440982170883
     TagComponent:
-      Tag: Top
+      Tag: Player
     TransformComponent:
-      Position: [0, 10, 5]
+      Position: [-12, 7, 5]
       Rotation: [0, -0, 0]
-      Scale: [30, 1, 1]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      TexturePath: F:\Projects\SnapEngine\SnapEditor\SandBoxGame\Assets\Textures\player.png
+      TilingFactor: 1
+    RigidBody2DComponent:
+      RigidBody2DType: Dynamic
+      FixedRotation: false
+    CircleCollider2DComponent:
+      Offset: [0, 0]
+      Raduis: 0.540000021
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - EntityID: 3726267398520112411
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 0, 40]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      ProjectionType: 0
+      OrthoGraphicSize: 10
+      OrthoGraphicNear: -100
+      OrthoGraphicFar: 100
+      PerspectiveFov: 0.785398185
+      PerspectiveNear: 0.00999999978
+      PerspectiveFar: 1000
+      IsMain: true
+      FixedAspectRatio: false
+    ScriptComponent:
+      ClassName: SandBox.CameraController
+      FieldMap:
+        []
+  - EntityID: 5231428966367896477
+    TagComponent:
+      Tag: Left
+    TransformComponent:
+      Position: [-14.822753, -0.00513435854, 5]
+      Rotation: [0, -0, 89.9999771]
+      Scale: [21, 1, 1]
     SpriteRendererComponent:
       Color: [0.118518531, 0.118518531, 0.118518531, 1]
       TilingFactor: 1
@@ -81,11 +128,31 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - EntityID: 5231428966367896477
+  - EntityID: 10359601714447704607
     TagComponent:
-      Tag: Left
+      Tag: Top
     TransformComponent:
-      Position: [-14.822753, -0.00513435854, 5]
+      Position: [0, 10, 5]
+      Rotation: [0, -0, 0]
+      Scale: [30, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.118518531, 0.118518531, 0.118518531, 1]
+      TilingFactor: 1
+    RigidBody2DComponent:
+      RigidBody2DType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Size: [0.5, 0.5]
+      Offset: [0, 0]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - EntityID: 17674494289007977892
+    TagComponent:
+      Tag: Right
+    TransformComponent:
+      Position: [14.5998554, -0.00514483452, 5]
       Rotation: [0, -0, 89.9999771]
       Scale: [21, 1, 1]
     SpriteRendererComponent:
@@ -101,87 +168,24 @@ Entities List:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - EntityID: 3726267398520112411
+  - EntityID: 15967425690956812172
     TagComponent:
-      Tag: Camera
+      Tag: BackGround
     TransformComponent:
-      Position: [0, 0, 40]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    CameraComponent:
-      ProjectionType: 0
-      OrthoGraphicSize: 10
-      OrthoGraphicNear: -100
-      OrthoGraphicFar: 100
-      PerspectiveFov: 0.785398185
-      PerspectiveNear: 0.00999999978
-      PerspectiveFar: 1000
-      IsMain: true
-      FixedAspectRatio: false
-    ScriptComponent:
-      ClassName: SandBox.CameraController
-      FieldMap:
-        []
-  - EntityID: 9524621440982170883
-    TagComponent:
-      Tag: Player
-    TransformComponent:
-      Position: [-12, 7, 5]
+      Position: [7.15255737e-07, 8.70227814e-06, -6.25417042]
       Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
+      Scale: [40, 30, 1]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
-      TexturePath: F:\Projects\SnapEngine\SnapEditor\SandBoxGame\Assets\Textures\player.png
+      Color: [0.259259284, 0.259259284, 0.259259284, 1]
       TilingFactor: 1
-    RigidBody2DComponent:
-      RigidBody2DType: Dynamic
-      FixedRotation: false
-    CircleCollider2DComponent:
-      Offset: [0, 0]
-      Raduis: 0.540000021
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.5
-      RestitutionThreshold: 0.5
-  - EntityID: 4786479438578278988
+  - EntityID: 9641041142738431343
     TagComponent:
-      Tag: Floor
+      Tag: Portal
     TransformComponent:
-      Position: [-7.01658916, 1.64114761, 5]
-      Rotation: [0, -0, -28.1158123]
-      Scale: [14.8898726, 0.999999702, 1]
-    SpriteRendererComponent:
-      Color: [1, 0.444444418, 0, 1]
-      TilingFactor: 1
-    RigidBody2DComponent:
-      RigidBody2DType: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Size: [0.5, 0.5]
-      Offset: [0, 0]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.5
-      RestitutionThreshold: 0.5
-  - EntityID: 3482727311953698507
-    TagComponent:
-      Tag: Text
-    TransformComponent:
-      Position: [-14.2377081, 8.85779667, 5]
+      Position: [11.1056738, 6.09973621, 5]
       Rotation: [0, -0, 0]
-      Scale: [1, 1, 1]
-    RigidBody2DComponent:
-      RigidBody2DType: Dynamic
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Size: [2.96000004, 0.360000014]
-      Offset: [2.94000006, 0.219999999]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.5
-      RestitutionThreshold: 0.5
-    TextRendererComponent:
-      TextString: Karim Hamdallah
-      TextColor: [1, 1, 1, 1]
-      KerningOffset: 0
-      LineSpacing: 0
+      Scale: [2.23000002, 2.23000002, 2.23000002]
+    CircleRendererComponent:
+      Color: [0.112592548, 0.562962949, 0, 1]
+      Fade: 0.00499999989
+      Thickness: 0.136000007

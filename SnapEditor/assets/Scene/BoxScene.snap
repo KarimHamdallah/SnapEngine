@@ -35,7 +35,7 @@ Entities List:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Position: [0, -1.24167526, 17.1070061]
+      Position: [0, -1.24167526, 34.1070061]
       Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
     CameraComponent:

@@ -224,11 +224,11 @@ namespace SnapEngine
 			if (m_ContentBrowserPanel->IsWindowFocused() && m_ContentBrowserPanel->IsWindowHovered())
 				Application::Get().GetImGuiLayer()->BlockEvents(false);
 
-			
-			if (m_Font)
+			auto& DefaultFont = Font::GetDefault();
+			if (DefaultFont)
 			{
-				ImGui::Begin("LIBAlgorithm");
-				SnapPtr<Texture2D> font_atlas = m_Font->GetAtlasTexture();
+				ImGui::Begin("FontAtlas");
+				SnapPtr<Texture2D> font_atlas = DefaultFont->GetAtlasTexture();
 				if (font_atlas)
 					ImGui::Image((ImTextureID)font_atlas->getID(), { (float)font_atlas->getWidth(), (float)font_atlas->getHeight() }, { 0.0f, 1.0f }, {1.0, 0.0f});
 				ImGui::End();
@@ -308,12 +308,6 @@ private:
 
 		std::filesystem::path m_CurrentDeserializedScenePath = "";
 		std::filesystem::path m_CurrentDeserializedProjectPath = "";
-
-
-		////////////////////
-		//SnapPtr<SnapEngine::Font> font;
-		SnapPtr<Font> m_Font;
-		Entity Character;
 	};
 
 

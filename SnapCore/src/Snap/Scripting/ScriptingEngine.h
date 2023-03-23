@@ -9,6 +9,8 @@ extern "C" {
 	typedef struct _MonoAssembly MonoAssembly;
 	typedef struct _MonoImage MonoImage;
 	typedef struct _MonoClassField MonoClassField;
+	typedef struct _MonoDomain MonoDomain;
+	typedef struct _MonoString MonoString;
 }
 
 namespace Scripting
@@ -156,6 +158,8 @@ namespace Scripting
 		static bool IsReloadAppAssemblyPending();
 	public:
 		static MonoObject* InstantiateClass(MonoClass* monoClass);
+
+		static MonoDomain* GetAppDomain();
 
 		friend class ScriptGlue;
 	};

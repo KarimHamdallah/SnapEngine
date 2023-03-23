@@ -21,7 +21,8 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -59,8 +62,22 @@
     <Reference Include="Snap-ScriptCore" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Fonts\OpenSans-Bold.ttf" />
+    <None Include="Assets\Scenes\3DScene.snap" />
+    <None Include="Assets\Scenes\BoxScene.snap" />
+    <None Include="Assets\Scenes\ExampleScene.snap" />
+    <None Include="Assets\Scenes\FirstLevel.snap" />
+    <None Include="Assets\Scenes\Scene.snap" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\Name.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Textures\box.png" />
+    <Content Include="Assets\Textures\image.png" />
+    <Content Include="Assets\Textures\player.png" />
+    <Content Include="Assets\Textures\SpriteSheet.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -400,6 +400,11 @@ namespace Scripting
 		return instance;
 	}
 
+	MonoDomain* ScriptingEngine::GetAppDomain()
+	{
+		return s_Data->AppDomain;
+	}
+
 	SnapEngine::SnapPtr<ScriptClass> ScriptingEngine::GetScriptClass(const std::string& name)
 	{
 		if (s_Data->m_EntityClasses.find(name) == s_Data->m_EntityClasses.end())

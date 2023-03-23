@@ -52,4 +52,45 @@ namespace SnapEngine
             InternalCalls.RigidBody2D_ApplyLinearImpulseToCenter(m_Entity.m_ID, ref Impulse, wake);
         }
     }
+
+    public class TextRendererComponent : Component
+    {
+        public string Text
+        {
+            get
+            {
+                return InternalCalls.TextComponent_GetText(m_Entity.m_ID);
+            }
+            set { InternalCalls.TextComponent_SetText(m_Entity.m_ID, value); }
+        }
+        public vec4 Color
+        {
+            get
+            {
+                InternalCalls.TextComponent_GetColor(m_Entity.m_ID, out vec4 val);
+                return val;
+            }
+            set { InternalCalls.TextComponent_SetColor(m_Entity.m_ID, ref value); }
+        }
+
+        public float KerningOffset
+        {
+            get
+            {
+                InternalCalls.TextComponent_GetKerningOffset(m_Entity.m_ID, out float val);
+                return val;
+            }
+            set { InternalCalls.TextComponent_SetKerningOffset(m_Entity.m_ID, ref value); }
+        }
+
+        public float LineSpacing
+        {
+            get
+            {
+                InternalCalls.TextComponent_GetLineSpacing(m_Entity.m_ID, out float val);
+                return val;
+            }
+            set { InternalCalls.TextComponent_SetLineSpacing(m_Entity.m_ID, ref value); }
+        }
+    }
 }

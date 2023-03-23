@@ -21,7 +21,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\SnapEditor\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\Build\intermediate\SnapEditor\Resources\Scripts\intermediate\Distribution\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -61,6 +64,7 @@
     <Compile Include="Source\Snap\Math\Math.cs" />
     <Compile Include="Source\Snap\Math\vec2.cs" />
     <Compile Include="Source\Snap\Math\vec3.cs" />
+    <Compile Include="Source\Snap\Math\vec4.cs" />
     <Compile Include="Source\Snap\Scene\Components.cs" />
     <Compile Include="Source\Snap\Scene\Entity.cs" />
   </ItemGroup>
